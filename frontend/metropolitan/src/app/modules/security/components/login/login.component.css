@@ -1,35 +1,232 @@
-.rows {
-  height: 100%;
-}
-
-.fullscreen {
-  height: 100%;
-  background-color: #f6f6f7;
-}
-
-h5 {
-  color: #006132;
-}
-
-h1 {
-  margin-top: 50%;
-  margin-bottom: 20%;
-  font-family:'Times New Roman';
-  font-weight:600;
-}
-
-.card {
-  margin: 20px;
-  padding: 20px;
+.login-container {
   width: 100%;
-  min-height: 200px;
-  /*display: grid;*/
-  grid-template-rows: 20px 50px 1fr 50px;
-  border-radius: 10px;
-  box-shadow: 0px 6px 10px rgba(0, 0, 0, 0.25);
-  transition: all 0.2s;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
 }
 
-.card-1 {
-  background: radial-gradient(#A6C6FF, #93B7F9);
+.bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(24, 144, 255, 0.75) 0%, rgba(9, 109, 217, 0.65) 50%, rgba(0, 80, 179, 0.75) 100%);
+  z-index: 1;
+}
+
+.login-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.glass-card {
+  width: 420px;
+  max-width: 100%;
+  padding: 40px 36px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 24px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-brand {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.brand-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.brand-icon i {
+  font-size: 28px;
+  color: #fff;
+}
+
+.card-brand h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.brand-sub {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 300;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+:host ::ng-deep .ant-input-group {
+  display: flex;
+  align-items: center;
+}
+
+:host ::ng-deep .ant-input-affix-wrapper {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 4px 12px;
+  transition: all 0.3s ease;
+}
+
+:host ::ng-deep .ant-input-affix-wrapper:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+:host ::ng-deep .ant-input-affix-wrapper-focused,
+:host ::ng-deep .ant-input-affix-wrapper:focus {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+:host ::ng-deep .ant-input-affix-wrapper .ant-input-prefix {
+  margin-right: 10px;
+}
+
+:host ::ng-deep .ant-input-affix-wrapper .ant-input-prefix i {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 16px;
+}
+
+:host ::ng-deep .ant-input {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #fff;
+  font-size: 15px;
+  padding: 8px 0;
+  height: 40px;
+}
+
+:host ::ng-deep .ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+:host ::ng-deep .ant-btn-primary {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(24, 144, 255, 0.3);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+:host ::ng-deep .ant-btn-primary:hover {
+  background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%);
+  box-shadow: 0 6px 24px rgba(24, 144, 255, 0.45);
+  transform: translateY(-1px);
+}
+
+:host ::ng-deep .ant-btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(24, 144, 255, 0.3);
+}
+
+:host ::ng-deep .ant-btn-primary[disabled] {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: none;
+}
+
+:host ::ng-deep .ant-form-item {
+  margin-bottom: 16px;
+}
+
+:host ::ng-deep .ant-spin-nested-loading > div > .ant-spin {
+  max-height: none;
+}
+
+:host ::ng-deep .ant-spin-dot i {
+  background-color: #fff;
+}
+
+.card-footer {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.card-footer p {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 300;
+}
+
+@media (max-width: 576px) {
+  .glass-card {
+    padding: 28px 20px;
+    border-radius: 20px;
+  }
+
+  .card-brand h1 {
+    font-size: 24px;
+  }
+
+  .brand-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .brand-icon i {
+    font-size: 24px;
+  }
+
+  :host ::ng-deep .ant-btn-primary {
+    height: 44px;
+    font-size: 15px;
+  }
 }
