@@ -1,98 +1,82 @@
+<div class="page-header">
+  <h2>Nota de Debito Universal Assistance N° {{numeroNotaDebito}}</h2>
+  <span *ngIf="notaDebito.estado>0" class="status-badge">{{stateTranslate(notaDebito.estado)}}</span>
+</div>
 <nz-spin [nzSpinning]="waitAction">
-  <div id="pdfContainer" class="container">
+  <div id="pdfContainer" class="glass-card">
     <div nz-row>
-      <div nz-col nzSpan="8">
-        <img src="../../../../assets/img/metropolitana-slogan.jpg" width="300" />
+      <div nz-col nzSpan="12">
+        <img src="../../../../assets/img/metropolitana-slogan.jpg" width="220" />
       </div>
-    </div>
-    <div nz-row>
-      <div nz-col nzSpan="8" nzOffset="8">
-        <h2>Nota de Debito Universal Assistance N° {{numeroNotaDebito}}</h2>
-        <h2 *ngIf="notaDebito.estado>0">{{stateTranslate(notaDebito.estado)}}</h2>
-      </div>
-    </div>
-    <div nz-row>
-      <div nz-col nzSpan="9" nzOffset="15">
-        <div style="border:1px solid black; padding: 5px; width:99%; height:40px;">
-          <h3 style="font-size: 1vw; float: left; width: 70%">A pagar a Metropolitana: </h3>
-          <div style="font-size: 1vw; float: left; width: 29%; padding-top: 3px; padding-left: 10px; text-align: right;"><p>$us {{resultSum | number:'1.2-2' }}</p></div>
+      <div nz-col nzSpan="12" style="text-align:right">
+        <div class="total-badge">
+          <span class="total-label">A pagar a Metropolitana</span>
+          <span class="total-value">$us {{resultSum | number:'1.2-2' }}</span>
         </div>
       </div>
     </div>
-    <div nz-row>
-      <div nz-col nzSpan="8" class="columnContainer">
 
-        <div>
-          <h3 style="float:left;">Cliente:</h3>
-          <p>{{cliente}} </p>
+    <div nz-row [nzGutter]="32">
+      <div nz-col [nzXs]="24" [nzMd]="14">
+        <div class="info-row">
+          <span class="info-label">Cliente</span>
+          <span class="info-value">{{cliente}}</span>
         </div>
-
-        <div>
-          <h3 style="float:left;">Pasajero:</h3>
-          <p>{{pasajero}} </p>
+        <div class="info-row">
+          <span class="info-label">Pasajero</span>
+          <span class="info-value">{{pasajero}}</span>
         </div>
-
-        <div>
-          <h3>Fecha: </h3>
-          <p>{{fechaRegistro}}</p>
+        <div class="info-row">
+          <span class="info-label">Fecha</span>
+          <span class="info-value">{{fechaRegistro}}</span>
         </div>
-        <div>
-          <h3>Fecha Vencimiento: </h3>
-          <p>{{fechaVencimimento}}</p>
+        <div class="info-row">
+          <span class="info-label">Fecha Vencimiento</span>
+          <span class="info-value">{{fechaVencimimento}}</span>
         </div>
-        <div>
-          <h3 nzFor="Pasajero">Voucher:</h3>
-          <p>{{voucher}}</p>
+        <div class="info-row">
+          <span class="info-label">Voucher</span>
+          <span class="info-value">{{voucher}}</span>
         </div>
-        <div>
-          <h3 nzFor="Pasajero">Concepto:</h3>
-          <p>Operador: {{operador}}</p>
-          <p>Counter: {{counter}} </p>
-          <p>Servicio: {{servicio}}</p>
-          <p>Concepto: {{concepto}}</p>
+        <div class="info-row">
+          <span class="info-label">Operador</span>
+          <span class="info-value">{{operador}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Counter</span>
+          <span class="info-value">{{counter}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Servicio</span>
+          <span class="info-value">{{servicio}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Concepto</span>
+          <span class="info-value">{{concepto}}</span>
         </div>
       </div>
-      <div nz-col nzSpan="9" nzOffset="7" class="columnContainer">
-        <br />
-        <div>
-          <h4>Liquidación</h4>
+      <div nz-col [nzXs]="24" [nzMd]="10" class="liquidacion-col">
+        <h4>Liquidación</h4>
+        <div class="info-row">
+          <span class="info-label">Monto al Pax</span>
+          <span class="info-value">$us {{alPax | number:'1.2-2' }}</span>
         </div>
-        <div>
-          <h3 nzFor="Pasajero" style="width:70%; float:left;">Monto al Pax:</h3>
-          <p style="width:25%; float:left;">$us {{alPax | number:'1.2-2' }}</p>
+        <div class="info-row">
+          <span class="info-label">Comisión Agencia</span>
+          <span class="info-value">$us {{comicionAgencia | number:'1.2-2' }}</span>
         </div>
-        <div>
-          <h3 nzFor="Pasajero" style="width:70%; float:left;">Comisión Agencia:</h3>
-          <p style="width:25%; float:left;">$us {{comicionAgencia | number:'1.2-2' }}</p>
-        </div>
-
-      </div>
-    </div>
-
-    <div nz-row>
-      <div nz-col nzOffset="19" nzSpan="4">
-        <h3>Creado por: {{nombreCreador}}</h3>
       </div>
     </div>
+
+    <div class="creator-line">Creado por: {{nombreCreador}}</div>
   </div>
 
-
-  <div nz-row>
-    <div *ngIf="isAdmin" nz-col nzSpan="4" style="text-align:center;">
-      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="Anular()">Anular</button>
-    </div>
-    <div nz-col nzSpan="4" style="text-align:center;">
-      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="NDAnulacion()">ND Anulacion</button>
-    </div>
-    <div nz-col nzSpan="4" style="text-align:center">
-      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="Remitir()">Remitir</button>
-    </div>
-    <div nz-col nzSpan="4" style="text-align:center">
-      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="PendienteFecha()">Pendiente de Fecha</button>
-    </div>
-    <div nz-col nzSpan="5" style="text-align:center">
-      <button nz-button style="margin-top:30px; width:90%; padding-left:5px;" nzType="primary" (click)="generarPDF()">Imprimir Registro</button>
-    </div>
+  <div class="actions-bar">
+    <button *ngIf="isAdmin && estadoButton" nz-button nzType="primary" (click)="Anular()">Anular</button>
+    <button *ngIf="estadoButton" nz-button nzType="primary" (click)="NDAnulacion()">ND Anulacion</button>
+    <button *ngIf="estadoButton" nz-button nzType="primary" (click)="Remitir()">Remitir</button>
+    <button *ngIf="estadoButton" nz-button nzType="primary" (click)="PendienteFecha()">Pendiente de Fecha</button>
+    <button nz-button nzType="primary" (click)="generarPDF()">Imprimir Registro</button>
   </div>
 </nz-spin>
 
@@ -111,5 +95,5 @@
 </nz-modal>
 
 <nz-modal [(nzVisible)]="isVisibleBorrar" nzTitle="Anular Nota de Debito" (nzOnCancel)="handleCancelAnular()" (nzOnOk)="handleOkAnular()">
-  <p>Desea Anular la nota de debito?</p>  
+  <p>Desea Anular la nota de debito?</p>
 </nz-modal>

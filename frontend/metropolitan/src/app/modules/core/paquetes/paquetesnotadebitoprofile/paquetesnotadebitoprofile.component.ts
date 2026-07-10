@@ -193,25 +193,28 @@ export class PaquetesnotadebitoprofileComponent implements OnInit {
     // Ajustamos la escala para mejorar la calidad de la imagen
     let nnumeroNombre = this.numeroNotaDebito;
 
-    // Añadimos una clase temporal para aplicar estilos específicos para el PDF
+    // Añadimos una clase temporal para neutralizar el estilo "glass" durante la captura
     const pdfContainer = document.getElementById('pdfContainer');
-    pdfContainer.classList.add('container');
+    pdfContainer.classList.add('pdf-print');
 
     html2canvas(pdfContainer, {
       allowTaint: true,
       useCORS: true, // permite el uso de imágenes externas si tienen la cabecera CORS configurada
-      scale: 2 // Escala mejorada para mayor calidad
+      scale: 2, // Escala mejorada para mayor calidad
+      windowWidth: 1200 // fuerza el layout de escritorio (2 columnas) sin importar el ancho real de la ventana
     }).then(canvas => {
       const img = canvas.toDataURL("image/jpeg", 0.5);
       const doc = new jsPDF();
 
-      // Ajuste de la posición y el tamaño de la imagen
-      doc.addImage(img, 'PNG', 5, 10, 200, 0); // Ajustar los valores si es necesario para mantener el contenido centrado
+      // Ajuste de la posición y el tamaño de la imagen, preservando la proporción real de la captura
+      const imgWidth = 200;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(img, 'JPEG', 5, 10, imgWidth, imgHeight);
       let name = `notaDebito_${nnumeroNombre}.pdf`;
       doc.save(name);
 
       // Removemos la clase de estilo PDF después de generar el archivo
-      pdfContainer.classList.remove('container');
+      pdfContainer.classList.remove('pdf-print');
     });
 
     // Guardamos el log

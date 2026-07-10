@@ -189,11 +189,15 @@ export class NotaDebitoProfileComponent implements OnInit {
 
   generarPDF() {
     let nnumeroNombre = this.numeroNotaDebito;
-    html2canvas(document.getElementById('pdfContainer'), {
+    const pdfElement = document.getElementById('pdfContainer');
+    pdfElement.classList.add('pdf-print');
+    html2canvas(pdfElement, {
       allowTaint: true,
       useCORS: false,
-      scale: 1
+      scale: 1,
+      windowWidth: 1200
     }).then(function (canvas) {
+      pdfElement.classList.remove('pdf-print');
       var img = canvas.toDataURL("image/jpeg", 0.5);
       var doc = new jsPDF();
       var imgWidth = 195;
