@@ -23,3 +23,514 @@ app-root {
   width: 100%;
   height: 100%;
 }
+
+/* ─── Glass Card ─── */
+.glass-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  padding: 24px;
+}
+
+/* ─── Page Headers ─── */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.page-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+}
+
+.page-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* ─── Tables ─── */
+.ant-table-wrapper {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.ant-table {
+  background: transparent !important;
+  font-size: 13px;
+}
+
+.ant-table-thead > tr > th {
+  background: rgba(24, 144, 255, 0.04) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  color: #595959;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03) !important;
+  padding: 12px 16px;
+  transition: background 0.2s;
+  font-size: 13px;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: rgba(24, 144, 255, 0.03) !important;
+}
+
+.ant-table-tbody > tr.ant-table-row-selected > td {
+  background: rgba(24, 144, 255, 0.06) !important;
+}
+
+.ant-table-pagination {
+  padding: 16px;
+  margin: 0 !important;
+}
+
+.ant-pagination-item {
+  border-radius: 8px !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  transition: all 0.2s;
+}
+
+.ant-pagination-item-active {
+  border-color: #1890ff !important;
+  background: #1890ff !important;
+}
+
+.ant-pagination-item-active a {
+  color: #fff !important;
+}
+
+/* ─── Table horizontal scroll on mobile ─── */
+.ant-table-body {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ant-table-content {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ─── Buttons ─── */
+.ant-btn {
+  border-radius: 10px !important;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  height: 38px;
+  padding: 0 20px;
+  transition: all 0.2s;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.25) !important;
+}
+
+.ant-btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(24, 144, 255, 0.35) !important;
+  background: linear-gradient(135deg, #40a9ff 0%, #1890ff 100%) !important;
+}
+
+.ant-btn-primary:active {
+  transform: translateY(0);
+}
+
+.ant-btn-default {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.ant-btn-default:hover {
+  border-color: #1890ff !important;
+  color: #1890ff !important;
+}
+
+.ant-btn-danger {
+  background: linear-gradient(135deg, #ff4d4f 0%, #cf1322 100%) !important;
+  border: none !important;
+  box-shadow: 0 4px 12px rgba(255, 77, 79, 0.25) !important;
+}
+
+.ant-btn-danger:hover {
+  box-shadow: 0 6px 20px rgba(255, 77, 79, 0.35) !important;
+}
+
+/* ─── Cards ─── */
+.ant-card {
+  border-radius: 16px !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+.ant-card-head {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  padding: 0 24px !important;
+  min-height: 56px !important;
+}
+
+.ant-card-head-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.ant-card-body {
+  padding: 24px !important;
+}
+
+/* ─── Forms ─── */
+.ant-form-item {
+  margin-bottom: 16px;
+}
+
+.ant-form-item-label > label {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 500;
+  font-size: 13px;
+  color: #595959;
+}
+
+.ant-input {
+  border-radius: 10px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 8px 12px !important;
+  height: 40px;
+  font-size: 13px;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-input:hover {
+  border-color: #1890ff !important;
+}
+
+.ant-input:focus {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1) !important;
+}
+
+.ant-input-affix-wrapper {
+  border-radius: 10px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  padding: 0 12px !important;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-input-affix-wrapper:hover {
+  border-color: #1890ff !important;
+}
+
+.ant-input-affix-wrapper-focused {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1) !important;
+}
+
+.ant-select {
+  font-family: 'Poppins', sans-serif;
+}
+
+.ant-select-selection--single {
+  border-radius: 10px !important;
+  height: 40px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-select-selection__rendered {
+  line-height: 38px !important;
+}
+
+.ant-select-focused .ant-select-selection {
+  border-color: #1890ff !important;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1) !important;
+}
+
+.ant-select-dropdown {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(0, 0, 0, 0.04) !important;
+  padding: 4px !important;
+}
+
+.ant-select-dropdown-menu-item {
+  border-radius: 8px !important;
+  padding: 8px 12px !important;
+  font-size: 13px;
+}
+
+/* ─── Date Picker ─── */
+.ant-calendar-picker {
+  border-radius: 10px !important;
+}
+
+.ant-calendar-picker input {
+  border-radius: 10px !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-calendar-picker:hover input {
+  border-color: #1890ff !important;
+}
+
+/* ─── Modal ─── */
+.ant-modal-content {
+  border-radius: 20px !important;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12) !important;
+  overflow: hidden;
+}
+
+.ant-modal-header {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  padding: 20px 24px !important;
+  border-radius: 20px 20px 0 0 !important;
+}
+
+.ant-modal-body {
+  padding: 24px !important;
+}
+
+.ant-modal-footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.04) !important;
+  padding: 16px 24px !important;
+}
+
+/* ─── Spin ─── */
+.ant-spin-nested-loading > div > .ant-spin {
+  max-height: none;
+}
+
+.ant-spin-dot i {
+  background-color: #1890ff;
+}
+
+/* ─── Notifications / Message ─── */
+.ant-message-notice-content {
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ─── Transfer ─── */
+.ant-transfer-list {
+  border-radius: 12px !important;
+  border: 1px solid rgba(0, 0, 0, 0.06) !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+}
+
+.ant-transfer-list-header {
+  background: rgba(24, 144, 255, 0.04) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+/* ─── Tabs ─── */
+.ant-tabs {
+  font-family: 'Poppins', sans-serif;
+}
+
+.ant-tabs-bar {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+}
+
+.ant-tabs-tab {
+  font-size: 13px;
+  padding: 12px 16px !important;
+  transition: all 0.2s;
+}
+
+.ant-tabs-ink-bar {
+  background: #1890ff !important;
+  height: 3px !important;
+  border-radius: 3px 3px 0 0;
+}
+
+/* ─── Tag ─── */
+.ant-tag {
+  border-radius: 6px !important;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  padding: 2px 10px;
+}
+
+/* ─── Page container ─── */
+.page-container {
+  padding: 0;
+}
+
+/* ─── Filter row ─── */
+.filter-row {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-row nz-form-item {
+  margin-bottom: 0;
+  min-width: 180px;
+}
+
+/* ─── Page title row (nz-row with h2 + button) ─── */
+.ant-row + nz-spin .ant-table-wrapper,
+nz-spin .ant-table-wrapper {
+  margin-top: 16px;
+}
+
+/* make page header rows wrap properly */
+nz-row:first-child {
+  flex-wrap: wrap;
+}
+
+/* ─── nz-select inside list pages ─── */
+nz-select {
+  min-width: 140px;
+}
+
+/* ─── Month picker ─── */
+.ant-calendar-month-picker {
+  min-width: 160px;
+}
+
+/* ─── Make nz-form-item in filter rows more compact ─── */
+nz-form-item {
+  margin-bottom: 12px;
+}
+
+/* ─── Checkbox inline fix ─── */
+label[nz-checkbox] {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 992px) {
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 10px 12px !important;
+    font-size: 12px;
+  }
+
+  .ant-btn {
+    height: 34px;
+    font-size: 12px;
+    padding: 0 14px;
+  }
+
+  .ant-input {
+    height: 36px;
+    font-size: 12px;
+  }
+
+  nz-select {
+    min-width: 100px;
+  }
+}
+
+@media (max-width: 576px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-actions {
+    width: 100%;
+  }
+
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-row nz-form-item {
+    min-width: 100%;
+  }
+
+  .glass-card {
+    padding: 16px;
+  }
+
+  .ant-table-wrapper {
+    border-radius: 12px;
+  }
+
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 10px !important;
+    font-size: 11px;
+  }
+
+  .ant-table-thead > tr > th {
+    font-size: 10px;
+  }
+
+  .ant-btn {
+    height: 32px;
+    font-size: 11px;
+    padding: 0 10px;
+  }
+
+  .page-header h2 {
+    font-size: 16px;
+  }
+
+  /* Make nz-select full width on mobile */
+  nz-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ant-form-item-label > label {
+    font-size: 12px;
+  }
+
+  .ant-pagination {
+    font-size: 11px;
+  }
+
+  .ant-pagination-item {
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
+  }
+}

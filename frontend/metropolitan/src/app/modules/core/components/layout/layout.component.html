@@ -1,298 +1,248 @@
 <nz-layout class="app-layout">
-  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="320px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
+  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="280px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
             [nzTrigger]="null">
-    <div class="sidebar-logo">
-      <span class="header-trigger" (click)="onCollapseMenu()">
-        <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" aria-hidden="true"></i>
-      </span>
+    <div class="sidebar-header">
+      <div class="brand" *ngIf="!isCollapsed">
+        <div class="brand-icon">
+          <i nz-icon nzType="bank" nzTheme="outline"></i>
+        </div>
+        <span class="brand-text">Metropolitana</span>
+      </div>
+      <div class="sidebar-toggle" (click)="onCollapseMenu()">
+        <i nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'"></i>
+      </div>
     </div>
-    <div>
+
+    <div class="sidebar-menu">
       <ul nz-menu nzTheme="light" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
         <li *ngIf="isAdmin(['1','2','3','4','5'])" nz-menu-item routerLink="../main"
             routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{ exact: true }">
-          <i nz-icon [nzType]="'star'" [nzTheme]="'fill'"></i>
-          <span>Home</span>
+          <i nz-icon nzType="home" nzTheme="outline"></i>
+          <span>Inicio</span>
         </li>
+
         <li *ngIf="isAdmin(['1','2'])" nz-submenu nzClose>
           <span title>
-            <i nz-icon nzType="form" nzTheme="outline"></i>
+            <i nz-icon nzType="global" nzTheme="outline"></i>
             <span>Universal Assistance</span>
           </span>
           <ul>
-            <li routerLink="travelace/nota-debito" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Nota de Debito
-              </span>
+            <li nz-menu-item routerLink="travelace/nota-debito">
+              <i nz-icon nzType="file-text" nzTheme="outline"></i>
+              <span>Nota de Débito</span>
             </li>
-            <li routerLink="travelace/cargar-excel" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Cargar Excel Nota de Debito
-              </span>
+            <li nz-menu-item routerLink="travelace/cargar-excel">
+              <i nz-icon nzType="upload" nzTheme="outline"></i>
+              <span>Cargar Excel</span>
             </li>
-            <li routerLink="travelace/reporte-nota-debito" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte Nota Debito
-              </span>
+            <li nz-menu-item routerLink="travelace/reporte-nota-debito">
+              <i nz-icon nzType="bar-chart" nzTheme="outline"></i>
+              <span>Reporte Nota Débito</span>
             </li>
-            <li routerLink="travelace/orden-pago" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Orden de Pago
-              </span>
+            <li nz-menu-item routerLink="travelace/orden-pago">
+              <i nz-icon nzType="dollar" nzTheme="outline"></i>
+              <span>Orden de Pago</span>
             </li>
-            <li routerLink="travelace/reporte-orden-pago" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte Orden de Pago
-              </span>
+            <li nz-menu-item routerLink="travelace/reporte-orden-pago">
+              <i nz-icon nzType="pie-chart" nzTheme="outline"></i>
+              <span>Reporte Orden Pago</span>
             </li>
-            <li routerLink="travelace/reporte-ventas" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas
-              </span>
+            <li nz-menu-item routerLink="travelace/reporte-ventas">
+              <i nz-icon nzType="line-chart" nzTheme="outline"></i>
+              <span>Reporte de Ventas</span>
             </li>
-            <li routerLink="travelace/reporte-ventas-filtradas" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas Filtradas
-              </span>
+            <li nz-menu-item routerLink="travelace/reporte-ventas-filtradas">
+              <i nz-icon nzType="filter" nzTheme="outline"></i>
+              <span>Ventas Filtradas</span>
             </li>
-            <li routerLink="travelace/reporte-ventas-counter" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas Por Counter
-              </span>
+            <li nz-menu-item routerLink="travelace/reporte-ventas-counter">
+              <i nz-icon nzType="team" nzTheme="outline"></i>
+              <span>Ventas por Counter</span>
             </li>
-
           </ul>
         </li>
 
         <li *ngIf="isAdmin(['1','3'])" nz-submenu nzClose>
           <span title>
-            <i nz-icon nzType="form" nzTheme="outline"></i>
+            <i nz-icon nzType="inbox" nzTheme="outline"></i>
             <span>Paquetes</span>
           </span>
           <ul>
-            <li routerLink="paquetes/nota-debito" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Nota de Debito
-              </span>
+            <li nz-menu-item routerLink="paquetes/nota-debito">
+              <i nz-icon nzType="file-text" nzTheme="outline"></i>
+              <span>Nota de Débito</span>
             </li>
-            <li routerLink="paquetes/orden-pago" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Orden de Pago
-              </span>
+            <li nz-menu-item routerLink="paquetes/orden-pago">
+              <i nz-icon nzType="dollar" nzTheme="outline"></i>
+              <span>Orden de Pago</span>
             </li>
-            <li routerLink="paquetes/reporte-orden-pago" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte Orden de Pago
-              </span>
+            <li nz-menu-item routerLink="paquetes/reporte-orden-pago">
+              <i nz-icon nzType="pie-chart" nzTheme="outline"></i>
+              <span>Reporte Orden Pago</span>
             </li>
-            <li routerLink="paquetes/reporte-ventas" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas
-              </span>
+            <li nz-menu-item routerLink="paquetes/reporte-ventas">
+              <i nz-icon nzType="line-chart" nzTheme="outline"></i>
+              <span>Reporte de Ventas</span>
             </li>
-            <li routerLink="paquetes/reporte-ventas-counter" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas Por Counter
-              </span>
+            <li nz-menu-item routerLink="paquetes/reporte-ventas-counter">
+              <i nz-icon nzType="team" nzTheme="outline"></i>
+              <span>Ventas por Counter</span>
             </li>
-            <li routerLink="paquetes/reporte-ventas-filtradas" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas Filtradas
-              </span>
+            <li nz-menu-item routerLink="paquetes/reporte-ventas-filtradas">
+              <i nz-icon nzType="filter" nzTheme="outline"></i>
+              <span>Ventas Filtradas</span>
             </li>
           </ul>
         </li>
 
         <li *ngIf="isAdmin(['1','4'])" nz-submenu nzClose>
           <span title>
-            <i nz-icon nzType="form" nzTheme="outline"></i>
+            <i nz-icon nzType="download" nzTheme="outline"></i>
             <span>Carga</span>
           </span>
           <ul>
-            <li routerLink="carga/nota-debito" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Nota de Debito
-              </span>
+            <li nz-menu-item routerLink="carga/nota-debito">
+              <i nz-icon nzType="file-text" nzTheme="outline"></i>
+              <span>Nota de Débito</span>
             </li>
-            <li routerLink="carga/orden-pago" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Orden de Pago
-              </span>
+            <li nz-menu-item routerLink="carga/orden-pago">
+              <i nz-icon nzType="dollar" nzTheme="outline"></i>
+              <span>Orden de Pago</span>
             </li>
-            <li routerLink="carga/reporte-orden-pago" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte Orden de Pago
-              </span>
+            <li nz-menu-item routerLink="carga/reporte-orden-pago">
+              <i nz-icon nzType="pie-chart" nzTheme="outline"></i>
+              <span>Reporte Orden Pago</span>
             </li>
-            <li routerLink="carga/reporte-ventas" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas
-              </span>
+            <li nz-menu-item routerLink="carga/reporte-ventas">
+              <i nz-icon nzType="line-chart" nzTheme="outline"></i>
+              <span>Reporte de Ventas</span>
             </li>
-            <li routerLink="carga/reporte-ventas-counter" nz-menu-item>
-              <i nz-icon nzType="form" nzTheme="outline"></i>
-              <span>
-                Reporte de Ventas Por Counter
-              </span>
+            <li nz-menu-item routerLink="carga/reporte-ventas-counter">
+              <i nz-icon nzType="team" nzTheme="outline"></i>
+              <span>Ventas por Counter</span>
             </li>
           </ul>
         </li>
-        <li *ngIf="isAdmin(['1'])" nz-menu-item nzMatchRouter permission="['1']"
-            routerLink="farms">
-          <i nz-icon nzType="form" nzTheme="outline"></i>
+
+        <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="farms">
+          <i nz-icon nzType="book" nzTheme="outline"></i>
           <span>Reportes</span>
         </li>
+
         <li *ngIf="isAdmin(['1','2','3','4','5'])" nz-submenu nzClose>
           <span title>
-            <i nz-icon nzType="form" nzTheme="outline"></i><span>Configuracion</span>
+            <i nz-icon nzType="setting" nzTheme="outline"></i>
+            <span>Configuración</span>
           </span>
-
           <ul>
             <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="sucursales">
-              <span title>
-                <i nz-icon nzType="form" nzTheme="outline"></i><span>Sucursales</span>
-              </span>
-              <ul>
-                <li>
-                  <button nz-button nzType="default" nzBlock>
-                    Usuarios
-                  </button>
-                </li>
-              </ul>
+              <i nz-icon nzType="shop" nzTheme="outline"></i>
+              <span>Sucursales</span>
             </li>
-
             <li *ngIf="isAdmin(['1','2'])" nz-submenu nzClose>
               <span title>
-                <i nz-icon nzType="form" nzTheme="outline"></i><span>Travelace</span>
+                <i nz-icon nzType="global" nzTheme="outline"></i>
+                <span>Travelace</span>
               </span>
               <ul>
-                <li routerLink="clients">
-                  <button nz-button nzType="default" nzBlock>
-                    Clientes
-                  </button>
+                <li nz-menu-item routerLink="clients">
+                  <i nz-icon nzType="user" nzTheme="outline"></i>
+                  <span>Clientes</span>
                 </li>
-                <li routerLink="operador">
-                  <button nz-button nzType="default" nzBlock>
-                    Proveedores
-                  </button>
+                <li nz-menu-item routerLink="operador">
+                  <i nz-icon nzType="car" nzTheme="outline"></i>
+                  <span>Proveedores</span>
                 </li>
-                <li routerLink="counter">
-                  <button nz-button nzType="default" nzBlock>
-                    Counter
-                  </button>
+                <li nz-menu-item routerLink="counter">
+                  <i nz-icon nzType="team" nzTheme="outline"></i>
+                  <span>Counter</span>
                 </li>
               </ul>
             </li>
-
             <li *ngIf="isAdmin(['1','3'])" nz-submenu nzClose>
               <span title>
-                <i nz-icon nzType="form" nzTheme="outline"></i><span>Paquetes</span>
+                <i nz-icon nzType="inbox" nzTheme="outline"></i>
+                <span>Paquetes</span>
               </span>
               <ul>
-                <li routerLink="paquetes/clientesList">
-                  <button nz-button nzType="default" nzBlock>
-                    Clientes
-                  </button>
+                <li nz-menu-item routerLink="paquetes/clientesList">
+                  <i nz-icon nzType="user" nzTheme="outline"></i>
+                  <span>Clientes</span>
                 </li>
-                <li routerLink="paquetes/proveedorList">
-                  <button nz-button nzType="default" nzBlock>
-                    Proveedores
-                  </button>
+                <li nz-menu-item routerLink="paquetes/proveedorList">
+                  <i nz-icon nzType="car" nzTheme="outline"></i>
+                  <span>Proveedores</span>
                 </li>
-                <li routerLink="paquetes/counterList">
-                  <button nz-button nzType="default" nzBlock>
-                    Counter
-                  </button>
+                <li nz-menu-item routerLink="paquetes/counterList">
+                  <i nz-icon nzType="team" nzTheme="outline"></i>
+                  <span>Counter</span>
                 </li>
               </ul>
             </li>
-
             <li *ngIf="isAdmin(['1','4'])" nz-submenu nzClose>
               <span title>
-                <i nz-icon nzType="form" nzTheme="outline"></i><span>Carga</span>
+                <i nz-icon nzType="download" nzTheme="outline"></i>
+                <span>Carga</span>
               </span>
               <ul>
-                <li routerLink="carga/clientesList">
-                  <button nz-button nzType="default" nzBlock>
-                    Clientes
-                  </button>
+                <li nz-menu-item routerLink="carga/clientesList">
+                  <i nz-icon nzType="user" nzTheme="outline"></i>
+                  <span>Clientes</span>
                 </li>
-                <li routerLink="carga/proveedorList">
-                  <button nz-button nzType="default" nzBlock>
-                    Proveedores
-                  </button>
+                <li nz-menu-item routerLink="carga/proveedorList">
+                  <i nz-icon nzType="car" nzTheme="outline"></i>
+                  <span>Proveedores</span>
                 </li>
-                <li routerLink="carga/counterList">
-                  <button nz-button nzType="default" nzBlock>
-                    Counter
-                  </button>
+                <li nz-menu-item routerLink="carga/counterList">
+                  <i nz-icon nzType="team" nzTheme="outline"></i>
+                  <span>Counter</span>
                 </li>
               </ul>
             </li>
-
             <li *ngIf="isAdmin(['1'])" nz-submenu nzClose>
               <span title>
-                <i nz-icon nzType="form" nzTheme="outline"></i><span>Administracion</span>
+                <i nz-icon nzType="safety" nzTheme="outline"></i>
+                <span>Administración</span>
               </span>
               <ul>
-                <li routerLink="usuarios">
-                  <button nz-button nzType="default" nzBlock>
-                    Usuarios
-                  </button>
+                <li nz-menu-item routerLink="usuarios">
+                  <i nz-icon nzType="user" nzTheme="outline"></i>
+                  <span>Usuarios</span>
                 </li>
               </ul>
             </li>
-
-
-
           </ul>
-        </li>
-        <li routerLink="/">
-          <button nz-button nzType="default" nzBlock>
-            Salir
-          </button>
         </li>
       </ul>
     </div>
+
+    <div class="sidebar-footer" *ngIf="!isCollapsed">
+      <div class="user-info">
+        <nz-avatar nzSize="small" nzIcon="user"></nz-avatar>
+        <div class="user-detail">
+          <span class="user-name">{{nombreUsuario || 'Usuario'}}</span>
+          <span class="user-role" *ngIf="userId">ID: {{userId}}</span>
+        </div>
+      </div>
+      <button nz-button nzType="text" class="logout-btn" (click)="logout()">
+        <i nz-icon nzType="logout" nzTheme="outline"></i>
+        <span>Salir</span>
+      </button>
+    </div>
   </nz-sider>
+
   <nz-layout>
     <nz-header>
       <div class="app-header">
-        <div nz-row nzAlign="middle" nzJustify="center">
-          <div nz-col nzSpan="8">
-            <img src="assets/img/logo1.png" class="header-logo" alt="SMS Logo" />
+        <div class="header-left">
+          <img src="assets/img/logo1.png" class="header-logo" alt="Logo" />
+        </div>
+        <div class="header-right">
+          <div class="header-user" routerLink="usuarios/edit-usuario/{{userId}}" *ngIf="userId">
+            <nz-avatar nzSize="small" nzIcon="user"></nz-avatar>
+            <span class="header-user-name">{{nombreUsuario}}</span>
           </div>
-          
-          <div nz-col nzSpan="1" routerLink="usuarios/edit-usuario/{{userId}}">
-            <nz-avatar [nzSize]="32" nzIcon="user"></nz-avatar>            
-          </div>
-          <div nz-col nzSpan="12">
-            <div nz-row>
-              <div nz-col nzSpan="10">
-                <h3>Nombre: {{nombreUsuario}}</h3>
-              </div>
-              <div nz-col nzSpan="14">
-                <p>Version: 1.19.0 09/12/2025 16:17 PM </p>
-              </div>
-            </div>
-          </div>
+          <span class="header-version">v1.19.0</span>
         </div>
       </div>
     </nz-header>

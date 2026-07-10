@@ -1,20 +1,22 @@
 nz-select {
-  width: 400px;
-  display: block !important;
+  width: 100%;
+  max-width: 400px;
+  display: block;
 }
 
 nz-date-picker {
-  width: 400px !important;
+  width: 100%;
+  max-width: 400px;
   display: block;
 }
 
 .ant-calendar-picker {
-  width: 400px !important;
+  width: 100%;
+  max-width: 400px;
   display: block;
 }
 
 input {
-  width: 400px;
   height: 40px;
 }
 
