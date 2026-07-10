@@ -1,0 +1,55 @@
+<h2>Sucursal</h2>
+
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="nombre" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="telefono">Direccion</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="telefono" type="text" formControlName="direccion" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="fax">Telefonos</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="fax" type="text" formControlName="telefono" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="email" formControlName="email" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8" nzOffset="7" style="padding-bottom:20px;">
+        <nz-form-label nzRequired>Encargado</nz-form-label>
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige un Encargado" formControlName="idEncargado">
+          <nz-option *ngFor="let option of listUsers" nzValue="{{option.id}}" nzLabel="{{option.nombre}}"></nz-option>
+        </nz-select>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div nz-row>
+  <div nz-col nzSpan="24" nzOffset="9" style="padding-top:20px;">
+    <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveSucursal()">Guardar Datos de Operador</button>
+  </div>
+
+</div>

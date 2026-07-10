@@ -1,0 +1,87 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <h2>Nota de Debito Universal Assistance</h2>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary" routerLink="../nota-debito-Create">Crear Nota de Debito</button>
+  </div>
+</div>
+<nz-spin [nzSpinning]="waitAction">
+  <div nz-row>
+    <div nz-col nzSpan="4">
+      <nz-form-item>
+        <nz-form-label nzFor="filtrar">Numero Nota:</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="filtrarId" nzOverlayClassName="numeric-input" type="number" [(ngModel)]="idSearch" style="margin-left:20px;">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="4" nzOffset="1">
+      <button nz-button nzType="primary" (click)="filterId()">Filtrar</button>
+    </div>
+    <div nz-col nzSpan="6">
+      <nz-form-item>
+        <nz-form-label nzSpan="10" nzFor="filtrar">Filtrar por Texto:</nz-form-label>
+        <nz-form-control nzSpan="12">
+          <input nz-input name="filtrar" type="text" [(ngModel)]="searchText" nzSpan="20">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col>
+      <form nz-form [formGroup]="form">
+        <nz-form-item class="selectClass">
+          <nz-form-label nzRequired>Ciudad: </nz-form-label>
+          <nz-form-control>
+            <nz-select nzPlaceHolder="Sucursal" formControlName="sucursal">
+              <nz-option *ngFor="let option of listSucursales" [nzLabel]="option['nombre']" [nzValue]="option['id']"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="6">
+      <nz-form-item>
+        <nz-form-label nzSpan="4" nzFor="filtrar">Fecha</nz-form-label>
+        <nz-form-control nzSpan="16">
+          <nz-month-picker [(ngModel)]="dateSearch" (ngModelChange)="onChange($event)"></nz-month-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="8">
+      <button nz-button nzType="primary" (click)="resetDate()">Sin Fecha</button>
+    </div>
+  </div>
+
+  <nz-table #basicTable [nzPageSize]='10' [nzPaginationPosition]="'both'" [nzData]="listOfData | notaDebitoFilter:searchText">
+    <thead>
+      <tr>
+        <th>Codigo</th>
+        <th>Agencia</th>
+        <th>Pasajero</th>
+        <th>Servicio</th>
+        <th>Voucher</th>
+        <th>Monto Total</th>
+        <th>Estado</th>
+        <th *ngIf="isAdmin"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data" routerLink="../profile-nota-debito/{{data.id}}">
+        <td><h3>{{ data.codigoUnico }}</h3></td>
+        <td>{{ data.codCliente }}</td>
+        <td>{{ data.pasajero }}</td>
+        <td>{{ data.servicio }}</td>
+        <td>{{ data.voucher }}</td>
+        <td>{{ data.total.toFixed(2) }}</td>
+        <td>{{ stateTranslate(data.estado) }}</td>
+        <td *ngIf="isAdmin">
+          <button nz-button nzType="primary" routerLink="../edit-nota-debito/{{data.id}}">Editar</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

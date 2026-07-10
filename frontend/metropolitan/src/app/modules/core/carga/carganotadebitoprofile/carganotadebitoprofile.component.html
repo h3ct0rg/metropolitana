@@ -1,0 +1,114 @@
+<nz-spin [nzSpinning]="waitAction">
+  <div id="pdfContainer" class="container">
+    <div nz-row>
+      <div nz-col nzSpan="8">
+        <img src="../../../../assets/img/metropolitana-slogan.jpg" width="300" />
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="8" nzOffset="8">
+        <h2>Nota de Debito de Carga N° {{numeroNotaDebito}}</h2>
+        <h2 *ngIf="notaDebito.estado>0">{{stateTranslate(notaDebito.estado)}}</h2>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="9" nzOffset="15">
+        <div style="border:1px solid black; padding: 5px; width:99%; height:40px;">
+          <h3 style="font-size: 1vw; float: left; width: 70%">A pagar a Metropolitana: </h3>
+          <div style="font-size: 1vw; float: left; width: 25%; padding-top: 3px; padding-left: 10px; text-align: right;"><p>$us {{resultSum}}</p></div>
+        </div>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="8" class="columnContainer">
+
+        <div>
+          <h3 style="float:left;">Nombre:</h3>
+          <p>{{cliente}} </p>
+        </div>
+
+        <div>
+          <h3 style="float:left;">Cliente:</h3>
+          <p>{{pasajero}} </p>
+        </div>
+
+        <div>
+          <h3>Fecha: </h3>
+          <p>{{fechaRegistro}}</p>
+        </div>
+        <div>
+          <h3>Fecha Vencimiento: </h3>
+          <p>{{fechaVencimimento}}</p>
+        </div>
+        <div>
+          <h3 nzFor="Pasajero">Flete:</h3>
+          <p>{{voucher}}</p>
+        </div>
+        <div>
+          <p>Operador: {{operador}}</p>
+          <p>Counter: {{counter}} </p>
+          <p>Servicio: {{servicio}}</p>
+          <p>Concepto: {{concepto}}</p>
+        </div>
+      </div>
+      <div nz-col nzSpan="9" nzOffset="7" class="columnContainer">
+        <br />
+        <div>
+          <h4>Liquidación</h4>
+        </div>
+        <div>
+          <h3 nzFor="Pasajero" style="width:70%; float:left;">Monto al Pax:</h3>
+          <p style="width:25%; float:left;">$us {{alPax}}</p>
+        </div>
+        <div>
+          <h3 nzFor="Pasajero" style="width:70%; float:left;">Comisión Agencia:</h3>
+          <p style="width:25%; float:left;">$us {{comicionAgencia}}</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div nz-row>
+      <div nz-col nzOffset="19" nzSpan="4">
+        <h3>Creado por: {{nombreCreador}}</h3>
+      </div>
+    </div>
+  </div>
+
+
+  <div nz-row>
+    <div *ngIf="isAdmin" nz-col nzSpan="5" style="text-align:center;">
+      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="Anular()">Anular</button>
+    </div>
+    <div nz-col nzSpan="4" style="text-align:center;">
+      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="NDAnulacion()">ND Anulacion</button>
+    </div>
+    <div nz-col nzSpan="4" style="text-align:center">
+      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="Remitir()">Remitir</button>
+    </div>
+    <div nz-col nzSpan="4" style="text-align:center">
+      <button *ngIf="estadoButton" nz-button style="margin-top:30px; width:90%;" nzType="primary" (click)="PendienteFecha()">Pendiente de Fecha</button>
+    </div>
+    <div nz-col nzSpan="5" style="text-align:center">
+      <button nz-button style="margin-top:30px; width:90%; padding-left:5px;" nzType="primary" (click)="generarPDF()">Imprimir Registro</button>
+    </div>
+  </div>
+</nz-spin>
+
+<nz-modal [(nzVisible)]="isVisible" nzTitle="Crear Noda Duplicada" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+  <p>Desea crear una nota de debito duplicada en el mes actual</p>
+  <form nz-form [formGroup]="form">
+    <div>
+      <nz-form-item>
+        <nz-form-label nzRequired>Fecha de Registro: </nz-form-label>
+        <nz-form-control>
+          <nz-date-picker formControlName="fechaRegistro" nzPlaceHolder="Fecha Registro"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </form>
+</nz-modal>
+
+<nz-modal [(nzVisible)]="isVisibleBorrar" nzTitle="Anular Nota de Debito" (nzOnCancel)="handleCancelAnular()" (nzOnOk)="handleOkAnular()">
+  <p>Desea Anular la nota de debito?</p>
+</nz-modal>

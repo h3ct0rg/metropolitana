@@ -1,0 +1,37 @@
+<div class="fullscreen">
+  <div class="rows" nz-col nzSpan="14">
+    <div nz-row nzType="flex" nzAlign="middle" nzJustify="center">
+      <div nz-col nzSpan="13">
+
+        <h1>Metropolitana</h1>
+        <nz-spin [nzSpinning]="waitAction">
+          <div class="card card-1">
+            <form nz-form [formGroup]="form">
+              <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="usuario">Usuario</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                  <input nz-input name="usuaario" type="text" formControlName="usuario">
+                </nz-form-control>
+              </nz-form-item>
+
+              <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="password">Password</nz-form-label>
+                <nz-form-control [nzSpan]="14">
+                  <input nz-input name="password" type="password" formControlName="password">
+                </nz-form-control>
+              </nz-form-item>
+            </form>
+            <button nz-button nzType="primary" nzSize="default" (click)="login()" nzBlock>Ingresar</button>
+          </div>
+        </nz-spin>
+
+      </div>
+    </div>
+    <div nz-row nzType="flex" nzAlign="middle" nzJustify="center">
+
+    </div>
+  </div>
+  <div class="rows" nz-col nzSpan="10">
+    <image-gallery></image-gallery>
+  </div>
+</div>

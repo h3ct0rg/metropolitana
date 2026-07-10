@@ -1,0 +1,13 @@
+input {
+  width: 300px;
+  height: 40px;
+}
+
+.ant-form-item {
+  margin: 0 0 0 0;
+}
+
+input {
+  text-align: center;
+  padding-right: 5px;
+}

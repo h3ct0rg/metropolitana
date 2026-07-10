@@ -1,0 +1,305 @@
+<nz-layout class="app-layout">
+  <nz-sider class="menu-sidebar" nzCollapsible nzWidth="320px" nzBreakpoint="md" [(nzCollapsed)]="isCollapsed"
+            [nzTrigger]="null">
+    <div class="sidebar-logo">
+      <span class="header-trigger" (click)="onCollapseMenu()">
+        <i class="trigger" nz-icon [nzType]="isCollapsed ? 'menu-unfold' : 'menu-fold'" aria-hidden="true"></i>
+      </span>
+    </div>
+    <div>
+      <ul nz-menu nzTheme="light" nzMode="inline" [nzInlineCollapsed]="isCollapsed">
+        <li *ngIf="isAdmin(['1','2','3','4','5'])" nz-menu-item routerLink="../main"
+            routerLinkActive="ant-menu-item-selected" [routerLinkActiveOptions]="{ exact: true }">
+          <i nz-icon [nzType]="'star'" [nzTheme]="'fill'"></i>
+          <span>Home</span>
+        </li>
+        <li *ngIf="isAdmin(['1','2'])" nz-submenu nzClose>
+          <span title>
+            <i nz-icon nzType="form" nzTheme="outline"></i>
+            <span>Universal Assistance</span>
+          </span>
+          <ul>
+            <li routerLink="travelace/nota-debito" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Nota de Debito
+              </span>
+            </li>
+            <li routerLink="travelace/cargar-excel" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Cargar Excel Nota de Debito
+              </span>
+            </li>
+            <li routerLink="travelace/reporte-nota-debito" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte Nota Debito
+              </span>
+            </li>
+            <li routerLink="travelace/orden-pago" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Orden de Pago
+              </span>
+            </li>
+            <li routerLink="travelace/reporte-orden-pago" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte Orden de Pago
+              </span>
+            </li>
+            <li routerLink="travelace/reporte-ventas" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas
+              </span>
+            </li>
+            <li routerLink="travelace/reporte-ventas-filtradas" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas Filtradas
+              </span>
+            </li>
+            <li routerLink="travelace/reporte-ventas-counter" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas Por Counter
+              </span>
+            </li>
+
+          </ul>
+        </li>
+
+        <li *ngIf="isAdmin(['1','3'])" nz-submenu nzClose>
+          <span title>
+            <i nz-icon nzType="form" nzTheme="outline"></i>
+            <span>Paquetes</span>
+          </span>
+          <ul>
+            <li routerLink="paquetes/nota-debito" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Nota de Debito
+              </span>
+            </li>
+            <li routerLink="paquetes/orden-pago" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Orden de Pago
+              </span>
+            </li>
+            <li routerLink="paquetes/reporte-orden-pago" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte Orden de Pago
+              </span>
+            </li>
+            <li routerLink="paquetes/reporte-ventas" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas
+              </span>
+            </li>
+            <li routerLink="paquetes/reporte-ventas-counter" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas Por Counter
+              </span>
+            </li>
+            <li routerLink="paquetes/reporte-ventas-filtradas" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas Filtradas
+              </span>
+            </li>
+          </ul>
+        </li>
+
+        <li *ngIf="isAdmin(['1','4'])" nz-submenu nzClose>
+          <span title>
+            <i nz-icon nzType="form" nzTheme="outline"></i>
+            <span>Carga</span>
+          </span>
+          <ul>
+            <li routerLink="carga/nota-debito" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Nota de Debito
+              </span>
+            </li>
+            <li routerLink="carga/orden-pago" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Orden de Pago
+              </span>
+            </li>
+            <li routerLink="carga/reporte-orden-pago" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte Orden de Pago
+              </span>
+            </li>
+            <li routerLink="carga/reporte-ventas" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas
+              </span>
+            </li>
+            <li routerLink="carga/reporte-ventas-counter" nz-menu-item>
+              <i nz-icon nzType="form" nzTheme="outline"></i>
+              <span>
+                Reporte de Ventas Por Counter
+              </span>
+            </li>
+          </ul>
+        </li>
+        <li *ngIf="isAdmin(['1'])" nz-menu-item nzMatchRouter permission="['1']"
+            routerLink="farms">
+          <i nz-icon nzType="form" nzTheme="outline"></i>
+          <span>Reportes</span>
+        </li>
+        <li *ngIf="isAdmin(['1','2','3','4','5'])" nz-submenu nzClose>
+          <span title>
+            <i nz-icon nzType="form" nzTheme="outline"></i><span>Configuracion</span>
+          </span>
+
+          <ul>
+            <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="sucursales">
+              <span title>
+                <i nz-icon nzType="form" nzTheme="outline"></i><span>Sucursales</span>
+              </span>
+              <ul>
+                <li>
+                  <button nz-button nzType="default" nzBlock>
+                    Usuarios
+                  </button>
+                </li>
+              </ul>
+            </li>
+
+            <li *ngIf="isAdmin(['1','2'])" nz-submenu nzClose>
+              <span title>
+                <i nz-icon nzType="form" nzTheme="outline"></i><span>Travelace</span>
+              </span>
+              <ul>
+                <li routerLink="clients">
+                  <button nz-button nzType="default" nzBlock>
+                    Clientes
+                  </button>
+                </li>
+                <li routerLink="operador">
+                  <button nz-button nzType="default" nzBlock>
+                    Proveedores
+                  </button>
+                </li>
+                <li routerLink="counter">
+                  <button nz-button nzType="default" nzBlock>
+                    Counter
+                  </button>
+                </li>
+              </ul>
+            </li>
+
+            <li *ngIf="isAdmin(['1','3'])" nz-submenu nzClose>
+              <span title>
+                <i nz-icon nzType="form" nzTheme="outline"></i><span>Paquetes</span>
+              </span>
+              <ul>
+                <li routerLink="paquetes/clientesList">
+                  <button nz-button nzType="default" nzBlock>
+                    Clientes
+                  </button>
+                </li>
+                <li routerLink="paquetes/proveedorList">
+                  <button nz-button nzType="default" nzBlock>
+                    Proveedores
+                  </button>
+                </li>
+                <li routerLink="paquetes/counterList">
+                  <button nz-button nzType="default" nzBlock>
+                    Counter
+                  </button>
+                </li>
+              </ul>
+            </li>
+
+            <li *ngIf="isAdmin(['1','4'])" nz-submenu nzClose>
+              <span title>
+                <i nz-icon nzType="form" nzTheme="outline"></i><span>Carga</span>
+              </span>
+              <ul>
+                <li routerLink="carga/clientesList">
+                  <button nz-button nzType="default" nzBlock>
+                    Clientes
+                  </button>
+                </li>
+                <li routerLink="carga/proveedorList">
+                  <button nz-button nzType="default" nzBlock>
+                    Proveedores
+                  </button>
+                </li>
+                <li routerLink="carga/counterList">
+                  <button nz-button nzType="default" nzBlock>
+                    Counter
+                  </button>
+                </li>
+              </ul>
+            </li>
+
+            <li *ngIf="isAdmin(['1'])" nz-submenu nzClose>
+              <span title>
+                <i nz-icon nzType="form" nzTheme="outline"></i><span>Administracion</span>
+              </span>
+              <ul>
+                <li routerLink="usuarios">
+                  <button nz-button nzType="default" nzBlock>
+                    Usuarios
+                  </button>
+                </li>
+              </ul>
+            </li>
+
+
+
+          </ul>
+        </li>
+        <li routerLink="/">
+          <button nz-button nzType="default" nzBlock>
+            Salir
+          </button>
+        </li>
+      </ul>
+    </div>
+  </nz-sider>
+  <nz-layout>
+    <nz-header>
+      <div class="app-header">
+        <div nz-row nzAlign="middle" nzJustify="center">
+          <div nz-col nzSpan="8">
+            <img src="assets/img/logo1.png" class="header-logo" alt="SMS Logo" />
+          </div>
+          
+          <div nz-col nzSpan="1" routerLink="usuarios/edit-usuario/{{userId}}">
+            <nz-avatar [nzSize]="32" nzIcon="user"></nz-avatar>            
+          </div>
+          <div nz-col nzSpan="12">
+            <div nz-row>
+              <div nz-col nzSpan="10">
+                <h3>Nombre: {{nombreUsuario}}</h3>
+              </div>
+              <div nz-col nzSpan="14">
+                <p>Version: 1.19.0 09/12/2025 16:17 PM </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nz-header>
+    <nz-content>
+      <div class="inner-content">
+        <router-outlet></router-outlet>
+      </div>
+    </nz-content>
+  </nz-layout>
+</nz-layout>

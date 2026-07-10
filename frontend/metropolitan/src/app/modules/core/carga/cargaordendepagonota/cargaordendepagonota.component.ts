@@ -1,0 +1,181 @@
+import { Component, OnInit, Input } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { StorageService } from '../../../../shared/services/local-data/storage.service';
+import { ActivatedRoute } from '@angular/router';
+import { ClientService } from '../../services/clientes.service';
+import { IStorageKeys } from '../../../../shared/services/local-data/storage';
+import { changeNumbertoLetter } from '../../services/numeroaletra.service';
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { OrdenPago } from '../../../../shared/model/orden-pago';
+import { UsuarioService } from '../../services/usuario.service';
+import { CargaOrdenPagoService } from '../../services/carga/carga-orden-pago.services';
+import { CargaNotaDebitoService } from '../../services/carga/carga-nota-debito.services';
+
+@Component({
+  selector: 'app-cargaordendepagonota',
+  templateUrl: './cargaordendepagonota.component.html',
+  styleUrls: ['./cargaordendepagonota.component.css']
+})
+export class CargaordendepagonotaComponent implements OnInit {
+  @Input() listOfData = [];
+  @Input() montoPagado: string;
+  @Input() nombreCliente: string;
+  @Input() fechaRegistro: string;
+  @Input() formaPagoId: number;
+  @Input() nameCreator: string;
+  public numeroOrdenPago: string;
+  ordenNumner: changeNumbertoLetter;
+  token: string;
+  localOrdenPago: OrdenPago;
+  formaPagoText = "";
+  cuentaBanco = "";
+  elavoradoPor = "";
+  notaDebitoCod = 0;
+  public fullCharged = true;
+  public listOPN: string = "";
+  public isSpinning = true;
+
+  concepto = "";
+  servicio = "";
+
+  public form: FormGroup;
+
+  optionsMetodoPago = [
+    { id: "1", name: "Efectivo" },
+    { id: "2", name: "Tarjeta Credito/Debito" },
+    { id: "3", name: "Cheque" },
+    { id: "4", name: "Cuenta de Banco" },
+    { id: "5", name: "LINKSER" }
+  ];
+
+  cuentas = [
+    { id: "1", name: "BANCO BISA CUENTA 11 EN DOLARES METRO" },
+    { id: "2", name: "BANCO BISA CUENTA 19 EN BOLIVIANOS METRO" },
+    { id: "3", name: "BANCO GANADERO CUENTA 39 EN DOLARES LILIANA" },
+    { id: "4", name: "BANCO NACIONAL CUENTA 73 EN DOLARES METRO" },
+    { id: "5", name: "BCP CUENTA 17 EN BOLIVIANOS ANDREA" },
+    { id: "6", name: "BCP CUENTA 301 EN BOLIVIANOS ANDREA" },
+    { id: "7", name: "GANADERO CUENTA 361 BOLIVIANOS Lilian" },
+    { id: "8", name: "BANCO MERCANTIL SANTA CRUZ CUENTA 252 BOLIVIANOS Liliana " },
+    { id: "9", name: "BANCO UNION CUENTA 843 BOLIVIANOS Lilian Fiordoliva" }
+  ]
+
+  constructor(
+    private storage: StorageService,
+    private route: ActivatedRoute,
+    private ordenPagoService: CargaOrdenPagoService,
+    private notaDebitoService: CargaNotaDebitoService,
+    private clienteService: ClientService,
+    private usuarioService: UsuarioService,
+
+  ) {
+    this.form = new FormGroup({});
+    this.ordenNumner = new changeNumbertoLetter();
+    this.fechaRegistro = new Date().toDateString();
+  }
+
+  getDecimals(num) {
+    let number = (((num % 1) * 100).toFixed(0)).toString();
+    return number.length == 1 ? "0" + number : number;
+  }
+
+  ngOnInit() {
+    this.token = this.storage.get(IStorageKeys.Token);
+    JSON.parse(this.token)["userId"]
+    this.route.paramMap.subscribe(param => {
+      let operadorParam = param;
+      this.numeroOrdenPago = operadorParam["params"].id;
+      if (this.numeroOrdenPago) {
+        this.loadOrdenPagoDatos(this.numeroOrdenPago);
+      }
+    });
+  }
+
+  textConfim(numeroOP) {
+    this.listOPN = "";
+    this.isSpinning = true;
+    this.numeroOrdenPago = numeroOP;
+    this.loadOrdenPagoDatos(this.numeroOrdenPago);
+  }
+
+  loadOrdenPagoDatos(ordenPago) {
+    this.listOPN = "";
+    this.ordenPagoService.getOrdenPago(ordenPago).subscribe(result => {
+      this.formaPagoId = this.formaPagoId == undefined ? result.formaPago : this.formaPagoId;
+      if (result.id != 0) {
+        this.localOrdenPago = result;
+        this.usuarioService.getUser(this.localOrdenPago.createBy.toString()).subscribe(res => {
+          this.elavoradoPor = res.nombre;
+        });
+        this.numeroOrdenPago = result.numeroPago.toString();
+        this.ordenPagoService.getOrdenPagoByCodProfile(result.codProfile).subscribe(resultCodProfile => {
+          let calcular = 0;
+          resultCodProfile.forEach(key => {
+            this.listOPN += " " + key.numeroPago + ",";
+            this.notaDebitoService.getNotaDebitoByCodigoUnico(key.numeroNotaDebito, key.idSucursal).subscribe(NDResult => {
+              key['nombreCliente'] = NDResult[0]['codigoUnico'];
+              key['pasajero'] = NDResult[0]['servicio'];
+              this.isSpinning = false;
+            })
+
+            calcular += key.montoAPagar;
+          });
+          this.listOPN = this.listOPN.substring(0, this.listOPN.length - 1) + " ";
+          this.montoPagado = calcular.toFixed(2);
+          this.listOfData = resultCodProfile;
+          this.getFormaPago();
+        });
+
+        this.notaDebitoService.getNotaDebitoByCodigoUnico(result.numeroNotaDebito.toString(), this.getActualSucursal()).subscribe(resultNota => {
+          if (resultNota.length > 0) {
+            this.clienteService.getClientCarga(resultNota[0].codCliente.toString()).subscribe(resultCliente => {
+              this.nombreCliente = resultCliente.name;
+            });
+          }
+        });
+      }
+    });
+  }
+
+  onPrint() {
+    this.generarPDF();
+  }
+
+  getFormaPago() {
+    let resultMetodoPago = this.optionsMetodoPago.find(item => item.id == this.formaPagoId.toString());
+    if (resultMetodoPago) {
+      this.formaPagoText = resultMetodoPago['name'];
+      if (this.formaPagoId == 4) {
+        this.formaPagoText += " - " + this.cuentas.find(item => parseInt(item.id) == parseInt(this.localOrdenPago.numeroTarjeta.trim())).name;
+        this.fullCharged = false;
+      }
+    }
+  }
+
+  getTime(theTime) {
+    var d = new Date(theTime);
+    let hora = d.getDate() + " / " + (d.getMonth() + 1) + " / " + d.getFullYear();
+    return hora;
+  }
+
+  generarPDF() {
+    let numneroHeader = this.numeroOrdenPago;
+    html2canvas(document.getElementById('pdfContainer'), {
+      allowTaint: true,
+      useCORS: false,
+      scale: 1
+    }).then(function (canvas) {
+      var img = canvas.toDataURL("image/png");
+      var doc = new jsPDF();
+      doc.addImage(img, 'PNG', 7, 20, 195, 100);
+      let name = "ordenPago-" + numneroHeader + ".pdf";
+      doc.save(name);
+    });
+  }
+
+  getActualSucursal() {
+    const token = this.storage.parse(IStorageKeys.Token);
+    return token.sucursal;
+  }
+}

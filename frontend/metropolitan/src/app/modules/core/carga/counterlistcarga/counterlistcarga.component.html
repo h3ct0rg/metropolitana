@@ -1,0 +1,48 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <h2>Counter Carga</h2>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary" routerLink="../counterCreate">Crear Counter</button>
+  </div>
+</div>
+
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <nz-form-item>
+      <nz-form-label nzSpan="4" nzFor="nombre">Filtrar</nz-form-label>
+      <nz-form-control nzSpan="16">
+        <input nz-input name="nombre" type="text" [(ngModel)]="searchText" nzSpan="20">
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary">Filtrar</button>
+  </div>
+</div>
+<nz-spin [nzSpinning]="waitAction">
+  <nz-table #basicTable [nzData]="listOfData">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Codigo</th>
+        <th>Porcentaje Normal</th>
+        <th>Porcentaje Low Cost</th>
+        <th>Porcentaje AMP</th>
+        <th>Porcentaje Especial</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData">
+        <td routerLink="../edit-counter/{{data.id}}">{{ data.name }}</td>
+        <td routerLink="../edit-counter/{{data.id}}">{{ data.nombreCod }}</td>
+        <td routerLink="../edit-counter/{{data.id}}">{{ data.porcentajeNormal }}</td>
+        <td routerLink="../edit-counter/{{data.id}}">{{ data.porcentajeLow }}</td>
+        <td routerLink="../edit-counter/{{data.id}}">{{ data.porcentajeCorp }}</td>
+        <td routerLink="../edit-counter/{{data.id}}">{{ data.porcentajeEspecial }}</td>
+        <td><button nz-button nzType="primary" (click)="deleteCounter(data.id)">Eliminar</button></td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

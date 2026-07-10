@@ -1,0 +1,32 @@
+nz-select {
+  width: 200px;
+}
+
+input{
+    height:30px;
+}
+
+.container {
+  height: 670px;
+}
+
+.columnContainer > div > h4 {
+  float: left;
+  padding-right: 10px;
+}
+
+columnContainer > div {
+  padding-bottom: 15px;
+}
+
+p {
+  margin: 0;
+  font-weight: bold;
+  font-size: 19px;
+}
+
+h4 {
+  margin: 0;
+  font-weight: bold;
+  font-size: 15px;
+}

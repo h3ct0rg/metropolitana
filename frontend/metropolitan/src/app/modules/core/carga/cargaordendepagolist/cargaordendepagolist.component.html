@@ -1,0 +1,51 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <h2>Nota de Pago Paquetes</h2>
+  </div>
+</div>
+<form nz-form [formGroup]="form">
+  <div nz-row>
+    <div nz-col nzSpan="7">
+      <nz-form-item>
+        <nz-form-label nzSpan="4" nzFor="nombre">Filtrar</nz-form-label>
+        <nz-form-control nzSpan="16">
+          <input nz-input name="nombre" type="text" [(ngModel)]="searchText" nzSpan="20" [ngModelOptions]="{standalone: true}">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="7">
+      <button nz-button nzType="primary">Filtrar</button>
+    </div>
+    <div nz-col nzSpan="7">
+      <div>
+        <nz-form-item>
+          <nz-form-label nzRequired>Ciudad: </nz-form-label>
+          <nz-form-control>
+            <nz-select nzPlaceHolder="Sucursal" formControlName="sucursal">
+              <nz-option *ngFor="let option of listSucursales" [nzLabel]="option['nombre']" [nzValue]="option['id']"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+</form>
+
+<nz-table #basicTable [nzData]="listOfData | ordenPagoFilter:searchText">
+  <thead>
+    <tr>
+      <th>Pasajero</th>
+      <th>Deuda Total</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data" routerLink="../edit-orden-create/{{data.idCliente}}">
+      <td>{{ data.nombreCliente }}</td>
+      <td>{{ data.saldoDeudor.toFixed(2) }}</td>
+      <td>
+        <button nz-button nzType="primary">Pagar</button>
+      </td>
+    </tr>
+  </tbody>
+</nz-table>

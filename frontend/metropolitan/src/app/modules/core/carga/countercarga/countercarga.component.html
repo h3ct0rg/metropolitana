@@ -1,0 +1,85 @@
+<h2>Crear Counter</h2>
+
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="10" nzOffset="2">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="nombreCounter">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="10">
+        <nz-form-item>
+          <nz-form-label nzFor="telefono">Codigo</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="telefono" type="text" formControlName="codigoCounter" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col class="gutter-row" nzSpan="6">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Porcentaje Normal</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="number" formControlName="porcentajeNormal" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="6">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="telefono">Porcentaje Low Cost</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="telefono" type="number" formControlName="porcentajeLowCost" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="6">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="fax">Porcentaje AMP</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="fax" type="number" formControlName="porcentajeAMP" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col class="gutter-row" nzSpan="6">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="fax">Porcentaje Nacional</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="fax" type="number" formControlName="porcentajeEspecial" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+      <div nz-col class="gutter-row" nzSpan="8" nzOffset="7" style="padding-bottom:20px;">
+        <nz-form-label nzRequired>Agencia</nz-form-label>
+        <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige una Agencia" formControlName="agencias">
+          <nz-option *ngFor="let option of listaAgencia" nzValue="{{option.id}}" nzLabel="{{option.name}}"></nz-option>
+        </nz-select>
+      </div>
+    </div>
+
+    <div nz-row style="padding-bottom:20px;">
+      <div nz-col nzOffset="7">
+        <nz-form-label nzRequired>Proveedores Asociados</nz-form-label>
+      </div>
+    </div>
+    <div nz-row style="padding-bottom:20px;">
+      <div nz-col nzOffset="4" nzSpann="20">
+        <nz-transfer [nzDataSource]="list"
+                     (nzSelectChange)="select($event)"
+                     (nzChange)="change($event)">
+        </nz-transfer>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div nz-row>
+  <div nz-col nzSpan="24" nzOffset="9">
+    <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveCounter()">Guardar Datos de Counter</button>
+  </div>
+</div>

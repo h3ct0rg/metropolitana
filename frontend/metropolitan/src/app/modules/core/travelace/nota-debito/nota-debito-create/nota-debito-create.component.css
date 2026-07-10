@@ -1,0 +1,27 @@
+nz-select {
+  width: 400px;
+  display: block !important;
+}
+
+nz-date-picker {
+  width: 400px !important;
+  display: block;
+}
+
+.ant-calendar-picker {
+  width: 400px !important;
+  display: block;
+}
+
+input {
+  width: 400px;
+  height: 40px;
+}
+
+.ant-form-item {
+  margin: 0 0 0 0;
+}
+
+.montos{
+    text-align:center;
+}

@@ -1,0 +1,92 @@
+<form nz-form [formGroup]="form">
+  <nz-spin [nzSpinning]="isSpinning">
+    <div id="pdfContainer" class="container">
+      <div nz-row>
+        <div nz-col nzSpan="12">
+          <img src="../../../../assets/img/metropolitana-slogan.jpg" width="300" />
+        </div>
+
+        <div nz-col [nzSpan]="12">
+          <div style="text-align:right">
+            <h2>Sistema de Contabilidad</h2>
+          </div>
+        </div>
+      </div>
+      <div nz-row>
+        <div nz-col [nzOffset]="8" [nzSpan]="8">
+          <h3>Orden de Pago Universal Assistance</h3>
+          <h3>N° ({{listOPN}})</h3>
+        </div>
+      </div>
+
+      <div nz-row>
+        <div nz-col [nzOffset]="16" [nzSpan]="8">
+          <div style="border: 1px solid black; width:200px; float:left; padding: 3px;">
+            <h3 style="float:left; padding-right:20px">$us:</h3>
+            <p>{{montoPagado | number:'1.2-2' }}</p>
+          </div>
+        </div>
+      </div>
+
+
+      <div nz-row>
+        <h3>Nombre:</h3><p>{{nombreCliente}}</p>
+      </div>
+
+
+      <div nz-row>
+        <h3>Son:</h3><p>{{ordenNumner.Millones(montoPagado)}} {{getDecimals(montoPagado)}}/100 Dolares Americanos</p>
+      </div>
+
+
+      <div nz-row>
+        <nz-table #basicTable [nzData]="listOfData" [nzShowPagination]="false">
+          <thead>
+            <tr>
+              <th><h3>N° Debito</h3></th>
+              <th><h3>Fecha</h3></th>
+              <th><h3>Concepto de Venta</h3></th>
+              <th><h3>Amortizado</h3></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+            <tr *ngFor="let data of basicTable.data">
+              <td><p>{{data.nombreCliente}}</p></td>
+              <td><p>{{getTime(data.fechaPago)}}</p></td>
+              <td><p>{{data.pasajero}}</p></td>
+              <td><p>{{data.montoAPagar.toFixed(2) | number:'1.2-2' }}</p></td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+
+
+      <div nz-row>
+        <div nz-col [nzOffset]="16" [nzSpan]="8">
+          <h3>Total $: {{montoPagado | number:'1.2-2' }}</h3>
+        </div>
+      </div>
+
+
+      <div nz-row>
+        <h3>Concepto:</h3>
+      </div>
+
+      <div nz-row>
+        <div nz-col [nzSpan]="8">
+
+        </div>
+        <div nz-col [nzSpan]="8">
+          <h3>Elaborado Por: </h3><p>{{nameCreator}}</p>
+        </div>
+        <div nz-col [nzSpan]="8">
+          <h3>Forma de Pago: </h3><p>{{formaPagoText}}</p>
+        </div>
+      </div>
+    </div>
+  </nz-spin>
+</form>
+<nz-spin [nzSpinning]="isSpinning" [nzDelay]="500">
+  <button nz-button [nzType]="'primary'" (click)="onPrint()">Imprimir</button>
+</nz-spin>

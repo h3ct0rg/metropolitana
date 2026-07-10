@@ -1,0 +1,66 @@
+<h2>Crear Usuario</h2>
+
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="nombre">Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="nombreUsuario">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="telefono">CI</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="ci" type="text" formControlName="ciUser">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="telefono">Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="Email" type="text" formControlName="emailUser">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="fax">Nombre de Usuario</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="usuario" type="text" formControlName="usuarioUser">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="fax">Password</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="password" type="password" formControlName="passwordUser">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div *ngIf="isAdmin" nz-col class="gutter-row" nzSpan="8">
+        <nz-form-label nzRequired>Roles</nz-form-label>
+        <nz-select nzMode="tags" nzPlaceHolder="Role de Sistema" formControlName="selectRol">
+          <nz-option *ngFor="let option of idroles" [nzLabel]="option['name']" [nzValue]="option['id']"></nz-option>
+        </nz-select>
+      </div>
+      <div *ngIf="isAdmin" nz-col class="gutter-row" nzSpan="8">
+        <nz-form-label nzRequired>Sucursal</nz-form-label>
+        <nz-select nzPlaceHolder="Sucursal" formControlName="sucursal">
+          <nz-option *ngFor="let option of listSucursales" [nzLabel]="option['nombre']" [nzValue]="option['id']"></nz-option>
+        </nz-select>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div nz-row>
+  <div nz-col nzSpan="24" nzOffset="9">
+    <button nz-button nzType="primary" (click)="saveProveedor()">Guardar Datos de Usuario</button>
+  </div>
+</div>

@@ -1,0 +1,315 @@
+<form nz-form [formGroup]="form">
+
+  <div nz-row>
+    <div nz-col [nzSpan]="7">
+      <div>
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha Inicio: </nz-form-label>
+          <nz-form-control>
+            <nz-date-picker ngModelChange="onChange()" formControlName="fechaStardDate" nzPlaceHolder="Fecha Registro" (ngModelChange)="updateCheckClientes()"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-col [nzSpan]="7">
+      <div>
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha Final: </nz-form-label>
+          <nz-form-control>
+            <nz-date-picker ngModelChange="onChange()" formControlName="fechaEndDate" nzPlaceHolder="Fecha Registro" (ngModelChange)="updateCheckClientes()"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-col [nzSpan]="7">
+      <div>
+        <nz-form-item>
+          <nz-form-label nzRequired>Ciudad: </nz-form-label>
+          <nz-form-control>
+            <nz-select nzPlaceHolder="Sucursal" formControlName="sucursal">
+              <nz-option *ngFor="let option of listSucursales" [nzLabel]="option['nombre']" [nzValue]="option['id']"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="24">
+      <button nz-button nzType="primary" (click)="generateNote()">Reporte de Ventas</button>
+    </div>
+  </div>
+
+  <div id="pdfContainer" class="container">
+
+    <div nz-row style="padding-top:50px; padding-bottom:20px;">
+      <div nz-col nzSpan="6">
+        <img src="../../../../assets/img/metropolitana-slogan.jpg" width="300" />
+      </div>
+
+      <div nz-col [nzSpan]="6">
+        <div style="text-align:right">
+          <h2>Reporte de Ventas "Universal Assistance"</h2>
+        </div>
+      </div>
+    </div>
+
+    <div nz-row>
+      <div nz-col nzSpan="6">
+        <h4>Fecha Del: {{fechaIni}}</h4>
+      </div>
+      <div nz-col nzSpan="6">
+        <h4>Fecha Al: {{fechaF}}</h4>
+      </div>
+    </div>
+
+    <div nz-row>
+      <div nz-col nzSpan="24">
+        <div *ngFor="let operador of listOperadoresSelect" style="padding-bottom:100px;">
+          <nz-table *ngIf="operador.length>0" [nzShowPagination]="false" #basicTable [nzData]="listReport">
+            <thead>
+              <tr><h2>{{operador[0].nombreOperador}}</h2></tr>
+              <tr>
+                <th>Indice</th>
+                <th>Nro Debito</th>
+                <th>Nro Orden</th>
+                <th>Agencia</th>
+                <th>Pasajero</th>
+                <th>Fecha</th>
+                <th>Forma Pago</th>
+                <th>Precio</th>
+                <th>Com Agencia</th>
+                <th>Com Counter</th>
+                <th>Com Metro</th>
+                <th>Neto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of operador; index as i" style="padding-top:15px;">
+                <td>{{ i+1 }}</td>
+                <td>{{ data.Id}}</td>
+                <td>{{ data.numeroPago }}</td>
+                <td>{{ data.nombreAgencia}}</td>
+                <td>{{ data.pasajero}}</td>
+                <td>{{ getTime(data.fechaPago) }}</td>
+                <td>{{ data.formaPago }}</td>
+                <td>{{ data.montoNeto.toFixed(2) }}</td>
+                <td>{{ data.totalAgencia.toFixed(2) }}</td>
+                <td>{{ data.totalCounter.toFixed(2) }}</td>
+                <td>{{ data.totalFinal.toFixed(2) }}</td>
+                <td>{{ data.totalArgentina.toFixed(2) }}</td>
+              </tr>
+
+
+
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td><h3>Totales</h3></td>
+                <td>
+                  {{getSum('montoNeto',operador).toFixed(2)}}
+                </td>
+                <td>
+                  {{getSum('totalAgencia',operador).toFixed(2)}}
+                </td>
+                <td>
+                  {{getSum('totalCounter',operador).toFixed(2)}}
+                </td>
+                <td>
+                  {{getSum('totalFinal',operador).toFixed(2)}}
+                </td>
+                <td>
+                  {{getSum('totalArgentina',operador).toFixed(2)}}
+                </td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <div style="margin-bottom: 50px">
+          <nz-table *ngIf="listReportExtra.length>0" [nzShowPagination]="false" #basicTable [nzData]="listReportExtra">
+            <thead>
+              <tr><h2>Anteriores Por Poner Fecha</h2></tr>
+              <tr>
+                <th>Indice</th>
+                <th>Nro Nota</th>
+                <th>Agencia</th>
+                <th>Pasajero</th>
+                <th>Servicios</th>
+                <th>Fecha</th>
+                <th>Precio</th>
+                <th>Com Agencia</th>
+                <th>Com Counter</th>
+                <th>Com Metro</th>
+                <th>Neto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of listReportExtra; index as i" style="padding-top:15px;">
+                <td>{{ i+1 }}</td>
+                <td>{{ data.codUnicoNota}}</td>
+                <td>{{ data.nombreAgencia}}</td>
+                <td>{{ data.pasajero }}</td>
+                <td>{{ data.servicios }}</td>
+                <td>{{ getTime(data.fechaPago) }}</td>
+                <td>{{ data.montoNeto.toFixed(2) }}</td>
+                <td>{{ data.totalAgencia.toFixed(2) }}</td>
+                <td>{{ data.totalCounter.toFixed(2) }}</td>
+                <td>{{ (data.montoNeto-data.totalAgencia).toFixed(2) }}</td>
+                <td>{{ data.totalArgentina.toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <div style="margin-bottom: 50px">
+          <nz-table *ngIf="listReportAnulacion.length>0" [nzShowPagination]="false" #basicTable [nzData]="listReportAnulacion">
+            <thead>
+              <tr><h2>Notas de Debito de Anulacion</h2></tr>
+              <tr>
+                <th>Indice</th>
+                <th>Nro Nota</th>
+                <th>Agencia</th>
+                <th>Pasajero</th>
+                <th>Servicios</th>
+                <th>Precio</th>
+                <th>Com Agencia</th>
+                <th>Com Counter</th>
+                <th>Com Metro</th>
+                <th>Neto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of listReportAnulacion; index as i" style="padding-top:15px;">
+                <td>{{ i+1 }}</td>
+                <td>{{ data.codUnicoNota}}</td>
+                <td>{{ data.nombreAgencia}}</td>
+                <td>{{ data.pasajero }}</td>
+                <td>{{ data.servicios }}</td>
+                <td>{{ data.montoNeto.toFixed(2) }}</td>
+                <td>{{ data.totalAgencia.toFixed(2) }}</td>
+                <td>{{ data.totalCounter.toFixed(2) }}</td>
+                <td>{{ data.totalMetro.toFixed(2) }}</td>
+                <td>{{ data.totalArgentina.toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <div style="margin-bottom: 50px">
+          <nz-table *ngIf="listReportRemision.length>0" [nzShowPagination]="false" #basicTable [nzData]="listReportRemision">
+            <thead>
+              <tr><h2>Notas de Debito de Remision</h2></tr>
+              <tr>
+                <th>Indice</th>
+                <th>Nro Nota</th>
+                <th>Agencia</th>
+                <th>Pasajero</th>
+                <th>Servicios</th>
+                <th>Precio</th>
+                <th>Com Agencia</th>
+                <th>Com Counter</th>
+                <th>Com Metro</th>
+                <th>Neto</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let data of listReportRemision; index as i" style="padding-top:15px;">
+                <td>{{ i+1 }}</td>
+                <td>{{ data.codUnicoNota}}</td>
+                <td>{{ data.nombreAgencia}}</td>
+                <td>{{ data.pasajero }}</td>
+                <td>{{ data.servicios }}</td>
+                <td>{{ data.montoNeto.toFixed(2) }}</td>
+                <td>{{ data.totalAgencia.toFixed(2) }}</td>
+                <td>{{ data.totalCounter.toFixed(2) }}</td>
+                <td>{{ data.totalMetro.toFixed(2) }}</td>
+                <td>{{ data.totalArgentina.toFixed(2) }}</td>
+              </tr>
+            </tbody>
+          </nz-table>
+        </div>
+        <nz-table style="padding-top:15px;" [nzShowPagination]="false" [nzData]="listReport">
+          <tbody>
+            <tr>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th></th>
+              <th>Precio Neto</th>
+              <th>Com Agencia</th>
+              <th>Com Counter</th>
+              <th>Com Metro</th>
+              <th>Com Argentina</th>
+            </tr>
+            <tr>
+              <td><h3>Totales</h3></td>
+              <td>.</td>
+              <td>.</td>
+              <td>.</td>
+              <td></td>
+              <td>{{ totalNeto.toFixed(2) }}</td>
+              <td>{{ totalAgencia.toFixed(2) }}</td>
+              <td>{{ totalCounter.toFixed(2) }}</td>
+              <td>{{ (totalTotal-(listRestas[5]+listRestas[6])).toFixed(2) }}</td>
+              <td>{{ totalArgentina.toFixed(2) }}</td>
+              <td></td>
+              <td></td>
+            </tr>
+
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td><h3>Total Metropolitana</h3></td>
+              <td><h3>Total Anulaciones</h3></td>
+              <td><h3>Total Remisiones</h3></td>
+              <td><h3>Total Impuestos</h3></td>
+              <td><h3>Cobros por Anulaciones</h3></td>
+              <td><h3>Total Por Poner Fecha</h3></td>
+              <td><h3>Total Argentina</h3></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td><h3>Total Para Metropolitana</h3></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>{{ totalNeto.toFixed(2) }}</td>
+              <td>{{listRestas[0].toFixed(2)}}</td>
+              <td>{{listRestas[1].toFixed(2)}}</td>
+              <td>{{listRestas[2].toFixed(2)}}</td>
+              <td>{{listRestas[3].toFixed(2)}}</td>
+              <td>{{listRestas[4].toFixed(2)}}</td>
+              <td>{{ (totalNeto - (listRestas[2]+listRestas[3]+listRestas[4]+listRestas[0])).toFixed(2) }}</td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+
+    <h4>Reporte</h4>
+  </div>
+
+</form>
+<button [disabled]="isSpinning" nz-button [nzType]="'primary'" (click)="onPrint()">Imprimir</button>

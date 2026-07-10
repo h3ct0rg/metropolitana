@@ -1,0 +1,98 @@
+<form nz-form [formGroup]="form">
+  <div nz-row>
+    <div nz-col nzSpan="5" nzOffset="1">
+      <nz-form-item>
+        <nz-form-label nzRequired>Fecha de Registro: </nz-form-label>
+        <nz-form-control>
+          <nz-date-picker ngModelChange="onChange()" formControlName="fechaRegistro" nzPlaceHolder="Fecha Registro" (ngModelChange)="updateDatePayment()"></nz-date-picker>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="5" nzOffset="1">
+      <nz-form-item>
+        <nz-form-label nzFor="Servicio">Numero Orden de Pago</nz-form-label>
+        <nz-form-control>
+          <input nz-input [disabled]="true" name="Servicio" type="text" formControlName="numeroOrdenPago">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+
+    <div nz-col nzSpan="5" nzOffset="1">
+      <nz-form-item>
+        <nz-form-label nzFor="Servicio">Monto a Pagar $</nz-form-label>
+        <nz-form-control>
+          <input nz-input [disabled]="true" name="Servicio" type="text" formControlName="montoDolares">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="5" nzOffset="1">
+      <nz-form-item>
+        <nz-form-label nzFor="Servicio">Monto a Pagar Bs</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="Servicio" [disabled]="true" type="text" formControlName="montoBs">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-row>
+    <nz-table #basicTable [nzData]="listOfData">
+      <thead>
+        <tr>
+          <th>N° Nota de Debito</th>
+          <th>Cliente</th>
+          <th>Saldo</th>
+          <th [nzChecked]="check" [nzIndeterminate]="indeterminate" (nzCheckedChange)="onAllChecked($event)"></th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td>{{ data.idNota }}</td>
+          <td>{{ data.nombreCliente }}</td>
+          <td>{{ data.saldoDeudor.toFixed(2) }}</td>
+
+          <td>
+            <label nz-checkbox (nzCheckedChange)="this.check(data.idOrden,data.saldoDeudor, data.numeroOrdenPago)">Pagar</label>
+          </td>
+
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+
+  <div nz-row>
+    <nz-form-item>
+      <nz-form-label nzRequired>Metodo de Pago</nz-form-label>
+      <nz-select nzRequired nzShowSearch nzAllowClear nzPlaceHolder="Elige un Metodo" formControlName="metodoDePago">
+        <nz-option *ngFor="let option of optionsMetodoPago" nzValue="{{option.id}}" nzLabel="{{option.name}}"></nz-option>
+      </nz-select>
+    </nz-form-item>
+  </div>
+  <div nz-row>
+    <nz-form-item *ngIf="mostrarData">
+      <nz-form-label nzFor="Servicio">{{tituloFormaPago}}</nz-form-label>
+      <nz-form-control>
+        <input nz-input name="Servicio" type="text" formControlName="textMetodoPago">
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-row *ngIf="mostrarCuentas">
+    <nz-form-label>Cuentas Bancarias</nz-form-label>
+    <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige una Cuenta" formControlName="cuentaBancaria">
+      <nz-option *ngFor="let option of cuentas" nzValue="{{option.id}}" nzLabel="{{option.name}}"></nz-option>
+    </nz-select>
+  </div>
+
+  <div nz-row>
+    <div nz-col nzSpan="24" nzOffset="9">
+      <button nz-button nzType="primary" [disabled]="!form.valid" (click)="saveNotaVenta()">Guardar Pago</button>
+    </div>
+  </div>
+
+  <nz-modal [(nzVisible)]="isVisible" nzWidth="900" nzTitle="" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+    <orden-pago-nota #listPays></orden-pago-nota>
+  </nz-modal>
+
+
+</form>

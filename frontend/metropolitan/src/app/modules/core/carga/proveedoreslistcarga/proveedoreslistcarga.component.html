@@ -1,0 +1,45 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <h2>Proveedor Carga</h2>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary" routerLink="../proveedorCreate">Crear Proveedor</button>
+  </div>
+</div>
+
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <div nz-row>
+      <nz-form-item>
+        <nz-form-label nzFor="nombre">Filtrar</nz-form-label>
+        <nz-form-control>
+          <input nz-input name="nombre" type="text" [(ngModel)]="buscarOperador">
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary">Filtrar</button>
+  </div>
+</div>
+
+<nz-table #basicTable [nzData]="listOfData">
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Porcentaje Agencia</th>
+      <th>Porcentaje Metropolitana</th>
+      <th>Porcentaje A Liquidar</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of basicTable.data">
+      <td routerLink="../edit-proveedor/{{data.id}}">{{ data.name }}</td>
+      <td routerLink="../edit-proveedor/{{data.id}}">{{ data.porcentajeAgencia }}</td>
+      <td routerLink="../edit-proveedor/{{data.id}}">{{ data.porcentajeMetropolitana }}</td>
+      <td routerLink="../edit-proveedor/{{data.id}}">{{ data.porcentajeArgentina }}</td>
+      <td><button nz-button nzType="primary" (click)="deleteOperator(data.id)">Eliminar</button></td>
+    </tr>
+  </tbody>
+</nz-table>

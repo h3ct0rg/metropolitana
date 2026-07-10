@@ -1,0 +1,44 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <h2>Sucursales Metropolitana</h2>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary" routerLink="sucursalCreate">Crear Sucursal</button>
+  </div>
+</div>
+
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <!--<nz-form-item>
+      <nz-form-label nzSpan="4" nzFor="nombre">Filtrar</nz-form-label>
+      <nz-form-control nzSpan="16">
+        <input nz-input name="nombre" type="text" [(ngModel)]="searchText" nzSpan="20">
+      </nz-form-control>
+    </nz-form-item>-->
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary">Filtrar</button>
+  </div>
+</div>
+
+<nz-spin [nzSpinning]="waitAction">
+  <nz-table #basicTable [nzData]="listOfData">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Telefono</th>
+        <th>Direccion</th>
+        <th>Encargado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData" routerLink="sucursalEdit/{{data.id}}">
+        <td>{{ data.nombre }}</td>
+        <td>{{ data.telefonos }}</td>
+        <td>{{ data.direccion }}</td>
+        <td>{{ data.Encargado }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>
+

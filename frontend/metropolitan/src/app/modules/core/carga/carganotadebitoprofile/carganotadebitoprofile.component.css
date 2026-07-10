@@ -1,0 +1,23 @@
+.container {
+  border: 2px solid black;
+  padding: 15px 15px 15px 15px;
+}
+
+.columnContainer > div > h3 {
+  float: left;
+  padding-right: 10px;
+}
+
+button {
+  width: 200px;
+}
+
+p {
+  font-weight: bold;
+  font-size: 19px;
+}
+
+h3 {
+  font-weight: bold;
+  font-size: 19px;
+}

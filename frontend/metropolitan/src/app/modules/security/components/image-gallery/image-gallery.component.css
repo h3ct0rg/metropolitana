@@ -1,0 +1,116 @@
+[nz-carousel-content] {
+  text-align: center;
+  height: 100%;
+  line-height: 160px;
+  background: #2196F3;
+  color: #fff;
+  overflow: hidden;
+  top: 0;
+  bottom: 0;
+  position: fixed;
+}
+
+img{
+    width:200px;
+}
+
+.rows {
+    height: 100%;
+}
+
+.fullscreen {
+    height: 100%;
+    background-color: #f6f6f7;
+}
+
+::ng-deep .ant-carousel .slick-slider {
+    height: 100% !important;
+}
+
+.ant-carousel .slick-slider {
+    height: 100% !important;
+}
+
+::ng-deep .ant-carousel .slick-slider .slick-track {
+    height: 100%;
+}
+
+::ng-deep .slick-list {
+    height: 100%;
+}
+
+nz-input-group {
+    height: 40px;
+    width: 100%;
+    border-color: ghostwhite;
+}
+
+input {
+    box-shadow: inset 0 2px 8px 0 rgba(207,215,223,0.3);
+}
+
+.LargeEcomButton {
+    height: 40px;
+    width: 100%;
+    border-radius: 4px;
+    background-color: #006132;
+    margin-top: 48px;
+}
+
+.carrouselImage {
+    width: auto;
+    height: 100%;
+    background-color: #004423;
+    opacity: 0.2;
+}
+
+.textContainerImage {
+    position: absolute;
+    top: 50%;
+    left: 39%;
+    z-index: 1;
+    text-align: -webkit-center;
+}
+
+.middlerow {
+    text-align: -webkit-center;
+}
+
+.headerRow {
+    padding-top: 38px;
+}
+
+.bodyRow {
+    padding-top: 200px;
+}
+
+.imgHeader {
+    padding-left: 30px;
+}
+
+.selectHeader {
+    text-align: -webkit-right;
+    padding-right: 30px;
+}
+
+.smsIcon {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    padding-right: 25px;
+    padding-top: 25px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+h1 {
+    color: #ffffff;
+}
+
+h2{
+    color: #ffffff;
+}

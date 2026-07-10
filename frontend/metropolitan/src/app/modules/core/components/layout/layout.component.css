@@ -1,0 +1,118 @@
+:host {
+    display: flex;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.ant-row{
+    height: 100px;
+}
+
+.app-layout {
+    height: 100vh;
+}
+
+.menu-sidebar {
+    overflow: auto;
+    position: relative;
+    z-index: 10;
+    box-shadow: 2px 0 6px rgba(0, 21, 41, 0.35);
+}
+
+.menu-sidebar ul > li img {
+    margin-right: 10px;
+    height: 25px;
+    width: 30px;
+}
+
+.header-trigger {
+    height: 64px;
+    padding: 0px 30px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s, padding 0s;
+    color: black;
+    float: right;
+}
+
+.sidebar-logo {
+    position: relative;
+    height: 64px;
+    padding-left: 24px;
+    overflow: hidden;
+    line-height: 64px;
+    transition: all 0.3s;
+}
+
+.trigger:hover {
+    color: #1890ff;
+}
+
+.inner-content {
+    padding: 24px;
+    background: #fff;
+}
+
+.header-logo {
+    max-width: 153px;
+    width: 40px;
+    height: auto;
+    margin-left: 10px;
+    margin-right: 50%;
+}
+
+.app-header {
+    position: relative;
+    height: 64px;
+    padding: 0;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
+}
+
+nz-header {
+    padding: 0;
+    width: 100%;
+    z-index: 2;
+    box-shadow: 0px 2px 6px rgba(0, 21, 41, 0.35);
+}
+.profile{
+    text-align: center;
+}
+.commodities-container, .tenants-container {
+    display: flex;
+    height: 64px;
+    align-items: center;
+}
+::ng-deep .tenants-container .tenants .ant-select-selection.ant-select-selection--multiple,
+::ng-deep .commodities-container .commodities .ant-select-selection.ant-select-selection--multiple {
+    max-height: 40px;
+    overflow: hidden;
+}
+.tenants-container .tenants,
+.commodities-container .commodities {
+    width: 100%;
+}
+
+.userInfo{
+    vertical-align: middle;
+}
+
+label{
+    font-size: 12px;
+    margin-right: 5px;
+}
+
+.ant-select{
+    width: 13vw;
+}
+.commodities{
+    margin-right: 1vw;
+}
+.commodities-label{
+    margin-left: 10px;
+}
+.setting{
+    margin-right: 15px;
+}
+

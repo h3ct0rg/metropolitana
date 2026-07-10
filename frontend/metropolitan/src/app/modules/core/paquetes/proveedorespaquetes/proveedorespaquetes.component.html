@@ -1,0 +1,65 @@
+<h2>Crear Proveedor</h2>
+
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="nombreOperador" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item style="visibility:hidden;">
+          <nz-form-label nzFor="telefono">Telefono</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="telefono" type="text" formControlName="telefonoOperador" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item style="visibility:hidden;">
+          <nz-form-label nzFor="fax">Direccion</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="fax" type="text" formControlName="direccionOperador" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Porcentaje A Liquidar</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="number" formControlName="porcentajeArgentina" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="telefono">Porcentaje Agencia</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="telefono" type="number" formControlName="porcentajeAgencia" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="fax">Porcentaje Metropolitana</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="fax" type="number" formControlName="porcentajeMetropolitan" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div nz-row>
+  <div nz-col nzSpan="24" nzOffset="9" style="padding-top:20px;">
+    <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveOperador()">Guardar Datos de Operador</button>
+  </div>
+
+</div>

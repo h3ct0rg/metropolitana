@@ -1,0 +1,120 @@
+<script>
+  var MyDiv1 = Document.getElementById('print');
+</script>
+
+
+<form nz-form [formGroup]="form">
+  <div nz-row>
+    <div nz-col nzSpan="8">
+      <h2>Ordenes de Pago</h2>
+    </div>
+  </div>
+
+  <div nz-row>
+    <nz-form-item>
+      <nz-form-label nzFor="Pasajero">Numero Orden de Pago</nz-form-label>
+      <nz-form-control>
+        <input nz-input name="codigoOrdenPago" type="text" formControlName="codigoOrdenPago" nzSpan="20">
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+
+  <div nz-row>
+    <div nz-col nzSpan="8">
+      <nz-radio-group formControlName="radioValue" (ngModelChange)="updateCheckVariable()">
+        <label nz-radio nzValue="1">Todos</label>
+        <label nz-radio nzValue="2">Pagados</label>
+        <label nz-radio nzValue="3">No Pagados</label>
+      </nz-radio-group>
+    </div>
+
+    <div nz-col nzSpan="7">
+      <div>
+        <nz-form-item>
+          <nz-form-label nzRequired>Ciudad: </nz-form-label>
+          <nz-form-control>
+            <nz-select nzPlaceHolder="Sucursal" formControlName="sucursal">
+              <nz-option *ngFor="let option of listSucursales" [nzLabel]="option['nombre']" [nzValue]="option['id']"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+</form>
+
+<nz-spin [nzSpinning]="isSpinning" [nzSize]="'large'">
+  <nz-table #basicTable [nzData]="listOfData">
+    <thead>
+      <tr>
+        <th>Numero Orden Pago</th>
+        <th>Cliente</th>
+        <th>Numero ND</th>
+        <th>Pasajero</th>
+        <th>Monto Pagado</th>
+        <th>Saldo</th>
+        <th>Concepto</th>
+        <th>Pagado</th>
+        <th>Anulado</th>
+        <th>Fecha de Pago</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basicTable.data" routerLink="../profile-orden-pago/{{data.id}}">
+        <td>{{ data.numeroPago }}</td>
+        <td>{{ data.nameCliente }}</td>
+        <td>{{ data.numeroND }}</td>
+        <td>{{ data.pasajero }}</td>
+        <td>{{ data.montoAPagar.toFixed(2) }}</td>
+        <td>{{ data.saldoDeudor.toFixed(2) }}</td>
+        <td>{{ data.concepto }}</td>
+        <td>{{ data.estadoPago }}</td>
+        <td>{{ data.estadoAnulado }}</td>
+        <td>{{ data.fechaPago }}</td>
+        <td>
+          <button nz-button nzType="primary" routerLink="../edit-orden-pago/{{data.id}}">Cambiar Estado</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>
+<nz-modal [(nzVisible)]="isVisible" nzWidth="900" nzTitle="Imprimir Nota" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
+
+  <div nz-row>
+    Concepto:
+    <nz-table #totalTable [nzData]="listOfData" [nzShowPagination]="false">
+      <thead>
+        <tr>
+          <th>Codigo Orden Pago</th>
+          <th>Cliente</th>
+          <th>Monto Pagado</th>
+          <th>Saldo</th>
+          <th>Concepto</th>
+          <th>Pagado</th>
+          <th>Anulado</th>
+          <th>Fecha de Pago</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let data of basicTable.data">
+          <td>{{ data.numeroPago }}</td>
+          <td>{{ data.idCliente }}</td>
+          <td>{{ data.montoAPagar.toFixed(2) }}</td>
+          <td>{{ data.saldoDeudor.toFixed(2) }}</td>
+          <td>{{ data.concepto }}</td>
+          <td>{{ data.pagado }}</td>
+          <td>{{ data.anulado }}</td>
+          <td>{{ getTime(data.fechaPago) }}</td>
+        </tr>
+      </tbody>
+    </nz-table>
+  </div>
+
+
+  <button nz-button [nzType]="'primary'" (click)="onPrint()">Imprimir</button>
+</nz-modal>
+
+<nz-spin [nzSpinning]="isSpinning" [nzSize]="'large'">
+  <button nz-button [nzType]="'primary'" (click)="showModal()"><span>Imprimir Reporte</span></button>
+</nz-spin>

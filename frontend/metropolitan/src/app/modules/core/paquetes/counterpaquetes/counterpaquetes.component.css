@@ -1,0 +1,9 @@
+input {
+  height: 30px;
+  width: 80%;
+  text-align: center;
+}
+
+::ng-deep .ant-transfer-list {
+  width: 40% !important;
+}

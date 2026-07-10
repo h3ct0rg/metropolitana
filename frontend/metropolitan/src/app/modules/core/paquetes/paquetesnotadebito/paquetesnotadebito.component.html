@@ -1,0 +1,150 @@
+<nz-spin [nzSpinning]="waitAction">
+  <form nz-form [formGroup]="form">
+    <div nz-row>
+      <div nz-col [nzSpan]="14">
+        <div>
+          <nz-form-item>
+            <nz-form-label nzRequired>Fecha de Registro: </nz-form-label>
+            <nz-form-control>
+              <nz-date-picker ngModelChange="onChange()" formControlName="fechaRegistro" nzPlaceHolder="Fecha Registro" (ngModelChange)="updateCheckClientes()"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div>
+          <nz-form-item>
+            <nz-form-label nzRequired>Fecha de Vencimmiento: </nz-form-label>
+            <nz-form-control>
+              <nz-date-picker ngModelChange="onChange()" formControlName="fechaVencimiento" nzPlaceHolder="Fecha Vencimiento" (ngModelChange)="updateCheckClientes()"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div>
+          <nz-form-label nzRequired>Cliente</nz-form-label>
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige una Agencia" formControlName="clienteNotaVenta" (ngModelChange)="counterChange($event)">
+            <nz-option *ngFor="let option of options" nzValue="{{option.id}}" nzLabel="{{option.name}}"></nz-option>
+          </nz-select>
+        </div>
+        <div>
+          <nz-form-label nzRequired nzFor="Operador">Proveedor</nz-form-label>
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige un Operador" formControlName="operador" ngModelChange="calculateData()">
+            <nz-option *ngFor="let operador of operadores" nzValue="{{operador.id}}" nzLabel="{{operador.name}}"></nz-option>
+          </nz-select>
+        </div>
+        <div>
+          <nz-form-item>
+            <nz-form-label nzFor="Pasajero">Pasajero</nz-form-label>
+            <nz-form-control>
+              <input nz-input name="Pasajero" type="text" formControlName="Pasajero" nzSpan="20">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div>
+          <nz-form-item>
+            <nz-form-label nzFor="Servicio">Servicio</nz-form-label>
+            <nz-form-control>
+              <input nz-input name="Servicio" type="text" formControlName="Servicio" nzSpan="20">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div>
+          <nz-form-item>
+            <nz-form-label nzFor="Pasajero">Voucher</nz-form-label>
+            <nz-form-control>
+              <input nz-input name="Voucher" type="text" formControlName="Voucher" nzSpan="20">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div>
+          <nz-form-label nzRequired nzFor="Operador">Counter</nz-form-label>
+          <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige un Counter" formControlName="counter" ngModelChange="calculateData()">
+            <nz-option *ngFor="let counter of counters" nzValue="{{counter.id}}" nzLabel="{{counter.nombreCod}}"></nz-option>
+          </nz-select>
+        </div>
+
+        <div>
+          <nz-form-item>
+            <nz-form-label nzFor="Pasajero">Concepto</nz-form-label>
+            <nz-form-control>
+              <input nz-input name="Concepto" type="text" formControlName="Concepto" nzSpan="20">
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+      </div>
+      <div nz-col [nzSpan]="10">
+        <div>
+          <h4>Liquidacion</h4>
+        </div>
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="Pasajero">Monto al Pax:</nz-form-label>
+          <nz-form-control>
+            <input class="montos" nz-input name="Voucher" type="number" formControlName="montoNeto" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label nzFor="Pasajero">comisión Agencia:</nz-form-label>
+          <nz-form-control>
+
+          </nz-form-control>
+        </nz-form-item>
+        <input class="montos" nz-input name="Voucher" type="text" formControlName="comicionAgencia" [disabled]="!isDisabled" nzSpan="20">
+        <nz-form-item>
+          <nz-form-label nzFor="Pasajero">comisión Counter</nz-form-label>
+          <nz-form-control>
+
+          </nz-form-control>
+        </nz-form-item>
+        <input class="montos" nz-input name="Voucher" type="text" formControlName="comicionCounter" [disabled]="!isDisabled" nzSpan="20">
+        <nz-form-item>
+          <nz-form-label nzFor="Pasajero">comisión Metropolitana</nz-form-label>
+          <nz-form-control>
+
+          </nz-form-control>
+        </nz-form-item>
+        <input class="montos" nz-input name="Voucher" type="text" formControlName="comicionMetro" [disabled]="!isDisabled" nzSpan="20">
+        <nz-form-item>
+          <nz-form-label nzFor="Pasajero">Neto a Liquidar</nz-form-label>
+          <nz-form-control>
+
+          </nz-form-control>
+        </nz-form-item>
+        <input class="montos" nz-input name="Voucher" type="text" formControlName="aMetro" [disabled]="!isDisabled" nzSpan="20">
+        <nz-form-item style="padding-top:20px;">
+          <label nz-checkbox formControlName="sinCalculo">Calculo Manual</label>
+        </nz-form-item>
+
+        <!--<nz-form-item style="padding-top:20px;">
+          <label nz-checkbox formControlName="pendienteFecha">Pediente de Fecha</label>
+        </nz-form-item>-->
+
+        <nz-form-item style="visibility:hidden">
+          <nz-form-label nzFor="Pasajero">Neto a Liquidar:</nz-form-label>
+          <nz-form-control>
+            <input class="montos" nz-input name="Voucher" type="text" formControlName="netoLiquida" disabled nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+
+
+
+        <nz-form-item style="visibility:hidden">
+          <nz-form-label nzFor="Pasajero">Al Pax:</nz-form-label>
+          <nz-form-control>
+            <input class="montos" nz-input name="Voucher" type="text" formControlName="alPax" disabled nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+
+
+
+      </div>
+
+    </div>
+  </form>
+
+  <div nz-row>
+    <div nz-col nzSpan="24" nzOffset="9">
+      <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveNotaVenta()">Guardar Datos de Nota de Venta</button>
+    </div>
+  </div>
+</nz-spin>

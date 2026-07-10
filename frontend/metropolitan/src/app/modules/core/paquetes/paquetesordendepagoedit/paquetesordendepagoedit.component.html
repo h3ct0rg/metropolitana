@@ -1,0 +1,57 @@
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col [nzSpan]="6">
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha de Registro: </nz-form-label>
+          <nz-form-control>
+            <nz-month-picker ngModelChange="onChange()" formControlName="fechaRegistro" nzPlaceHolder="Fecha Registro" (ngModelChange)="updateDatePayment()"></nz-month-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="nombre">Numero Orden de Pago</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="numeroOrden">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="nombre">Monto Pagado Dolares</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="montoPagado">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="nombre">Monto Pagado Bs</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="montoPagadoBs" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8" nzOffset="6">
+        <nz-form-label nzFor="nombre">Tipo de Accion</nz-form-label>
+        <nz-select nzAllowClear nzPlaceHolder="Elija la Accion" formControlName="listaAccion">
+          <nz-option nzLabel="Anulado" nzValue="1"></nz-option>
+          <nz-option nzLabel="Remision" nzValue="2"></nz-option>
+        </nz-select>
+      </div>
+    </div>
+    <div nz-row>
+      <div nz-col nzSpan="6" nzOffset="8" style="padding-top:30px;">
+        <button nz-button nzType="primary" (click)="updateOrdenPago()">Actualizar Orden Pago</button>
+      </div>
+    </div>
+  </div>
+</form>
+
+

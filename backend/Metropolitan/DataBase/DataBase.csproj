@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{27850107-EA9F-4758-8ACC-7B7A786CCC77}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>DataBase</RootNamespace>
+    <AssemblyName>DataBase</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="connectionDB.cs" />
+    <Compile Include="gestorDB.cs" />
+    <Compile Include="management\carga\cargaClientManagement.cs" />
+    <Compile Include="management\carga\cargaCounterManagement.cs" />
+    <Compile Include="management\carga\cargaNotaDebitoTravelaceManagement.cs" />
+    <Compile Include="management\carga\cargaOperadorManagement.cs" />
+    <Compile Include="management\carga\cargaOrdendePagoTravelaceManagement.cs" />
+    <Compile Include="management\Logs\LogsManagement.cs" />
+    <Compile Include="management\paquetes\paquetesOrdendePagoTravelaceManagement.cs" />
+    <Compile Include="management\paquetes\paquetesNotaDebitoTravelaceManagement.cs" />
+    <Compile Include="management\paquetes\paquetesCounterManagement.cs" />
+    <Compile Include="management\paquetes\paquetesOperadorManagement.cs" />
+    <Compile Include="management\paquetes\paquetesClientManagement.cs" />
+    <Compile Include="management\sucursalesManagement.cs" />
+    <Compile Include="management\counterManagement.cs" />
+    <Compile Include="management\excelManagement.cs" />
+    <Compile Include="management\operacionPagoTravelaceManagement.cs" />
+    <Compile Include="management\operadorManagement.cs" />
+    <Compile Include="management\notaDebitoTravelaceManagement.cs" />
+    <Compile Include="management\userManagement.cs" />
+    <Compile Include="management\provedorManagement.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{1ff3bbc0-5285-45fa-9741-0cf4954b02ee}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

@@ -1,0 +1,102 @@
+<h2>Crear Cliente</h2>
+
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="nombreCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="telefono">Telefono</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="telefono" type="text" formControlName="telefonoCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="fax">Celular</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="fax" type="text" formControlName="faxCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+    </div>
+
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="contacto">Contacto</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="contacto" type="text" formControlName="contactoCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="ruc">Nit</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="ruc" type="text" formControlName="rucCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="direccion">Direccion</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="direccion" type="text" formControlName="direccionCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+
+    </div>
+
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="casilla">Email</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="casilla" type="text" formControlName="casillaCliente" value="0" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzFor="cargo">Cargo</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="cargo" type="text" formControlName="cargoCliente" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired>Sucursal</nz-form-label>
+          <nz-select nzRequired nzShowSearch nzAllowClear nzPlaceHolder="Elige una Sucursal" formControlName="sucursal">
+            <nz-option *ngFor="let option of listSucursal" nzValue="{{option.id}}" nzLabel="{{option.nombre}}"></nz-option>
+          </nz-select>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired>Ciudad</nz-form-label>
+          <nz-select nzRequired nzShowSearch nzAllowClear nzPlaceHolder="Elige una Ciudad" formControlName="ciudad">
+            <nz-option *ngFor="let option of listCiudad" nzValue="{{option.id}}" nzLabel="{{option.nombre}}"></nz-option>
+          </nz-select>
+        </nz-form-item>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div nz-row>
+  <div nz-col nzSpan="24" nzOffset="9">
+    <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveClient()">Guardar Datos de Cliente</button>
+  </div>
+</div>

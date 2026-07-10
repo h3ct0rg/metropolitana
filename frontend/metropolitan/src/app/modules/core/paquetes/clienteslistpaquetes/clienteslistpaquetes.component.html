@@ -1,0 +1,45 @@
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <h2>Clientes Metropolitana</h2>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary" routerLink="../clienteCreate">Crear Clientes</button>
+  </div>
+</div>
+
+<div nz-row>
+  <div nz-col nzSpan="8">
+    <nz-form-item>
+      <nz-form-label nzSpan="4" nzFor="nombre">Filtrar</nz-form-label>
+      <nz-form-control nzSpan="16">
+        <input nz-input name="nombre" type="text" [(ngModel)]="searchText" nzSpan="20">
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary">Filtrar</button>
+  </div>
+</div>
+
+<nz-spin [nzSpinning]="waitAction">
+  <nz-table #basicTable [nzData]="listOfData">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Telefono</th>
+        <th>Direccion</th>
+        <th>Contacto</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData">
+        <td routerLink="../edit-cliente/{{data.id}}">{{ data.name }}</td>
+        <td routerLink="../edit-cliente/{{data.id}}">{{ data.telefono }}</td>
+        <td routerLink="../edit-cliente/{{data.id}}">{{ data.direccion }}</td>
+        <td routerLink="../edit-cliente/{{data.id}}">{{ data.contacto }}</td>
+        <td><button nz-button nzType="primary" (click)="deleteClient(data.id)">Eliminar</button></td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

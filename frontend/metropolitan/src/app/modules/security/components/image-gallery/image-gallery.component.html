@@ -1,0 +1,12 @@
+<div>
+    <img class="smsIcon" src="../../assets/logo1.png" />
+</div>
+<nz-carousel nzAutoPlay nzAutoPlaySpeed="5000">
+    <div nz-carousel-content *ngFor="let index of array">
+        <div class="textContainerImage">
+            <h1>{{index["text"]}}</h1>
+            <h2>{{index["bodytext"]}}</h2>
+        </div>
+        <img class="carrouselImage" src='{{index["image"]}}' />
+    </div>
+</nz-carousel>

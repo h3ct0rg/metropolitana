@@ -1,0 +1,7 @@
+export const environment = {
+  production: false,
+  baseUrlAuthService: 'http://metropolitana.somee.com/nodo/publish',
+  apiAuthenticationUrl: 'http://metropolitana.somee.com/nodo/publish/api/', // Auth
+  baseUrlApi: 'http://metropolitana.somee.com/nodo/publish/api',
+  localStorage: { currentUser: 'currentUser' }
+};

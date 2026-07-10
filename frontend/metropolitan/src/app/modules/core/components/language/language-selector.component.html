@@ -1,0 +1,3 @@
+<nz-select class="language" [(ngModel)]="selectedLanguage" (ngModelChange)="changeLanguage($event)">
+    <nz-option *ngFor="let option of languageList" [nzLabel]="option.displayName" [nzValue]="option.locale"></nz-option>
+</nz-select>

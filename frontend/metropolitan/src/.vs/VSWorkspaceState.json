@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\app",
+    "\\app\\modules",
+    "\\app\\modules\\core",
+    "\\app\\modules\\core\\paquetes",
+    "\\app\\modules\\core\\paquetes\\paquetesordendepagocreate",
+    "\\app\\modules\\core\\travelace",
+    "\\app\\modules\\core\\travelace\\orden-pago",
+    "\\app\\modules\\core\\travelace\\orden-pago\\orden-pago-create",
+    "\\app\\modules\\core\\travelace\\reporteventa"
+  ],
+  "SelectedNode": "\\app\\modules\\core\\paquetes\\paquetesordendepagocreate\\paquetesordendepagocreate.component.html",
+  "PreviewInSolutionExplorer": false
+}
