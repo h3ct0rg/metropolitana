@@ -228,7 +228,7 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
       const elementId = 'table_' + group.items[0].nombreOperador; // Asignar un ID único a cada tabla
       const element = document.getElementById(elementId)!;
 
-      return html2canvas(element, { scale: 2 }).then(canvas => {
+      return html2canvas(element, { scale: 1 }).then(canvas => {
         const imgWidth = 210; // Ancho de la página en mm
         const imgHeight = (canvas.height * imgWidth) / canvas.width; // Altura ajustada
 
@@ -239,7 +239,7 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
         }
 
         // Añadir la tabla a la página actual
-        const imgData = canvas.toDataURL('image/jpeg', 0.6); // Reducir calidad para menor tamaño
+        const imgData = canvas.toDataURL('image/jpeg', 0.5); // Reducir calidad para menor tamaño
         doc.addImage(imgData, 'JPEG', 0, yPosition, imgWidth, imgHeight);
         yPosition += imgHeight + 10; // Aumentar la posición para la siguiente tabla
 

@@ -534,3 +534,36 @@ label[nz-checkbox] {
     line-height: 28px;
   }
 }
+
+/* ─── PDF / Print overrides ─── */
+.pdf-print .ant-table-wrapper,
+.pdf-print .filter-row,
+.pdf-print .glass-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+}
+
+.pdf-print .ant-table-wrapper,
+.pdf-print .ant-table-body,
+.pdf-print .ant-table-content {
+  overflow: visible !important;
+}
+
+.pdf-print .ant-table-thead > tr > th {
+  white-space: normal !important;
+}
+
+@media print {
+  .ant-table-wrapper,
+  .filter-row,
+  .glass-card {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: #ffffff !important;
+  }
+}

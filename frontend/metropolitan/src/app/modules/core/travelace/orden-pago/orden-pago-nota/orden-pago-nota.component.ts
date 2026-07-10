@@ -152,21 +152,20 @@ export class OrdenPagoNotaComponent implements OnInit {
   }
 
   generarPDF() {
-    const heightPage = window.innerHeight;
-    const defaultSize = 90;
-    const opSize = (100-((heightPage * 100) / 880))/100;
-    const newheight = defaultSize + (defaultSize * opSize);
-    
-
     let numneroHeader = this.numeroOrdenPago;
-    html2canvas(document.getElementById('pdfContainer'), {
+    const pdfElement = document.getElementById('pdfContainer');
+    pdfElement.classList.add('pdf-print');
+    html2canvas(pdfElement, {
       allowTaint: true,
       useCORS: false,
       scale: 1
     }).then(function (canvas) {
-      var img = canvas.toDataURL("image/png");
+      pdfElement.classList.remove('pdf-print');
+      var img = canvas.toDataURL("image/jpeg", 0.5);
       var doc = new jsPDF();
-      doc.addImage(img, 'PNG', 15, 20, 180, newheight);
+      var imgWidth = 180;
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(img, 'JPEG', 15, 20, imgWidth, imgHeight);
       let name = "ordenPago-" + numneroHeader + ".pdf";
       doc.save(name);
     });

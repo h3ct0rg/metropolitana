@@ -11,3 +11,8 @@ p {
   font-weight: bold;
   font-size: 20px;
 }
+
+nz-table h3,
+nz-table p {
+  font-size: 14px;
+}

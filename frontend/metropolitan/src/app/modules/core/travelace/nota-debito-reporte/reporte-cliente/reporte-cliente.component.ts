@@ -281,11 +281,13 @@ export class NotaDebitoReporteListComponent implements OnInit {
     html2canvas(document.getElementById('pdfContainer'), {
       allowTaint: true,
       useCORS: false,
-      scale: 0.9
+      scale: 1
     }).then(function (canvas) {
-      var img = canvas.toDataURL("image/png");
+      var img = canvas.toDataURL("image/jpeg", 0.5);
       var doc = new jsPDF();
-      doc.addImage(img, 'JPEG', 7, 10, 195, 105);
+      var imgWidth = 195;
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(img, 'JPEG', 7, 10, imgWidth, imgHeight);
       let name = "notaDebito" + numneroHeader + ".pdf";
       doc.save(name);
     });

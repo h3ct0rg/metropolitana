@@ -202,7 +202,7 @@ export class PaquetesnotadebitoprofileComponent implements OnInit {
       useCORS: true, // permite el uso de imágenes externas si tienen la cabecera CORS configurada
       scale: 2 // Escala mejorada para mayor calidad
     }).then(canvas => {
-      const img = canvas.toDataURL("image/jpeg", 0.7);
+      const img = canvas.toDataURL("image/jpeg", 0.5);
       const doc = new jsPDF();
 
       // Ajuste de la posición y el tamaño de la imagen

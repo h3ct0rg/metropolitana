@@ -197,9 +197,11 @@ export class CarganotadebitoprofileComponent implements OnInit {
       useCORS: false,
       scale: 1
     }).then(function (canvas) {
-      var img = canvas.toDataURL("image/png");
+      var img = canvas.toDataURL("image/jpeg", 0.5);
       var doc = new jsPDF();
-      doc.addImage(img, 'PNG', 7, 20, 195, 105);
+      var imgWidth = 195;
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(img, 'JPEG', 7, 20, imgWidth, imgHeight);
       let name = "notaDebito" + nnumeroNombre + ".pdf";
       doc.save(name);
     });

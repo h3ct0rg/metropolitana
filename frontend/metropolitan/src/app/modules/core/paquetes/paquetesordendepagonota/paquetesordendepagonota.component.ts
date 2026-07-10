@@ -164,14 +164,19 @@ export class PaquetesordendepagonotaComponent implements OnInit {
 
   generarPDF() {
     let numneroHeader = this.numeroOrdenPago;
-    html2canvas(document.getElementById('pdfContainer'), {
+    const pdfElement = document.getElementById('pdfContainer');
+    pdfElement.classList.add('pdf-print');
+    html2canvas(pdfElement, {
       allowTaint: true,
       useCORS: false,
       scale: 1
     }).then(function (canvas) {
-      var img = canvas.toDataURL("image/png");
+      pdfElement.classList.remove('pdf-print');
+      var img = canvas.toDataURL("image/jpeg", 0.5);
       var doc = new jsPDF();
-      doc.addImage(img, 'PNG', 7, 20, 195, 100);
+      var imgWidth = 195;
+      var imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(img, 'JPEG', 7, 20, imgWidth, imgHeight);
       let name = "ordenPago-" + numneroHeader + ".pdf";
       doc.save(name);
     });
