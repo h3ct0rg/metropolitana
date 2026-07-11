@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NzSpinModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule, NzSelectModule, NzAutocompleteModule, NzTransferModule, NzDatePickerModule, NzCheckboxModule, NzModalModule, NzRadioModule } from 'ng-zorro-antd';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ClientesCargaComponent } from './clientescarga/clientescarga.component';
 import { ClienteslistcargasComponent } from './clienteslistcarga/clienteslistcarga.component';
@@ -40,7 +41,7 @@ import { cargaOrdenPagoFilter } from './filters/orden-pago-list.pipe';
     CommonModule, CargaRoutingModule,
     NzSpinModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule
     , FormsModule, ReactiveFormsModule, NzSelectModule,
-    NzAutocompleteModule, NzTransferModule, NzDatePickerModule, NzCheckboxModule, NzModalModule, NzRadioModule
+    NzAutocompleteModule, NzTransferModule, NzDatePickerModule, NzCheckboxModule, NzModalModule, NzRadioModule, NzInputModule
   ],
   providers: [
     CargaNotaDebitoService, CargaOrdenPagoService, CargaNotaDebitoCalculateService,

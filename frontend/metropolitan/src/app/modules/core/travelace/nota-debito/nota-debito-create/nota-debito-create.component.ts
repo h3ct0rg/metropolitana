@@ -88,6 +88,7 @@ export class NotaDebitoCreateComponent implements OnInit {
     });
 
     this.loadDropdowns();
+    this.updateComisionFieldsState(false);
 
     this.form.get('pendienteFecha').valueChanges.subscribe(data => {
       if (data) {
@@ -117,7 +118,7 @@ export class NotaDebitoCreateComponent implements OnInit {
 
     this.form.get("sinCalculo").valueChanges.subscribe(result => {
       this.isDisabled = result;
-      this.form.get("aMetro").enabled;
+      this.updateComisionFieldsState(result);
     });
   }
 
@@ -135,7 +136,7 @@ export class NotaDebitoCreateComponent implements OnInit {
 
     this.form.get("sinCalculo").valueChanges.subscribe(result => {
       this.isDisabled = result;
-      this.form.get("aMetro").enabled;
+      this.updateComisionFieldsState(result);
     });
   }
 
@@ -237,6 +238,18 @@ export class NotaDebitoCreateComponent implements OnInit {
         //});
       });
 
+    });
+  }
+
+  private updateComisionFieldsState(manual: boolean) {
+    const campos = ["comicionAgencia", "comicionCounter", "comicionMetro", "aMetro"];
+    campos.forEach(nombre => {
+      const control = this.form.get(nombre);
+      if (manual) {
+        control.enable({ emitEvent: false });
+      } else {
+        control.disable({ emitEvent: false });
+      }
     });
   }
 

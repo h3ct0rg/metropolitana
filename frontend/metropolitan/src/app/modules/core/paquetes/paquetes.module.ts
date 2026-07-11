@@ -4,6 +4,7 @@ import { PaquetesRoutingModule } from './paquetes-routing.module';
 import { ClientespaquetesComponent } from './clientespaquetes/clientespaquetes.component';
 import { ClienteslistpaquetesComponent } from './clienteslistpaquetes/clienteslistpaquetes.component';
 import { NzSpinModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule, NzSelectModule, NzAutocompleteModule, NzTransferModule, NzDatePickerModule, NzCheckboxModule, NzModalModule, NzRadioModule } from 'ng-zorro-antd';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProveedoreslistpaquetesComponent } from './proveedoreslistpaquetes/proveedoreslistpaquetes.component';
 import { ProveedorespaquetesComponent } from './proveedorespaquetes/proveedorespaquetes.component';
@@ -39,7 +40,7 @@ import { PaquetesReporteVentasFiltradasComponent } from './reportes/paquetes-rep
     CommonModule, PaquetesRoutingModule,
     NzSpinModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule
     , FormsModule, ReactiveFormsModule, NzSelectModule,
-    NzAutocompleteModule, NzTransferModule, NzDatePickerModule, NzCheckboxModule, NzModalModule, NzRadioModule
+    NzAutocompleteModule, NzTransferModule, NzDatePickerModule, NzCheckboxModule, NzModalModule, NzRadioModule, NzInputModule
   ],
   providers: [
     PaquetesNotaDebitoService, PaqueteOrdenPagoService, PaqueteNotaDebitoCalculateService,
