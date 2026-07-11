@@ -5,7 +5,6 @@ import { IStorageKeys } from '../../../../shared/services/local-data/storage';
 import { SucursalService } from '../../services/sucursal.services';
 import { FormControl, FormGroup } from '@angular/forms';
 import { UsuarioService } from '../../services/usuario.service';
-import { carganotaDebitoFilter } from '../filters/nota-debito.pipe';
 import { CargaNotaDebitoService } from '../../services/carga/carga-nota-debito.services';
 import { Logs } from '../../../../shared/model/Logs';
 import { LogsService } from '../../services/Logs/logs.services';
@@ -13,8 +12,7 @@ import { LogsService } from '../../services/Logs/logs.services';
 @Component({
   selector: 'app-carganotadebitolist',
   templateUrl: './carganotadebitolist.component.html',
-  styleUrls: ['./carganotadebitolist.component.css'],
-  providers: [carganotaDebitoFilter]
+  styleUrls: ['./carganotadebitolist.component.css']
 })
 export class CarganotadebitolistComponent implements OnInit {
   listOfData = [];
@@ -22,6 +20,9 @@ export class CarganotadebitolistComponent implements OnInit {
   public searchText: string;
   public idSearch: string;
   public dateSearch: string;
+  public pageIndex: number = 1;
+  public pageSize: number = 20;
+  public total: number = 0;
   public form: FormGroup;
   public isAdmin: boolean = false;
   public waitAction: boolean = true;
@@ -72,8 +73,9 @@ export class CarganotadebitolistComponent implements OnInit {
       else {
         this.form.get("sucursal").setValue(result[0].id);
       }
-      this.form.get("sucursal").valueChanges.subscribe(item => {        
+      this.form.get("sucursal").valueChanges.subscribe(item => {
         this.actualSucursal = item;
+        this.pageIndex = 1;
         this.chargeDataCLient();
       });
       this.chargeDataCLient();
@@ -101,6 +103,8 @@ export class CarganotadebitolistComponent implements OnInit {
     this.clienteServicio.getClientCargaList().subscribe(clientes => {
       this.notaDebitoService.getNotaDebitoBySucursalandDate(this.actualSucursal, sDateNow).subscribe((data: []) => {
         this.listOfData = data;
+        this.pageIndex = 1;
+        this.total = data.length;
         this.waitAction = false;
         this.logs.eventShoot = "Select Fecha";
         this.logService.saveLogItemCarga(this.logs).subscribe(success => {
@@ -112,6 +116,7 @@ export class CarganotadebitolistComponent implements OnInit {
   resetDate() {
     this.waitAction = true;
     this.dateSearch = "";
+    this.pageIndex = 1;
     this.chargeDataCLient();
     this.logs.eventShoot = "Click sin Fecha";
     this.logService.saveLogItemCarga(this.logs).subscribe(success => {
@@ -119,24 +124,39 @@ export class CarganotadebitolistComponent implements OnInit {
   }
 
   filter() {
-
+    this.waitAction = true;
+    this.pageIndex = 1;
+    this.chargeDataCLient();
   }
 
   chargeDataCLient() {
     this.listOfData = [];
     this.waitAction = true;
     this.clienteServicio.getClientCargaList().subscribe(clientes => {
-      this.notaDebitoService.getNotaDebitoBySucursal(this.actualSucursal).subscribe((data: []) => {
-        this.listOfData = data;
+      this.notaDebitoService.getNotaDebitoBySucursal(this.actualSucursal, this.pageIndex, this.pageSize, this.searchText).subscribe((result: any) => {
+        this.listOfData = result.data;
+        this.total = result.total;
         this.waitAction = false;
       });
     });
 
   }
 
+  onPageIndexChange(pageIndex: number) {
+    this.pageIndex = pageIndex;
+    this.chargeDataCLient();
+  }
+
+  onPageSizeChange(pageSize: number) {
+    this.pageSize = pageSize;
+    this.pageIndex = 1;
+    this.chargeDataCLient();
+  }
+
   filterId() {
     if (this.idSearch === null) {
       this.listOfData = [];
+      this.pageIndex = 1;
       this.chargeDataCLient();
     }
     else {
@@ -145,6 +165,8 @@ export class CarganotadebitolistComponent implements OnInit {
         this.notaDebitoService.getNotaDebitoBySucursalAndId(this.actualSucursal, this.idSearch).subscribe((data: []) => {
           this.logs.eventShoot = "click filter";
           this.listOfData = data;
+          this.pageIndex = 1;
+          this.total = data.length;
           this.waitAction = false;
           this.logService.saveLogItemCarga(this.logs).subscribe(success => {
           });

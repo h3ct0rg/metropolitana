@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { NotaDebitoService } from '../../../services/nota-debito.services';
 import { StorageService } from '../../../../../shared/services/local-data/storage.service';
 import { IStorageKeys } from '../../../../../shared/services/local-data/storage';
-import { notaDebitoFilter } from '../filters/nota-debito.pipe';
 import { ClientService } from '../../../services/clientes.service';
 import { UsuarioService } from '../../../services/usuario.service';
 import { SucursalService } from '../../../services/sucursal.services';
@@ -14,8 +13,7 @@ import { parse } from 'path';
 @Component({
   selector: 'nota-debito-list',
   templateUrl: './nota-debito-list.component.html',
-  styleUrls: ['./nota-debito-list.component.css'],
-  providers: [notaDebitoFilter]
+  styleUrls: ['./nota-debito-list.component.css']
 })
 export class NotaDebitoListComponent implements OnInit {
   listOfData = [];
@@ -23,6 +21,9 @@ export class NotaDebitoListComponent implements OnInit {
   public searchText: string;
   public idSearch: string;
   public dateSearch: string;
+  public pageIndex: number = 1;
+  public pageSize: number = 20;
+  public total: number = 0;
   public waitAction: boolean = true;
   public isAdmin: boolean = false;
   public form: FormGroup;
@@ -78,6 +79,7 @@ export class NotaDebitoListComponent implements OnInit {
       }
       this.form.get("sucursal").valueChanges.subscribe(item => {
         this.actualSucursal = item;
+        this.pageIndex = 1;
         this.chargeDataCLient();
       });
       this.chargeDataCLient();
@@ -104,6 +106,8 @@ export class NotaDebitoListComponent implements OnInit {
     this.listOfData = [];
     this.notaDebitoService.getNotaDebitoBySucursalandDate(this.actualSucursal, sDateNow).subscribe((data: []) => {
       this.listOfData = data;
+      this.pageIndex = 1;
+      this.total = data.length;
       this.waitAction = false;
       this.logs.eventShoot = "Select Fecha";
       this.logService.saveLogItem(this.logs).subscribe(success => {
@@ -114,6 +118,7 @@ export class NotaDebitoListComponent implements OnInit {
   resetDate() {
     this.waitAction = true;
     this.dateSearch = "";
+    this.pageIndex = 1;
     this.chargeDataCLient();
     this.logs.eventShoot = "Click sin Fecha";
     this.logService.saveLogItem(this.logs).subscribe(success => {
@@ -121,19 +126,35 @@ export class NotaDebitoListComponent implements OnInit {
   }
 
   filter() {
-
+    this.waitAction = true;
+    this.pageIndex = 1;
+    this.chargeDataCLient();
   }
 
   chargeDataCLient() {
-    this.notaDebitoService.getNotaDebitoBySucursal(this.actualSucursal).subscribe((data: []) => {
-      this.listOfData = data;
+    this.waitAction = true;
+    this.notaDebitoService.getNotaDebitoBySucursal(this.actualSucursal, this.pageIndex, this.pageSize, this.searchText).subscribe((result: any) => {
+      this.listOfData = result.data;
+      this.total = result.total;
       this.waitAction = false;
     });
+  }
+
+  onPageIndexChange(pageIndex: number) {
+    this.pageIndex = pageIndex;
+    this.chargeDataCLient();
+  }
+
+  onPageSizeChange(pageSize: number) {
+    this.pageSize = pageSize;
+    this.pageIndex = 1;
+    this.chargeDataCLient();
   }
 
   filterId() {
     if (this.idSearch === null) {
       this.listOfData = [];
+      this.pageIndex = 1;
       this.chargeDataCLient();
     }
     else {
@@ -141,6 +162,8 @@ export class NotaDebitoListComponent implements OnInit {
       this.notaDebitoService.getNotaDebitoBySucursalAndId(this.actualSucursal, this.idSearch).subscribe((data: []) => {
         this.logs.eventShoot = "click filter";
         this.listOfData = data;
+        this.pageIndex = 1;
+        this.total = data.length;
         this.waitAction = false;
         this.logService.saveLogItem(this.logs).subscribe(success => {
         });

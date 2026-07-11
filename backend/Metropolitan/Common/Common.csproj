@@ -73,6 +73,7 @@
     <Compile Include="model\calcularNotaDebitoTravelace.cs" />
     <Compile Include="model\contadorNota.cs" />
     <Compile Include="model\NotaDebitoFilter.cs" />
+    <Compile Include="model\PagedResult.cs" />
     <Compile Include="model\listaOrdenDePagoTravelace.cs" />
     <Compile Include="model\reporteOperacionPagoTravelace.cs" />
     <Compile Include="model\ordenPagoReporteTravelace.cs" />

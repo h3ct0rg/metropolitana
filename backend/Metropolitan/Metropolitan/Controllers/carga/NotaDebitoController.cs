@@ -28,11 +28,9 @@ namespace Metropolitan.Controllers.carga
         }
 
         [HttpGet("GetBySucursal")]
-        public ActionResult<IEnumerable<notaDebitoListTable>> GetBySucursal(int id)
+        public ActionResult<PagedResult<notaDebitoListTable>> GetBySucursal(int id, int pageIndex = 1, int pageSize = 20, string searchText = null)
         {
-            List<notaDebitoListTable> notaDebito = new List<notaDebitoListTable>();
-            notaDebito = gestordb.getListNotaDebitoBySucursal(id);
-            string json = JsonConvert.SerializeObject(notaDebito);
+            PagedResult<notaDebitoListTable> notaDebito = gestordb.getListNotaDebitoBySucursalPaged(id, pageIndex, pageSize, searchText);
             return notaDebito;
         }
 

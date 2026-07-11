@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../../../../shared/services/local-data/storage.service';
 import { ClientService } from '../../services/clientes.service';
-import { notaDebitoFilter } from '../filters/nota-debito.pipe';
 import { IStorageKeys } from '../../../../shared/services/local-data/storage';
 import { PaquetesNotaDebitoService } from '../../services/paquetes/paquete-nota-debito.services';
 import { SucursalService } from '../../services/sucursal.services';
@@ -13,8 +12,7 @@ import { LogsService } from '../../services/Logs/logs.services';
 @Component({
   selector: 'app-paquetesnotadebitolist',
   templateUrl: './paquetesnotadebitolist.component.html',
-  styleUrls: ['./paquetesnotadebitolist.component.css'],
-  providers: [notaDebitoFilter]
+  styleUrls: ['./paquetesnotadebitolist.component.css']
 })
 export class PaquetesnotadebitolistComponent implements OnInit {
   listOfData = [];
@@ -22,6 +20,9 @@ export class PaquetesnotadebitolistComponent implements OnInit {
   public searchText: string;
   public idSearch: string;
   public dateSearch: string;
+  public pageIndex: number = 1;
+  public pageSize: number = 20;
+  public total: number = 0;
   public form: FormGroup;
   public isAdmin: boolean = false;
   public waitAction: boolean = true;
@@ -71,8 +72,9 @@ export class PaquetesnotadebitolistComponent implements OnInit {
       else {
         this.form.get("sucursal").setValue(result[0].id);
       }
-      this.form.get("sucursal").valueChanges.subscribe(item => {        
+      this.form.get("sucursal").valueChanges.subscribe(item => {
         this.actualSucursal = item;
+        this.pageIndex = 1;
         this.chargeDataCLient();
       });
       this.chargeDataCLient();
@@ -100,6 +102,8 @@ export class PaquetesnotadebitolistComponent implements OnInit {
     this.clienteServicio.getClientPaqueteList().subscribe(clientes => {
       this.notaDebitoService.getNotaDebitoBySucursalandDate(this.actualSucursal, sDateNow).subscribe((data: []) => {
         this.listOfData = data;
+        this.pageIndex = 1;
+        this.total = data.length;
         this.waitAction = false;
       });
     });
@@ -108,28 +112,44 @@ export class PaquetesnotadebitolistComponent implements OnInit {
   resetDate() {
     this.waitAction = true;
     this.dateSearch = "";
+    this.pageIndex = 1;
     this.chargeDataCLient();
   }
 
   filter() {
-
+    this.waitAction = true;
+    this.pageIndex = 1;
+    this.chargeDataCLient();
   }
 
   chargeDataCLient() {
     this.listOfData = [];
     this.waitAction = true;
     this.clienteServicio.getClientPaqueteList().subscribe(clientes => {
-      this.notaDebitoService.getNotaDebitoBySucursal(this.actualSucursal).subscribe((data: []) => {
-        this.listOfData = data;
+      this.notaDebitoService.getNotaDebitoBySucursal(this.actualSucursal, this.pageIndex, this.pageSize, this.searchText).subscribe((result: any) => {
+        this.listOfData = result.data;
+        this.total = result.total;
         this.waitAction = false;
       });
     });
 
   }
 
+  onPageIndexChange(pageIndex: number) {
+    this.pageIndex = pageIndex;
+    this.chargeDataCLient();
+  }
+
+  onPageSizeChange(pageSize: number) {
+    this.pageSize = pageSize;
+    this.pageIndex = 1;
+    this.chargeDataCLient();
+  }
+
   filterId() {
     if (this.idSearch === null) {
       this.listOfData = [];
+      this.pageIndex = 1;
       this.chargeDataCLient();
     }
     else {
@@ -138,6 +158,8 @@ export class PaquetesnotadebitolistComponent implements OnInit {
         this.notaDebitoService.getNotaDebitoBySucursalAndId(this.actualSucursal, this.idSearch).subscribe((data: []) => {
           this.logs.eventShoot = "click filter";
           this.listOfData = data;
+          this.pageIndex = 1;
+          this.total = data.length;
           this.waitAction = false;
           this.logsService.saveLogItemPaquetes(this.logs).subscribe(success => {
           });

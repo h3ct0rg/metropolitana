@@ -38,7 +38,15 @@
     <button nz-button nzType="primary" (click)="resetDate()">Sin Fecha</button>
   </div>
 
-  <nz-table #basicTable [nzPageSize]='10' [nzPaginationPosition]="'both'" [nzData]="listOfData | notaDebitoFilter:searchText">
+  <nz-table #basicTable
+    [nzData]="listOfData"
+    [nzFrontPagination]="false"
+    [nzPaginationPosition]="'both'"
+    [nzTotal]="total"
+    [nzPageIndex]="pageIndex"
+    [nzPageSize]="pageSize"
+    (nzPageIndexChange)="onPageIndexChange($event)"
+    (nzPageSizeChange)="onPageSizeChange($event)">
     <thead>
       <tr>
         <th>Codigo</th>

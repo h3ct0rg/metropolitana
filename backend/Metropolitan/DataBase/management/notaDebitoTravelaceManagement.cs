@@ -176,6 +176,82 @@ where ND.idSucursal='{0}' order by ND.codigoUnicoNota DESC
             return listP;
         }
 
+        public PagedResult<notaDebitoListTable> getListNotaDebitoBySucursalPaged(int idSucursal, int pageIndex, int pageSize, string searchText)
+        {
+            if (pageIndex < 1) pageIndex = 1;
+            if (pageSize < 1) pageSize = 20;
+
+            PagedResult<notaDebitoListTable> result = new PagedResult<notaDebitoListTable> { data = new List<notaDebitoListTable>(), total = 0 };
+            base.sqlConnection.open();
+
+            string query = @"
+select ND.id, C.nombre, ND.pasajero, ND.servicios, ND.voucher, ND.total, ND.estado, ND.codigoUnicoNota,
+       COUNT(*) OVER() as TotalRows
+from travelaceNotaDebito as ND
+left join clients as C
+on C.id = ND.codCliente
+where ND.idSucursal = @idSucursal
+  and (@searchText is null
+       or ND.pasajero like @searchLike
+       or ND.servicios like @searchLike
+       or ND.voucher like @searchLike
+       or C.nombre like @searchLike
+       or CAST(ND.codigoUnicoNota as varchar(20)) like @searchLike)
+order by ND.codigoUnicoNota DESC
+offset @offset rows fetch next @pageSize rows only";
+
+            try
+            {
+                using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
+                {
+                    object searchTextParam = string.IsNullOrWhiteSpace(searchText) ? (object)DBNull.Value : searchText;
+                    object searchLikeParam = string.IsNullOrWhiteSpace(searchText) ? (object)DBNull.Value : "%" + searchText + "%";
+                    command.Parameters.AddWithValue("@idSucursal", idSucursal);
+                    command.Parameters.AddWithValue("@searchText", searchTextParam);
+                    command.Parameters.AddWithValue("@searchLike", searchLikeParam);
+                    command.Parameters.AddWithValue("@offset", (pageIndex - 1) * pageSize);
+                    command.Parameters.AddWithValue("@pageSize", pageSize);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            notaDebitoListTable notadebitoTravelace = new notaDebitoListTable();
+                            notadebitoTravelace.id = reader.GetInt32(0);
+                            try
+                            {
+                                notadebitoTravelace.codCliente = reader.GetString(1);
+                            }
+                            catch { }
+                            try
+                            {
+                                notadebitoTravelace.pasajero = reader.GetString(2);
+                            }
+                            catch { }
+                            try
+                            {
+                                notadebitoTravelace.servicio = reader.GetString(3);
+                            }
+                            catch { }
+                            notadebitoTravelace.voucher = reader.GetString(4);
+                            notadebitoTravelace.total = reader.GetDouble(5);
+                            notadebitoTravelace.estado = reader.GetInt32(6);
+                            notadebitoTravelace.codigoUnico = reader.GetInt32(7);
+                            result.data.Add(notadebitoTravelace);
+                            result.total = reader.GetInt32(8);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            base.sqlConnection.close();
+            return result;
+        }
+
         public List<notaDebitoListTable> getListNotaDebitoBySucursalandDate(int id, DateTime fecha)
         {
             int monthReview = fecha.Month;

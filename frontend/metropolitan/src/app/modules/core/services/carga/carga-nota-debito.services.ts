@@ -43,8 +43,11 @@ export class CargaNotaDebitoService extends BaseService<NotaDebito> {
     return this.get('/NotaDebitoCarga/GetById/?id=' + idNotaDebito) as Observable<NotaDebito>;
   }
 
-  getNotaDebitoBySucursal(idSucursal: string) {    
-    return this.get('/NotaDebitoCarga/GetBySucursal/?id=' + idSucursal) as Observable<NotaDebito[]>;
+  getNotaDebitoBySucursal(idSucursal: string, pageIndex: number = 1, pageSize: number = 20, searchText: string = '') {
+    return this.get('/NotaDebitoCarga/GetBySucursal/?id=' + idSucursal
+      + '&pageIndex=' + pageIndex
+      + '&pageSize=' + pageSize
+      + '&searchText=' + encodeURIComponent(searchText || '')) as Observable<any>;
   }
 
   getNotaDebitoBySucursalAndId(idSucursal: string, id: string) {

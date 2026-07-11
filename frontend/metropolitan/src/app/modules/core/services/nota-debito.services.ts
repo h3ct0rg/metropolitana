@@ -48,8 +48,11 @@ export class NotaDebitoService extends BaseService<NotaDebito> {
     return this.get('/NotaDebitoTravel/getNotaDebitoLastNegative/') as Observable<any>;
   }
 
-  getNotaDebitoBySucursal(idSucursal: string) {
-    return this.get('/NotaDebitoTravel/GetBySucursal/?id=' + idSucursal) as Observable<NotaDebito[]>;
+  getNotaDebitoBySucursal(idSucursal: string, pageIndex: number = 1, pageSize: number = 20, searchText: string = '') {
+    return this.get('/NotaDebitoTravel/GetBySucursal/?id=' + idSucursal
+      + '&pageIndex=' + pageIndex
+      + '&pageSize=' + pageSize
+      + '&searchText=' + encodeURIComponent(searchText || '')) as Observable<any>;
   }
 
   getNotaDebitoBySucursalComplete(idSucursal: string) {
