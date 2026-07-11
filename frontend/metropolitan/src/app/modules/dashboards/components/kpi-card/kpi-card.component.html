@@ -1,0 +1,13 @@
+<nz-spin [nzSpinning]="loading">
+  <div class="glass-card kpi-card">
+    <div class="kpi-card-header">
+      <span class="kpi-card-title">{{ titulo }}</span>
+      <i nz-icon [nzType]="icono" class="kpi-card-icon"></i>
+    </div>
+    <div class="kpi-card-value">{{ valor }}</div>
+    <div class="kpi-card-delta" *ngIf="delta != null" [class.positivo]="deltaEsPositivo" [class.negativo]="!deltaEsPositivo">
+      <i nz-icon [nzType]="deltaEsPositivo ? 'rise' : 'fall'"></i>
+      <span>{{ delta | number:'1.1-1' }}% {{ deltaLabel }}</span>
+    </div>
+  </div>
+</nz-spin>

@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { StorageService } from '../../../../shared/services/local-data/storage.service';
+import { IStorageKeys } from '../../../../shared/services/local-data/storage';
 
 @Component({
   selector: 'app-main-dashboard',
@@ -7,9 +9,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainDashboardComponent implements OnInit {
 
-  constructor() { }
+  isAdmin: boolean = false;
+
+  constructor(private storage: StorageService) { }
 
   ngOnInit() {
+    this.isAdmin = this.getTokenUserIsAdmin();
   }
 
+  getTokenUserIsAdmin(): boolean {
+    const token = this.storage.parse(IStorageKeys.Token);
+    const userType = token['userType'];
+    const arrayUserType = userType.split(',');
+    return arrayUserType.includes("1");
+  }
 }

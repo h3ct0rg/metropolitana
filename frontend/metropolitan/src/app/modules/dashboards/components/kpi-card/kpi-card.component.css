@@ -1,0 +1,46 @@
+.kpi-card {
+  min-height: 108px;
+}
+
+.kpi-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.kpi-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.45);
+  font-family: 'Poppins', sans-serif;
+}
+
+.kpi-card-icon {
+  font-size: 18px;
+  color: #1890ff;
+}
+
+.kpi-card-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.2;
+}
+
+.kpi-card-delta {
+  margin-top: 6px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kpi-card-delta.positivo {
+  color: #389e0d;
+}
+
+.kpi-card-delta.negativo {
+  color: #cf1322;
+}

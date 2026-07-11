@@ -1,1 +1,20 @@
-<h3>Dashboard will be here</h3>
+<div class="page-header">
+  <h2>Inicio</h2>
+</div>
+
+<div *ngIf="isAdmin; else sinAcceso">
+  <nz-tabset>
+    <nz-tab nzTitle="Financiero">
+      <app-financial-dashboard></app-financial-dashboard>
+    </nz-tab>
+    <nz-tab nzTitle="Actividad">
+      <app-activity-dashboard></app-activity-dashboard>
+    </nz-tab>
+  </nz-tabset>
+</div>
+
+<ng-template #sinAcceso>
+  <div class="glass-card">
+    <p>Bienvenido a Metropolitana.</p>
+  </div>
+</ng-template>

@@ -1,0 +1,24 @@
+.kpi-row {
+  margin-bottom: 16px;
+}
+
+.chart-row {
+  margin-bottom: 16px;
+}
+
+.chart-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+}
+
+.chart-container {
+  position: relative;
+  height: 260px;
+}
+
+.chart-container.chart-tall {
+  height: 320px;
+}

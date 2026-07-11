@@ -49,6 +49,8 @@
     <Compile Include="management\carga\cargaOperadorManagement.cs" />
     <Compile Include="management\carga\cargaOrdendePagoTravelaceManagement.cs" />
     <Compile Include="management\Logs\LogsManagement.cs" />
+    <Compile Include="management\dashboard\DashboardFinancialManagement.cs" />
+    <Compile Include="management\dashboard\DashboardActivityManagement.cs" />
     <Compile Include="management\paquetes\paquetesOrdendePagoTravelaceManagement.cs" />
     <Compile Include="management\paquetes\paquetesNotaDebitoTravelaceManagement.cs" />
     <Compile Include="management\paquetes\paquetesCounterManagement.cs" />

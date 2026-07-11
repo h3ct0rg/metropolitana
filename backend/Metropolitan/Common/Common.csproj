@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FileExcelHandler.cs" />
+    <Compile Include="ForecastHelper.cs" />
     <Compile Include="model\Logs.cs" />
     <Compile Include="model\sucursales.cs" />
     <Compile Include="model\clients.cs" />
@@ -74,6 +75,8 @@
     <Compile Include="model\contadorNota.cs" />
     <Compile Include="model\NotaDebitoFilter.cs" />
     <Compile Include="model\PagedResult.cs" />
+    <Compile Include="model\dashboard\FinancialDashboardModels.cs" />
+    <Compile Include="model\dashboard\ActivityDashboardModels.cs" />
     <Compile Include="model\listaOrdenDePagoTravelace.cs" />
     <Compile Include="model\reporteOperacionPagoTravelace.cs" />
     <Compile Include="model\ordenPagoReporteTravelace.cs" />

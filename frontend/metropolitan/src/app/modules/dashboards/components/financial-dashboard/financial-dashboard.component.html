@@ -1,0 +1,125 @@
+<div class="filter-row">
+  <nz-form-item>
+    <nz-form-label>Sucursal</nz-form-label>
+    <nz-form-control>
+      <nz-select [(ngModel)]="idSucursal" (ngModelChange)="onFiltroChange()" style="min-width: 180px;">
+        <nz-option [nzLabel]="'Todas las sucursales'" [nzValue]="-1"></nz-option>
+        <nz-option *ngFor="let s of listSucursales" [nzLabel]="s.nombre" [nzValue]="s.id"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Periodo</nz-form-label>
+    <nz-form-control>
+      <nz-month-picker [(ngModel)]="periodo" (ngModelChange)="onFiltroChange()"></nz-month-picker>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-row [nzGutter]="16" class="kpi-row">
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Ingresos del mes" icono="dollar" [loading]="loadingSummary"
+      [valor]="(summary.ingresosActivos || 0) | number:'1.0-0'" [delta]="summary.variacionPorcentualMesAnterior"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Notas anuladas" icono="close-circle" [loading]="loadingSummary"
+      [valor]="(summary.notasAnuladas || 0) + ' / ' + ((summary.totalAnulado || 0) | number:'1.0-0')"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Cuentas por cobrar" icono="wallet" [loading]="loadingSummary"
+      [valor]="(summary.saldoDeudorTotal || 0) | number:'1.0-0'"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Ticket promedio" icono="tag" [loading]="loadingSummary"
+      [valor]="(summary.ticketPromedio || 0) | number:'1.0-2'"></app-kpi-card>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="kpi-row">
+  <div nz-col [nzXs]="12" [nzSm]="6">
+    <app-kpi-card titulo="Margen Argentina" icono="pie-chart" [loading]="loadingSummary"
+      [valor]="(summary.totalArgentina || 0) | number:'1.0-0'"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="12" [nzSm]="6">
+    <app-kpi-card titulo="Margen Agencia" icono="pie-chart" [loading]="loadingSummary"
+      [valor]="(summary.totalAgencia || 0) | number:'1.0-0'"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="12" [nzSm]="6">
+    <app-kpi-card titulo="Margen Counter" icono="pie-chart" [loading]="loadingSummary"
+      [valor]="(summary.totalCounter || 0) | number:'1.0-0'"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="12" [nzSm]="6">
+    <app-kpi-card titulo="Margen Metropolitana" icono="pie-chart" [loading]="loadingSummary"
+      [valor]="(summary.totalMetropolitana || 0) | number:'1.0-0'"></app-kpi-card>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24">
+    <nz-spin [nzSpinning]="loadingRevenueChart">
+      <div class="glass-card chart-card">
+        <h3>Facturado vs Cobrado (12 meses + proyección a 3 meses)</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="revenueDatasets" [labels]="revenueLabels" [options]="revenueOptions" [chartType]="'line'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingBranchChart">
+      <div class="glass-card chart-card">
+        <h3>Ingresos por sucursal (mes)</h3>
+        <div class="chart-container">
+          <canvas baseChart [datasets]="branchDatasets" [labels]="branchLabels" [options]="branchOptions" [chartType]="'horizontalBar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingModuleChart">
+      <div class="glass-card chart-card">
+        <h3>Distribución de ingresos por módulo</h3>
+        <div class="chart-container">
+          <canvas baseChart [data]="moduleData" [labels]="moduleLabels" [options]="donutOptions" [colors]="moduleColors" [chartType]="'doughnut'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingReceivables">
+      <div class="glass-card chart-card">
+        <h3>Estado de cobranza</h3>
+        <div class="chart-container">
+          <canvas baseChart [data]="receivablesData" [labels]="receivablesLabels" [options]="donutOptions" [colors]="receivablesColors" [chartType]="'doughnut'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24">
+    <nz-spin [nzSpinning]="loadingTopClients">
+      <div class="glass-card chart-card">
+        <h3>Top 5 clientes del mes</h3>
+        <nz-table #topClientsTable [nzData]="topClients" [nzShowPagination]="false" [nzFrontPagination]="false">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Total facturado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of topClientsTable.data">
+              <td>{{ c.clienteNombre }}</td>
+              <td>{{ c.total | number:'1.0-2' }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </nz-spin>
+  </div>
+</div>

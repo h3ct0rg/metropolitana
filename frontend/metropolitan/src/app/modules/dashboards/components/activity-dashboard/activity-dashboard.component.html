@@ -1,0 +1,96 @@
+<div class="filter-row">
+  <nz-form-item>
+    <nz-form-label>Sucursal</nz-form-label>
+    <nz-form-control>
+      <nz-select [(ngModel)]="idSucursal" (ngModelChange)="onFiltroChange()" style="min-width: 180px;">
+        <nz-option [nzLabel]="'Todas las sucursales'" [nzValue]="-1"></nz-option>
+        <nz-option *ngFor="let s of listSucursales" [nzLabel]="s.nombre" [nzValue]="s.id"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Rango de fechas</nz-form-label>
+    <nz-form-control>
+      <nz-range-picker [(ngModel)]="rangoFechas" (ngModelChange)="onFiltroChange()"></nz-range-picker>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-row [nzGutter]="16" class="kpi-row">
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Usuarios activos (7 días)" icono="team" [loading]="loadingSummary"
+      [valor]="(summary.usuariosActivos7d || 0).toString()"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Eventos hoy" icono="thunderbolt" [loading]="loadingSummary"
+      [valor]="(summary.eventosHoy || 0).toString()"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Notas creadas hoy" icono="file-add" [loading]="loadingSummary"
+      [valor]="(summary.notasHoy || 0).toString()"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzSm]="12" [nzMd]="6">
+    <app-kpi-card titulo="Sucursal más activa" icono="environment" [loading]="loadingSummary"
+      [valor]="summary.sucursalMasActiva || '-'"></app-kpi-card>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-spin [nzSpinning]="loadingUserChart">
+      <div class="glass-card chart-card">
+        <h3>Notas creadas por usuario (top 10)</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="userDatasets" [labels]="userLabels" [options]="userChartOptions" [chartType]="'horizontalBar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-spin [nzSpinning]="loadingDailyChart">
+      <div class="glass-card chart-card">
+        <h3>Actividad diaria (últimos 30 días)</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="dailyDatasets" [labels]="dailyLabels" [options]="dailyOptions" [chartType]="'line'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingBranchChart">
+      <div class="glass-card chart-card">
+        <h3>Actividad por sucursal</h3>
+        <div class="chart-container">
+          <canvas baseChart [datasets]="branchDatasets" [labels]="branchLabels" [options]="branchOptions" [chartType]="'bar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingModuleChart">
+      <div class="glass-card chart-card">
+        <h3>Eventos por módulo</h3>
+        <div class="chart-container">
+          <canvas baseChart [data]="moduleData" [labels]="moduleLabels" [options]="donutOptions" [colors]="moduleColors" [chartType]="'doughnut'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingRecentEvents">
+      <div class="glass-card chart-card feed-card">
+        <h3>Últimos eventos</h3>
+        <div class="feed-list">
+          <div class="feed-item" *ngFor="let e of recentEvents">
+            <span class="feed-usuario">{{ e.usuario }}</span>
+            <span class="feed-evento">{{ e.evento }}</span>
+            <span class="feed-meta">{{ e.modulo }} · {{ e.sucursal }} · {{ e.fecha | date:'short' }}</span>
+          </div>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
