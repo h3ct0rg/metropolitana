@@ -6,6 +6,11 @@
   margin-bottom: 16px;
 }
 
+.kpi-row [nz-col],
+.chart-row [nz-col] {
+  margin-bottom: 16px;
+}
+
 .chart-card h3 {
   margin: 0 0 12px 0;
   font-size: 15px;
@@ -57,4 +62,22 @@
   font-size: 11px;
   color: rgba(0, 0, 0, 0.45);
   margin-top: 2px;
+}
+
+@media (max-width: 576px) {
+  .chart-container {
+    height: 220px;
+  }
+
+  .chart-container.chart-tall {
+    height: 260px;
+  }
+
+  .chart-card h3 {
+    font-size: 13px;
+  }
+
+  .feed-list {
+    max-height: 220px;
+  }
 }

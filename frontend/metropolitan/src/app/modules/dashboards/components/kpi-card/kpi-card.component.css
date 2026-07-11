@@ -44,3 +44,17 @@
 .kpi-card-delta.negativo {
   color: #cf1322;
 }
+
+@media (max-width: 576px) {
+  .kpi-card {
+    min-height: 90px;
+  }
+
+  .kpi-card-value {
+    font-size: 20px;
+  }
+
+  .kpi-card-title {
+    font-size: 12px;
+  }
+}

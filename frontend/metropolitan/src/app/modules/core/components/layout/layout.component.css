@@ -311,7 +311,7 @@ nz-header {
 }
 
 ::ng-deep .ant-layout-sider-collapsed .sidebar-toggle {
-  display: none;
+  margin: 0 auto;
 }
 
 ::ng-deep .ant-layout-sider-collapsed .ant-menu-item {

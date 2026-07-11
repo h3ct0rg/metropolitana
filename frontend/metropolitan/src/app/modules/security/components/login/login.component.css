@@ -111,8 +111,8 @@
 }
 
 :host ::ng-deep .ant-input-affix-wrapper {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: 12px;
   padding: 4px 12px;
   transition: all 0.3s ease;
@@ -125,8 +125,8 @@
 :host ::ng-deep .ant-input-affix-wrapper-focused,
 :host ::ng-deep .ant-input-affix-wrapper:focus {
   border-color: #fff;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
-  background: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.95);
 }
 
 :host ::ng-deep .ant-input-affix-wrapper .ant-input-prefix {
@@ -134,7 +134,7 @@
 }
 
 :host ::ng-deep .ant-input-affix-wrapper .ant-input-prefix i {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(0, 0, 0, 0.45);
   font-size: 16px;
 }
 
@@ -142,14 +142,14 @@
   background: transparent !important;
   border: none !important;
   box-shadow: none !important;
-  color: #fff;
+  color: #1a1a1a;
   font-size: 15px;
-  padding: 8px 0;
+  padding: 8px 12px 8px 32px;
   height: 40px;
 }
 
 :host ::ng-deep .ant-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.4);
 }
 
 :host ::ng-deep .ant-btn-primary {
