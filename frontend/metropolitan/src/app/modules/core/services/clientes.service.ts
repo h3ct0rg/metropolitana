@@ -79,7 +79,7 @@ export class ClientService extends BaseService<Cliente> {
   //--------------------------- Gestor Servicio Carga -------------------------------------
 
   getClientCargaList = (): Observable<any> => {
-    const data = this.get('/ClientePaquetes');
+    const data = this.get('/ClienteCarga');
     return data;
   }
 
