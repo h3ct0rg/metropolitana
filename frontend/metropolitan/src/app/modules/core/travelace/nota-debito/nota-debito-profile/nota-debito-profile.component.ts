@@ -202,7 +202,7 @@ export class NotaDebitoProfileComponent implements OnInit {
       var doc = new jsPDF();
       var imgWidth = 195;
       var imgHeight = (canvas.height * imgWidth) / canvas.width;
-      doc.addImage(img, 'JPEG', 7, 20, imgWidth, imgHeight);
+      doc.addImage(img, 'JPEG', 7, 5, imgWidth, imgHeight);
       let name = "notaDebito" + nnumeroNombre + ".pdf";
       doc.save(name);
     });

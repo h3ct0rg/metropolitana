@@ -287,7 +287,7 @@ export class NotaDebitoReporteListComponent implements OnInit {
       var doc = new jsPDF();
       var imgWidth = 195;
       var imgHeight = (canvas.height * imgWidth) / canvas.width;
-      doc.addImage(img, 'JPEG', 7, 10, imgWidth, imgHeight);
+      doc.addImage(img, 'JPEG', 7, 5, imgWidth, imgHeight);
       let name = "notaDebito" + numneroHeader + ".pdf";
       doc.save(name);
     });

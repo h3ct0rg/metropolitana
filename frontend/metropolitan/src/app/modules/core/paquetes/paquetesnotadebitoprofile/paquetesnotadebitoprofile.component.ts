@@ -209,7 +209,7 @@ export class PaquetesnotadebitoprofileComponent implements OnInit {
       // Ajuste de la posición y el tamaño de la imagen, preservando la proporción real de la captura
       const imgWidth = 200;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      doc.addImage(img, 'JPEG', 5, 10, imgWidth, imgHeight);
+      doc.addImage(img, 'JPEG', 5, 5, imgWidth, imgHeight);
       let name = `notaDebito_${nnumeroNombre}.pdf`;
       doc.save(name);
 

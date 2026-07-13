@@ -132,6 +132,63 @@ namespace DataBase
             return insertUpdateExecute(query);
         }
 
+        protected static int GetOrdinalOrDefault(SqlDataReader reader, string columnName)
+        {
+            try
+            {
+                return reader.GetOrdinal(columnName);
+            }
+            catch (IndexOutOfRangeException)
+            {
+                return -1;
+            }
+        }
+
+        protected string GetStringByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? "" : reader.GetString(i);
+        }
+
+        protected int GetInt32ByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? 0 : reader.GetInt32(i);
+        }
+
+        protected double GetDoubleByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? 0 : reader.GetDouble(i);
+        }
+
+        protected DateTime GetDateTimeByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? default(DateTime) : reader.GetDateTime(i);
+        }
+
+        private clients readClientRow(SqlDataReader reader)
+        {
+            clients Client = new clients();
+            Client.id = GetInt32ByName(reader, "id");
+            Client.name = GetStringByName(reader, "nombre");
+            Client.telefono = GetStringByName(reader, "telefonos");
+            Client.fax = GetStringByName(reader, "fax");
+            Client.contacto = GetStringByName(reader, "contacto");
+            Client.ruc = GetStringByName(reader, "ruc");
+            Client.direccion = GetStringByName(reader, "direccion");
+            Client.casilla = GetStringByName(reader, "casilla");
+            Client.cargo = GetStringByName(reader, "cargo");
+            Client.idSucursal = GetInt32ByName(reader, "idSucursal");
+            Client.idCiudad = GetInt32ByName(reader, "idCiudad");
+            Client.createBy = GetInt32ByName(reader, "createdby");
+            Client.modify = GetInt32ByName(reader, "modifyBy");
+            Client.createDate = GetDateTimeByName(reader, "createdate");
+            Client.modifyDate = GetDateTimeByName(reader, "modifydate");
+            return Client;
+        }
+
         public clients getListClients(int id)
         {
             clients Client = new clients();
@@ -145,29 +202,7 @@ namespace DataBase
                     {
                         while (reader.Read())
                         {
-                            Client.id = reader.GetInt32(0);
-                            Client.name = reader.GetString(1);
-                            Client.telefono = reader.GetString(2);
-                            Client.fax = reader.GetString(3);
-                            Client.contacto = reader.GetString(4);
-                            Client.ruc = reader.GetString(5);
-                            Client.direccion = reader.GetString(6);
-                            try
-                            {
-                                Client.casilla = reader.GetString(7);
-                            }
-                            catch { }
-                            Client.cargo = reader.GetString(8);
-                            Client.idSucursal = reader.GetInt32(9);
-                            Client.idCiudad = reader.GetInt32(10);
-                            try
-                            {
-                                Client.createBy = reader.GetInt32(11);
-                                Client.modify = reader.GetInt32(12);
-                                Client.createDate = reader.GetDateTime(13);
-                                Client.modifyDate = reader.GetDateTime(14);
-                            }
-                            catch { }
+                            Client = readClientRow(reader);
                         }
                     }
                 }
@@ -183,7 +218,6 @@ namespace DataBase
 
         public List<clients> getListClients()
         {
-            clients Client = new clients();
             List<clients> lclient = new List<clients>();
             sqlConnection.open();
             string query = string.Format("select * from clients order by nombre");
@@ -193,37 +227,9 @@ namespace DataBase
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        int count = 0;
                         while (reader.Read())
                         {
-                            Client = new clients();
-                            Client.id = reader.GetInt32(0);
-                            Client.name = reader.GetString(1);
-                            Client.telefono = reader.GetString(2);
-                            Client.fax = reader.GetString(3);
-                            Client.contacto = reader.GetString(4);
-                            Client.ruc = reader.GetString(5);
-                            Client.direccion = reader.GetString(6);
-                            try
-                            {
-                                Client.casilla = reader.GetString(7);
-                            }
-                            catch { }
-                            Client.cargo = reader.GetString(8);
-                            Client.idSucursal = reader.GetInt32(9);
-                            Client.idCiudad = reader.GetInt32(10);
-                            try
-                            {
-                                Client.createBy = reader.GetInt32(11);
-                                Client.modify = reader.GetInt32(12);
-                                Client.createDate = reader.GetDateTime(13);
-                                Client.modifyDate = reader.GetDateTime(14);
-                            }
-                            catch { }
-                            lclient.Add(Client);
-                            //if (count > 10)
-                            //    break;
-                            count++;
+                            lclient.Add(readClientRow(reader));
                         }
                     }
                 }
@@ -239,7 +245,6 @@ namespace DataBase
 
         public List<clients> getListClientsBySucursal(int id)
         {
-            clients Client = new clients();
             List<clients> lclient = new List<clients>();
             sqlConnection.open();
             string query = string.Format("select * from clients where idSucursal = '{0}' order by nombre", id);
@@ -249,35 +254,9 @@ namespace DataBase
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        int count = 0;
                         while (reader.Read())
                         {
-                            Client = new clients();
-                            Client.id = reader.GetInt32(0);
-                            Client.name = reader.GetString(1);
-                            Client.telefono = reader.GetString(2);
-                            Client.fax = reader.GetString(3);
-                            Client.contacto = reader.GetString(4);
-                            Client.ruc = reader.GetString(5);
-                            Client.direccion = reader.GetString(6);
-                            try
-                            {
-                                Client.casilla = reader.GetString(7);
-                            }
-                            catch { }
-                            Client.cargo = reader.GetString(8);
-                            Client.idSucursal = reader.GetInt32(9);
-                            Client.idCiudad = reader.GetInt32(10);
-                            try
-                            {
-                                Client.createBy = reader.GetInt32(11);
-                                Client.modify = reader.GetInt32(12);
-                                Client.createDate = reader.GetDateTime(13);
-                                Client.modifyDate = reader.GetDateTime(14);
-                            }
-                            catch { }
-                            lclient.Add(Client);
-                            count++;
+                            lclient.Add(readClientRow(reader));
                         }
                     }
                 }

@@ -44,6 +44,17 @@
     "tslib": "^1.10.0",
     "zone.js": "~0.9.1"
   },
+  "overrides": {
+    "@angular-devkit/build-angular": {
+      "source-map": "0.6.1"
+    },
+    "@angular-devkit/build-optimizer": {
+      "source-map": "0.6.1"
+    },
+    "@angular-devkit/core": {
+      "source-map": "0.6.1"
+    }
+  },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.803.23",
     "@angular/cli": "~8.3.23",

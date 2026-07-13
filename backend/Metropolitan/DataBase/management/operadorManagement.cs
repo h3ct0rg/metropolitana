@@ -10,9 +10,27 @@ namespace DataBase.management
 {
     public class OperadorManagement : gestorDB
     {
-        public List<Operadores> getListoperadores()
+        private Operadores readOperadorRow(SqlDataReader reader)
         {
             Operadores operador = new Operadores();
+            operador.id = GetInt32ByName(reader, "id");
+            operador.name = GetStringByName(reader, "nombre");
+            operador.direccion = GetStringByName(reader, "direccion");
+            operador.telefono = GetStringByName(reader, "telefono");
+            operador.porcentajeArgentina = GetDoubleByName(reader, "porcentageArgentina");
+            operador.porcentajeAgencia = GetDoubleByName(reader, "porcentajeAgencia");
+            operador.counterId = GetInt32ByName(reader, "counterId");
+            operador.porcentajeMetropolitana = GetDoubleByName(reader, "porcentajeMetropolitan");
+            operador.idSucursal = GetInt32ByName(reader, "idSucursal");
+            operador.createBy = GetInt32ByName(reader, "createdBy");
+            operador.modify = GetInt32ByName(reader, "modifyBy");
+            operador.createDate = GetDateTimeByName(reader, "createdDate");
+            operador.modifyDate = GetDateTimeByName(reader, "modifyDate");
+            return operador;
+        }
+
+        public List<Operadores> getListoperadores()
+        {
             List<Operadores> listP = new List<Operadores>();
             base.sqlConnection.open();
 
@@ -25,25 +43,7 @@ namespace DataBase.management
                     {
                         while (reader.Read())
                         {
-                            operador = new Operadores();
-                            operador.id = reader.GetInt32(0);
-                            operador.name = reader.GetString(1);
-                            operador.direccion = reader.GetString(2);
-                            operador.telefono = reader.GetString(3);
-                            operador.porcentajeArgentina = reader.GetDouble(4);
-                            operador.porcentajeAgencia = reader.GetDouble(5);
-                            operador.counterId = reader.GetInt32(6);
-                            operador.porcentajeMetropolitana = reader.GetDouble(7);
-                            operador.idSucursal = reader.GetInt32(8);
-                            try
-                            {
-                                operador.createBy = reader.GetInt32(9);
-                                operador.modify = reader.GetInt32(10);
-                                operador.createDate = reader.GetDateTime(11);
-                                operador.modifyDate = reader.GetDateTime(12);
-                            }
-                            catch { }
-                            listP.Add(operador);
+                            listP.Add(readOperadorRow(reader));
                         }
                     }
                 }
@@ -59,7 +59,6 @@ namespace DataBase.management
 
         public List<Operadores> getListoperadoresBySucursal(int id)
         {
-            Operadores operador = new Operadores();
             List<Operadores> listP = new List<Operadores>();
             base.sqlConnection.open();
 
@@ -72,25 +71,7 @@ namespace DataBase.management
                     {
                         while (reader.Read())
                         {
-                            operador = new Operadores();
-                            operador.id = reader.GetInt32(0);
-                            operador.name = reader.GetString(1);
-                            operador.direccion = reader.GetString(2);
-                            operador.telefono = reader.GetString(3);
-                            operador.porcentajeArgentina = reader.GetDouble(4);
-                            operador.porcentajeAgencia = reader.GetDouble(5);
-                            operador.counterId = reader.GetInt32(6);
-                            operador.porcentajeMetropolitana = reader.GetDouble(7);
-                            operador.idSucursal = reader.GetInt32(8);
-                            try
-                            {
-                                operador.createBy = reader.GetInt32(9);
-                                operador.modify = reader.GetInt32(10);
-                                operador.createDate = reader.GetDateTime(11);
-                                operador.modifyDate = reader.GetDateTime(12);
-                            }
-                            catch { }
-                            listP.Add(operador);
+                            listP.Add(readOperadorRow(reader));
                         }
                     }
                 }
@@ -119,24 +100,7 @@ namespace DataBase.management
                     {
                         while (reader.Read())
                         {
-                            operador = new Operadores();
-                            operador.id = reader.GetInt32(0);
-                            operador.name = reader.GetString(1);
-                            operador.direccion = reader.GetString(2);
-                            operador.telefono = reader.GetString(3);
-                            operador.porcentajeArgentina = reader.GetDouble(4);
-                            operador.porcentajeAgencia = reader.GetDouble(5);
-                            operador.counterId = reader.GetInt32(6);
-                            operador.porcentajeMetropolitana = reader.GetDouble(7);
-                            operador.idSucursal = reader.GetInt32(8);
-                            try
-                            {
-                                operador.createBy = reader.GetInt32(9);
-                                operador.modify = reader.GetInt32(10);
-                                operador.createDate = reader.GetDateTime(11);
-                                operador.modifyDate = reader.GetDateTime(12);
-                            }
-                            catch { }
+                            operador = readOperadorRow(reader);
                         }
                     }
                 }

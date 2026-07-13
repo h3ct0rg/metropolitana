@@ -165,7 +165,7 @@ export class OrdenPagoNotaComponent implements OnInit {
       var doc = new jsPDF();
       var imgWidth = 180;
       var imgHeight = (canvas.height * imgWidth) / canvas.width;
-      doc.addImage(img, 'JPEG', 15, 20, imgWidth, imgHeight);
+      doc.addImage(img, 'JPEG', 15, 5, imgWidth, imgHeight);
       let name = "ordenPago-" + numneroHeader + ".pdf";
       doc.save(name);
     });
