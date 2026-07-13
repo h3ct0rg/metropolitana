@@ -27,6 +27,7 @@ export class PaquetesnotadebitolistComponent implements OnInit {
   public waitAction: boolean = true;
   public actualSucursal: string;
   logs: Logs;
+  private searchTimeout: any;
 
   constructor(
     private notaDebitoService: PaquetesNotaDebitoService,
@@ -137,6 +138,14 @@ export class PaquetesnotadebitolistComponent implements OnInit {
     this.pageSize = pageSize;
     this.pageIndex = 1;
     this.chargeDataCLient();
+  }
+
+  onSearchTextChange() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.pageIndex = 1;
+      this.chargeDataCLient();
+    }, 300);
   }
 
   filterId() {

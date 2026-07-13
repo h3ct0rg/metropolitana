@@ -27,6 +27,7 @@ export class CarganotadebitolistComponent implements OnInit {
   public waitAction: boolean = true;
   public actualSucursal: string;
   logs: Logs;
+  private searchTimeout: any;
 
   constructor(
     private notaDebitoService: CargaNotaDebitoService,
@@ -144,6 +145,14 @@ export class CarganotadebitolistComponent implements OnInit {
     this.pageSize = pageSize;
     this.pageIndex = 1;
     this.chargeDataCLient();
+  }
+
+  onSearchTextChange() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.pageIndex = 1;
+      this.chargeDataCLient();
+    }, 300);
   }
 
   filterId() {

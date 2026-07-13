@@ -30,6 +30,7 @@ export class NotaDebitoListComponent implements OnInit {
   public sucursal: string;
   public actualSucursal: string;
   logs: Logs;
+  private searchTimeout: any;
 
   constructor(
     private notaDebitoService: NotaDebitoService,
@@ -149,6 +150,14 @@ export class NotaDebitoListComponent implements OnInit {
     this.pageSize = pageSize;
     this.pageIndex = 1;
     this.chargeDataCLient();
+  }
+
+  onSearchTextChange() {
+    clearTimeout(this.searchTimeout);
+    this.searchTimeout = setTimeout(() => {
+      this.pageIndex = 1;
+      this.chargeDataCLient();
+    }, 300);
   }
 
   filterId() {
