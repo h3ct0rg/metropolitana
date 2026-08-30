@@ -18,11 +18,17 @@ namespace DataBase
         //                            User ID=metropolitan_SQLLogin_1;
         //                            pwd=nt8bwsrrxl;";
 
-        private string connection = @"Data Source=metropolitanaDB.mssql.somee.com;
-                                    Initial Catalog=metropolitanaDB;
+        //private string connection = @"Data Source=metropolitanaDB.mssql.somee.com;
+        //                            Initial Catalog=metropolitanaDB;
+        //                            Persist Security Info=False;
+        //                            User ID=metropolitanam_SQLLogin_1;
+        //                            pwd=m3tafxnioq;";
+
+        private string connection = @"Data Source=192.168.0.128;
+                                    Initial Catalog=demoTurismoDev;
                                     Persist Security Info=False;
-                                    User ID=metropolitanam_SQLLogin_1;
-                                    pwd=m3tafxnioq;";
+                                    User ID=sa;
+                                    pwd=YourPassword123!;";
 
 
         public connectionDB()

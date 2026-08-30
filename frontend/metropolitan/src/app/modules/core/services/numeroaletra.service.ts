@@ -33,12 +33,23 @@ export class changeNumbertoLetter {
           case 3: return "TRECE";
           case 4: return "CATORCE";
           case 5: return "QUINCE";
-          default: return "DIECI" + this.Unidades(unidad);
+          case 6: return "DIECISEIS";
+          case 7: return "DIECISIETE";
+          case 8: return "DIECIOCHO";
+          case 9: return "DIECINUEVE";
         }
       case 2:
         switch (unidad) {
           case 0: return "VEINTE";
-          default: return "VEINTI" + this.Unidades(unidad);
+          case 1: return "VEINTIUNO";
+          case 2: return "VEINTIDOS";
+          case 3: return "VEINTITRES";
+          case 4: return "VEINTICUATRO";
+          case 5: return "VEINTICINCO";
+          case 6: return "VEINTISEIS";
+          case 7: return "VEINTISIETE";
+          case 8: return "VEINTIOCHO";
+          case 9: return "VEINTINUEVE";
         }
       case 3: return this.DecenasY("TREINTA", unidad);
       case 4: return this.DecenasY("CUARENTA", unidad);
@@ -122,6 +133,7 @@ export class changeNumbertoLetter {
   }
 
   Millones(num) {
+    num = Math.floor(num);
     if (!isNaN(num)) {
       let divisor = 1000000;
       let cientos = Math.floor(num / divisor)

@@ -52,3 +52,5 @@ npm install --legacy-peer-deps
 $env:NODE_OPTIONS="--openssl-legacy-provider"
 npx ng build --configuration=production
 ```
+set NODE_OPTIONS=--openssl-legacy-provider
+npx ng serve

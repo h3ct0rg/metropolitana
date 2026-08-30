@@ -1,0 +1,1 @@
+"DefaultConnection": "Server=192.168.0.128,1433;Database=demoTurismoDev;User Id=sa;Password=YourPassword123!;TrustServerCertificate=True;"

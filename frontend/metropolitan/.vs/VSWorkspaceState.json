@@ -1,0 +1,14 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\src",
+    "\\src\\app",
+    "\\src\\app\\modules",
+    "\\src\\app\\modules\\core",
+    "\\src\\app\\modules\\core\\travelace",
+    "\\src\\app\\modules\\core\\travelace\\reporteventa",
+    "\\src\\app\\modules\\core\\travelace\\reporteventa\\reporte-venta"
+  ],
+  "SelectedNode": "\\src\\app\\modules\\core\\travelace\\reporteventa\\reporte-venta\\reporte-venta.component.html",
+  "PreviewInSolutionExplorer": false
+}
