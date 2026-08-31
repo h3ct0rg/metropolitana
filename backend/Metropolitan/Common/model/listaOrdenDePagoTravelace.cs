@@ -14,6 +14,8 @@ namespace Common.model
         public string nombreCliente;
         public double ordenMontoPagar;
         public double saldoDeudor;
+        public int? monedaNota;
+        public double? tipoCambioValor;
     }
 
 }

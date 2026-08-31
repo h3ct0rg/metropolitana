@@ -25,6 +25,8 @@ export interface NotaDebito {
   createDate: string;
   modifyDate: string;
   estadoEditado?: number;
+  monedaNota?: number; // 1 = USD, 2 = BS. undefined/null = legacy, mostrar como USD.
+  tipoCambioValor?: number; // tasa USD->Bs usada al crear/editar esta ND.
 }
 
 export interface NotaDebitoList {
@@ -36,4 +38,6 @@ export interface NotaDebitoList {
   total: number;
   estado: number;
   codigoUnico: number;
+  monedaNota?: number;
+  tipoCambioValor?: number;
 }

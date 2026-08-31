@@ -162,6 +162,24 @@ namespace DataBase
             return (i < 0 || reader.IsDBNull(i)) ? 0 : reader.GetDouble(i);
         }
 
+        protected bool GetBooleanByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? false : reader.GetBoolean(i);
+        }
+
+        protected int? GetNullableInt32ByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? (int?)null : reader.GetInt32(i);
+        }
+
+        protected double? GetNullableDoubleByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? (double?)null : reader.GetDouble(i);
+        }
+
         protected DateTime GetDateTimeByName(SqlDataReader reader, string columnName)
         {
             int i = GetOrdinalOrDefault(reader, columnName);

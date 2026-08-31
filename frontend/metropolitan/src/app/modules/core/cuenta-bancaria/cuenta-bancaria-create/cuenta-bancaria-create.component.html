@@ -1,0 +1,39 @@
+<h2>Cuenta Bancaria</h2>
+
+<form nz-form [formGroup]="form">
+  <div class="gutter-example">
+    <div nz-row>
+      <div nz-col class="gutter-row" nzSpan="12">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="nombre">Nombre</nz-form-label>
+          <nz-form-control>
+            <input nz-input name="nombre" type="text" formControlName="nombre" nzSpan="20">
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col class="gutter-row" nzSpan="8">
+        <nz-form-item>
+          <nz-form-label nzRequired nzFor="moneda">Moneda</nz-form-label>
+          <nz-form-control>
+            <nz-select formControlName="moneda">
+              <nz-option nzValue="USD" nzLabel="Dólares (USD)"></nz-option>
+              <nz-option nzValue="BS" nzLabel="Bolivianos (BS)"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div nz-row style="padding-bottom:20px;">
+      <div nz-col nzSpan="12">
+        <label nz-checkbox formControlName="activo">Activa (seleccionable en nuevas OP)</label>
+      </div>
+    </div>
+  </div>
+</form>
+
+<div nz-row>
+  <div nz-col nzSpan="24" nzOffset="9" style="padding-top:20px;">
+    <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveCuentaBancaria()">Guardar Cuenta Bancaria</button>
+  </div>
+</div>

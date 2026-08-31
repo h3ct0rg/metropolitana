@@ -20,6 +20,7 @@ namespace Common.model
         public double totalAgencia;
         public DateTime fechaPago;
         public int formaPago;
+        public double? tipoCambioValor; // tasa propia de la ND; null = legacy, el reporte la trata como USD.
     }
 
     //    from travelaceNotaDebito as ND, travelOrdenPago as OP where ND.codigoUnicoNota = OP.idNotaDebito
@@ -43,6 +44,7 @@ namespace Common.model
         public DateTime fechaPago;
         public int formaPago;
         public string nombreAgencia;
+        public double? tipoCambioValor;
     }
 
     public class ReporteOperacionPagoTravelaceDetalleFiltrado

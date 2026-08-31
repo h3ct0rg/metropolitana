@@ -49,6 +49,8 @@ namespace DataBase.management
                             notadebitoTravelace.codigoUnico = reader.GetInt32(18);
                             notadebitoTravelace.estado = reader.GetInt32(19);
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
+                            notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
+                            notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -125,7 +127,7 @@ namespace DataBase.management
 
             string query = @"
 select ND.id, C.nombre, ND.pasajero, ND.servicios, ND.voucher, ND.total, ND.estado, ND.codigoUnicoNota,
-       COUNT(*) OVER() as TotalRows
+       COUNT(*) OVER() as TotalRows, ND.monedaNota, ND.tipoCambioValor
 from paquetesNotaDebito as ND
 left join clientePaquetes as C
 on C.id = ND.codCliente
@@ -164,6 +166,8 @@ offset @offset rows fetch next @pageSize rows only";
                             notadebitoTravelace.total = reader.GetDouble(5);
                             notadebitoTravelace.estado = reader.GetInt32(6);
                             notadebitoTravelace.codigoUnico = reader.GetInt32(7);
+                            notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
+                            notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             result.data.Add(notadebitoTravelace);
                             result.total = reader.GetInt32(8);
                         }
@@ -306,6 +310,8 @@ order by ND.codigoUnicoNota DESC
                             notadebitoTravelace.codigoUnico = reader.GetInt32(18);
                             notadebitoTravelace.estado = reader.GetInt32(19);
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
+                            notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
+                            notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -369,6 +375,8 @@ order by ND.codigoUnicoNota DESC
                             notadebitoTravelace.codigoUnico = reader.GetInt32(18);
                             notadebitoTravelace.estado = reader.GetInt32(19);
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
+                            notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
+                            notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -576,6 +584,8 @@ order by ND.codigoUnicoNota DESC
                             notadebitoTravelace.codigoUnico = reader.GetInt32(18);
                             notadebitoTravelace.estado = reader.GetInt32(19);
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
+                            notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
+                            notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -603,21 +613,23 @@ order by ND.codigoUnicoNota DESC
             {
                 notaD.codigoUnico = generateCodigoUnico(notaD.idSucursal);
             }
-            string query = string.Format(@"Insert into paquetesNotaDebito 
+            string query = string.Format(@"Insert into paquetesNotaDebito
                                         (codCliente,codCounter,codOperador,codTipoCambio,fechaGestion,
                                         pasajero,servicios,voucher,fechaVencimiento,totalArgentina,totalAgencia,
                                         totalCounter,totalMetropolitan,total,montoNeto,concepto,
                                         isEspecial,codigoUnicoNota,estado,idSucursal,
-                                        createdBy,createdDate)
+                                        createdBy,createdDate,monedaNota,tipoCambioValor)
                                         values ('{0}','{1}','{2}','{3}','{4}',
                                                 '{5}','{6}','{7}','{8}','{9}',
                                                 '{10}','{11}','{12}','{13}','{14}',
-                                                '{15}','{16}','{17}','{18}','{19}','{20}','{21}')",
+                                                '{15}','{16}','{17}','{18}','{19}','{20}','{21}',{22},{23})",
                                         notaD.codCliente, notaD.codCounter, notaD.codOperador, notaD.codTipoCambio, notaD.fechaGestion,
                                         notaD.pasajero, notaD.servicio, notaD.voucher, notaD.fechaVencimiento, notaD.totalArgentina, notaD.totalAgencia,
                                         notaD.totalCounter, notaD.totalMetropolitana, notaD.total, notaD.montoNeto, notaD.concepto,
                                         notaD.isEspecial, notaD.codigoUnico, notaD.estado, notaD.idSucursal,
-                                        notaD.createBy, notaD.createDate);
+                                        notaD.createBy, notaD.createDate,
+                                        notaD.monedaNota.HasValue ? notaD.monedaNota.Value.ToString() : "NULL",
+                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
             base.insertUpdateExecute(query);
             return getListNotaDebito(notaD.codigoUnico, notaD.idSucursal)[0];
         }
@@ -689,22 +701,57 @@ order by ND.codigoUnicoNota DESC
             return numeroDevuelto;
         }
 
+        public bool tieneOrdenPagoPagada(int codigoUnico, int idSucursal)
+        {
+            bool tienePagada = false;
+            base.sqlConnection.open();
+            string query = string.Format(
+                "select count(*) from paquetesOrdenPago where idNotaDebito = '{0}' and idSucursal = '{1}' and pagado = 1",
+                codigoUnico, idSucursal);
+            try
+            {
+                using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
+                {
+                    object result = command.ExecuteScalar();
+                    tienePagada = result != null && Convert.ToInt32(result) > 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                base.sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            base.sqlConnection.close();
+            return tienePagada;
+        }
+
         public int updatenotadebitoTravelace(notaDebitoTravelace notaD)
         {
-            string query = string.Format(@"Update paquetesNotaDebito 
-                                        set 
+            if (tieneOrdenPagoPagada(notaD.codigoUnico, notaD.idSucursal))
+            {
+                notaDebitoTravelace actual = getnotadebitoTravelace(notaD.id);
+                if (notaD.monedaNota != actual.monedaNota || notaD.tipoCambioValor != actual.tipoCambioValor)
+                {
+                    throw new Exception("No se puede modificar la moneda ni el tipo de cambio de una Nota de Débito que ya tiene una Orden de Pago pagada.");
+                }
+            }
+
+            string query = string.Format(@"Update paquetesNotaDebito
+                                        set
                                         codCliente='{0}',codCounter='{1}',codOperador='{2}',codTipoCambio='{3}',fechaGestion='{4}',
                                         pasajero='{5}',servicios='{6}',voucher='{7}',fechaVencimiento='{8}',totalArgentina='{9}',totalAgencia='{10}',
                                         totalCounter='{11}',totalMetropolitan='{12}',total='{13}',montoNeto='{14}',concepto='{15}',
                                         isEspecial='{16}',codigoUnicoNota='{17}',estado='{18}', idSucursal='{19}',
-                                        modifyBy={20},modifyDate='{21}'
+                                        modifyBy={20},modifyDate='{21}',monedaNota={23},tipoCambioValor={24}
                                         where id={22}",
                                         notaD.codCliente, notaD.codCounter, notaD.codOperador,
                                         notaD.codTipoCambio, notaD.fechaGestion,
                                         notaD.pasajero, notaD.servicio, notaD.voucher, notaD.fechaVencimiento, notaD.totalArgentina, notaD.totalAgencia,
                                         notaD.totalCounter, notaD.totalMetropolitana, notaD.total, notaD.montoNeto, notaD.concepto,
                                         notaD.isEspecial, notaD.codigoUnico, notaD.estado, notaD.idSucursal,
-                                        notaD.modify, notaD.modifyDate, notaD.id);
+                                        notaD.modify, notaD.modifyDate, notaD.id,
+                                        notaD.monedaNota.HasValue ? notaD.monedaNota.Value.ToString() : "NULL",
+                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
             return insertUpdateExecute(query);
         }
 
@@ -737,6 +784,7 @@ order by ND.codigoUnicoNota DESC
                             ordenPago.pagado = reader.GetBoolean(11);
                             ordenPago.codProfile = reader.GetString(12);
                             ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 ordenPago.createBy = reader.GetInt32(14);
@@ -768,22 +816,24 @@ order by ND.codigoUnicoNota DESC
                 int res = insertUpdateExecute(query);
                 if (res > 0)
                 {
-                    query = string.Format(@"Insert into paquetesNotaDebitoAnulado 
+                    query = string.Format(@"Insert into paquetesNotaDebitoAnulado
                                         (codCliente,codCounter,codOperador,codTipoCambio,fechaGestion,
                                         pasajero,servicios,voucher,fechaVencimiento,totalArgentina,totalAgencia,
                                         totalCounter,totalMetropolitan,total,montoNeto,concepto,
                                         isEspecial,codigoUnicoNota,estado,idSucursal,estadoEditado,
-                                        createdBy,createdDate, modifyBy, modifyDate)
+                                        createdBy,createdDate, modifyBy, modifyDate,monedaNota,tipoCambioValor)
                                         values ('{0}','{1}','{2}','{3}','{4}',
                                                 '{5}','{6}','{7}','{8}','{9}','{10}',
                                                 '{11}','{12}','{13}','{14}','{15}',
                                                 '{16}','{17}','{18}','{19}','{20}',
-                                                '{21}','{22}','{23}','{24}')",
+                                                '{21}','{22}','{23}','{24}',{25},{26})",
                                             notaD.codCliente, notaD.codCounter, notaD.codOperador, notaD.codTipoCambio, notaD.fechaGestion,
                                             notaD.pasajero, notaD.servicio, notaD.voucher, notaD.fechaVencimiento, notaD.totalArgentina, notaD.totalAgencia,
                                             notaD.totalCounter, notaD.totalMetropolitana, notaD.total, notaD.montoNeto, notaD.concepto,
                                             notaD.isEspecial, notaD.codigoUnico, notaD.estado, notaD.idSucursal, 0,
-                                            notaD.createBy, notaD.createDate, iduser, DateTime.Now);
+                                            notaD.createBy, notaD.createDate, iduser, DateTime.Now,
+                                            notaD.monedaNota.HasValue ? notaD.monedaNota.Value.ToString() : "NULL",
+                                            notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
                     res = insertUpdateExecute(query);
                 }
 
@@ -794,17 +844,18 @@ order by ND.codigoUnicoNota DESC
 
                 if (res > 0)
                 {
-                    query = string.Format(@"Insert into paquetesOrdenPagoAnulado 
+                    query = string.Format(@"Insert into paquetesOrdenPagoAnulado
                                         (fechaPago,montoAPagar,monedaPago,saldoDeudor,numeroPago,
                                         formaPago,numeroTarjeta,concepto,anulado,idNotaDebito,pagado,codProfile,idSucursal,
-                                        createdBy,createDate, modifyBy, modifyDate)
+                                        createdBy,createDate, modifyBy, modifyDate,tipoCambioValor)
                                         values ('{0}','{1}','{2}','{3}','{4}',
                                                 '{5}','{6}','{7}','{8}','{9}',
-                                                '{10}','{11}','{12}','{13}','{14}','{15}','{16}')",
+                                                '{10}','{11}','{12}','{13}','{14}','{15}','{16}',{17})",
                                             ordenPagoR.fechaPago, ordenPagoR.montoAPagar, ordenPagoR.monedaPago, ordenPagoR.saldoDeudor, ordenPagoR.numeroPago,
                                             ordenPagoR.formaPago, ordenPagoR.numeroTarjeta, ordenPagoR.concepto, ordenPagoR.anulado, ordenPagoR.numeroNotaDebito,
                                             ordenPagoR.pagado, ordenPagoR.codProfile, ordenPagoR.idSucursal,
-                                            ordenPagoR.createBy, ordenPagoR.createDate, iduser, DateTime.Now);
+                                            ordenPagoR.createBy, ordenPagoR.createDate, iduser, DateTime.Now,
+                                            ordenPagoR.tipoCambioValor.HasValue ? ordenPagoR.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
 
                     res = insertUpdateExecute(query);
                 }

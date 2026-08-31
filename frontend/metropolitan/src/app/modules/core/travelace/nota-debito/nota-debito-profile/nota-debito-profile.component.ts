@@ -44,7 +44,6 @@ export class NotaDebitoProfileComponent implements OnInit {
   comisionMetropolitana: number;
   comisionArgentina: number;
   netoLiquidar: number;
-  monedaCambio: number = 6.96;
   numeroNotaDebito: number = 0;
   isVisible: boolean = false;
   isVisibleBorrar: boolean = false;
@@ -99,6 +98,14 @@ export class NotaDebitoProfileComponent implements OnInit {
     this.form = new FormGroup({
       fechaRegistro: new FormControl(null, [Validators.required])
     })
+  }
+
+  get monedaSimbolo(): string {
+    return this.notaDebito.monedaNota === 2 ? 'Bs.' : '$us';
+  }
+
+  get factorConversion(): number {
+    return this.notaDebito.monedaNota === 2 && this.notaDebito.tipoCambioValor ? this.notaDebito.tipoCambioValor : 1;
   }
 
   stateTranslate(estado) {

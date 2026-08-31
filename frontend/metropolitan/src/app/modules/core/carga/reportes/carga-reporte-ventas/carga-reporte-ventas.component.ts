@@ -11,6 +11,8 @@ import { SucursalService } from '../../../services/sucursal.services';
 import { CargaOrdenPagoService } from '../../../services/carga/carga-orden-pago.services';
 import { Logs } from '../../../../../shared/model/Logs';
 import { LogsService } from '../../../services/Logs/logs.services';
+import { FormaPagoService } from '../../../services/forma-pago.services';
+import { FormaPago } from '../../../../../shared/model/forma-pago';
 
 @Component({
   selector: 'app-carga-reporte-ventas',
@@ -36,13 +38,9 @@ export class CargaReporteVentasComponent implements OnInit {
   logs: Logs;
   token: any;
 
-  public optionsMetodoPago = [
-    { id: "1", name: "Efectivo" },
-    { id: "2", name: "Tarjeta Credito/Debito" },
-    { id: "3", name: "Cheque" },
-    { id: "4", name: "Cuenta de Banco" },
-    { id: "5", name: "LINKSER" }
-  ];
+  public optionsMetodoPago: FormaPago[] = [];
+  public tasaManualRespaldo: number = null;
+  public faltanTasasLegacy: boolean = false;
 
   public listClients: any[];
   public listCounter: any[];
@@ -56,7 +54,8 @@ export class CargaReporteVentasComponent implements OnInit {
     private counterService: CounterService,
     private storage: StorageService,
     private sucursalesService: SucursalService,
-    private logService: LogsService
+    private logService: LogsService,
+    private formaPagoService: FormaPagoService
   ) {
     this.isSpinning = true;
     this.listRestas.push(0);
@@ -70,7 +69,12 @@ export class CargaReporteVentasComponent implements OnInit {
     this.form = new FormGroup({
       fechaStardDate: new FormControl(null, [Validators.required]),
       fechaEndDate: new FormControl(null, [Validators.required]),
-      sucursal: new FormControl(null, [Validators.required])
+      sucursal: new FormControl(null, [Validators.required]),
+      monedaReporte: new FormControl(1)
+    });
+
+    this.formaPagoService.getFormaPagoList().subscribe(result => {
+      this.optionsMetodoPago = result;
     });
 
     clientService.getClientCargaList().subscribe(result => {
@@ -128,7 +132,7 @@ export class CargaReporteVentasComponent implements OnInit {
     this.fechaIni = this.getTime(fechaStart);
     this.fechaF = this.getTime(fechaEnd);
     this.ordenPagoService.getReportOrdenPagoByDateDetailByCity(fechaStart, fechaEnd, this.form.get("sucursal").value).subscribe(result => {
-
+      result = this.convertirResultadoAMoneda(result);
       const rrGroup = this.groupByLocal(result, result => result.codOperador);
       this.listOperadoresSelect = [[]];
       let totalArgentinaTempo = 0;
@@ -149,7 +153,7 @@ export class CargaReporteVentasComponent implements OnInit {
               totalArgentina: 0,
               totalFinal: 0,
               fechaPago: value.fechaPago,
-              formaPago: listOptions.find(element => element.id === value.formaPago.toString()).name
+              formaPago: (listOptions.find(element => element.id.toString() === value.formaPago.toString()) || { nombre: '' }).nombre
             };
             resultSum.push(res[value.codUnicoNota])
           }
@@ -231,6 +235,24 @@ export class CargaReporteVentasComponent implements OnInit {
   getActualSucursal() {
     this.token = this.storage.parse(IStorageKeys.Token);
     return this.token.sucursal;
+  }
+
+  convertirResultadoAMoneda(result: any[]): any[] {
+    if (this.form.get('monedaReporte').value !== 2) {
+      this.faltanTasasLegacy = false;
+      return result;
+    }
+    this.faltanTasasLegacy = result.some(r => !r.tipoCambioValor);
+    return result.map(r => {
+      const tasa = r.tipoCambioValor || this.tasaManualRespaldo || 1;
+      return {
+        ...r,
+        montoNeto: r.montoNeto * tasa,
+        totalArgentina: r.totalArgentina * tasa,
+        totalCounter: r.totalCounter * tasa,
+        totalAgencia: r.totalAgencia * tasa
+      };
+    });
   }
 
   getSum(index: string, data: []): number {

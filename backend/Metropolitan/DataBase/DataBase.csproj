@@ -57,6 +57,10 @@
     <Compile Include="management\paquetes\paquetesOperadorManagement.cs" />
     <Compile Include="management\paquetes\paquetesClientManagement.cs" />
     <Compile Include="management\sucursalesManagement.cs" />
+    <Compile Include="management\formaPagoManagement.cs" />
+    <Compile Include="management\cuentaBancariaManagement.cs" />
+    <Compile Include="management\tipoCambioConfigManagement.cs" />
+    <Compile Include="management\flujoCajaManagement.cs" />
     <Compile Include="management\counterManagement.cs" />
     <Compile Include="management\excelManagement.cs" />
     <Compile Include="management\operacionPagoTravelaceManagement.cs" />

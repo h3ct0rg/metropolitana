@@ -55,6 +55,8 @@
         <th>Servicio</th>
         <th>Voucher</th>
         <th>Monto Total</th>
+        <th>Moneda</th>
+        <th>Tipo de Cambio</th>
         <th>Estado</th>
         <th *ngIf="isAdmin"></th>
       </tr>
@@ -67,6 +69,8 @@
         <td>{{ data.servicio }}</td>
         <td>{{ data.voucher }}</td>
         <td>{{ data.total.toFixed(2) }}</td>
+        <td>{{ data.monedaNota === 2 ? 'Bolivianos' : 'Dólares' }}</td>
+        <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
         <td>{{ stateTranslate(data.estado) }}</td>
         <td *ngIf="isAdmin">
           <button nz-button nzType="primary" routerLink="../edit-nota-debito/{{data.id}}">Editar</button>

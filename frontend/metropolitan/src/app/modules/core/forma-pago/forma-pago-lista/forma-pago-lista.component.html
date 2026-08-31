@@ -1,0 +1,26 @@
+<div nz-row>
+  <div nz-col nzSpan="8"><h2>Formas de Pago</h2></div>
+  <div nz-col nzSpan="8">
+    <button nz-button nzType="primary" routerLink="formaPagoCreate">Crear Forma de Pago</button>
+  </div>
+</div>
+
+<nz-spin [nzSpinning]="waitAction">
+  <nz-table #basicTable [nzData]="listOfData">
+    <thead>
+      <tr>
+        <th>Orden</th><th>Nombre</th><th>Moneda</th><th>Áreas</th><th>Requiere Cuenta</th><th>Activo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of listOfData" routerLink="formaPagoEdit/{{data.id}}">
+        <td>{{ data.orden }}</td>
+        <td>{{ data.nombre }}</td>
+        <td>{{ data.moneda }}</td>
+        <td>{{ data.areasAplicables }}</td>
+        <td>{{ data.requiereCuentaBancaria ? 'Sí' : 'No' }}</td>
+        <td>{{ data.activo ? 'Activo' : 'Inactivo' }}</td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

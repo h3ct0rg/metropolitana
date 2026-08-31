@@ -12,6 +12,17 @@ import { NotaDebitoService } from '../../../services/nota-debito.services';
 import { UsuarioService } from '../../../services/usuario.service';
 import { Logs } from '../../../../../shared/model/Logs';
 import { LogsService } from '../../../services/Logs/logs.services';
+import { FormaPagoService } from '../../../services/forma-pago.services';
+import { CuentaBancariaService } from '../../../services/cuenta-bancaria.services';
+import { TipoCambioService } from '../../../services/tipo-cambio.services';
+import { FormaPago } from '../../../../../shared/model/forma-pago';
+import { CuentaBancaria } from '../../../../../shared/model/cuenta-bancaria';
+
+interface ItemSeleccionado {
+  id: number;
+  saldo: number;
+  monedaNota: number;
+}
 
 @Component({
   selector: 'orden-pago-create',
@@ -25,27 +36,16 @@ export class OrdenPagoCreateComponent implements OnInit {
   numeroOrdenPagoResult: number;
   listOfData = [];
   listCheck = [];
-  optionsMetodoPago = [
-    { id: "1", name: "Efectivo" },
-    { id: "2", name: "Tarjeta Credito/Debito" },
-    { id: "3", name: "Cheque" },
-    { id: "4", name: "Cuenta de Banco" },
-    { id: "5", name: "WE TRAVEL" },
-    { id: "6", name: "LINKSER" }
-  ];
+  itemsSeleccionados: ItemSeleccionado[] = [];
+  formasPagoTodas: FormaPago[] = [];
+  optionsMetodoPago: FormaPago[] = [];
 
-  cuentas = [
-    { id: "1", name: "BANCO BISA CUENTA 11 EN DOLARES METRO" },
-    { id: "2", name: "BANCO BISA CUENTA 19 EN BOLIVIANOS METRO" },
-    { id: "3", name: "BANCO GANADERO CUENTA 39 EN DOLARES LILIANA" },
-    { id: "4", name: "BANCO NACIONAL CUENTA 73 EN DOLARES METRO" },
-    { id: "5", name: "BCP CUENTA 17 EN BOLIVIANOS ANDREA" },
-    { id: "6", name: "BCP CUENTA 301 EN BOLIVIANOS ANDREA" },
-    { id: "7", name: "GANADERO CUENTA 361 BOLIVIANOS Lilian" },
-    { id: "8", name: "BANCO MERCANTIL SANTA CRUZ CUENTA 252 BOLIVIANOS Liliana " },
-    { id: "9", name: "BANCO UNION CUENTA 843 BOLIVIANOS Lilian Fiordoliva" },
-    { id: "10", name: "BANCO BISA CUENTA 4025 EN BS ANDREA" }
-  ]
+  cuentasTodas: CuentaBancaria[] = [];
+  cuentas: CuentaBancaria[] = [];
+  // Moneda/tipo de cambio del lote que se está pagando: se fija con la
+  // primera ND marcada y no se puede mezclar con NDs de otra moneda en el
+  // mismo pago (la moneda de cada ND ya viene fija desde su creación).
+  public monedaSeleccionada: number = null;
   public form: FormGroup;
   clienteID: string;
   isEdit = false;
@@ -71,7 +71,10 @@ export class OrdenPagoCreateComponent implements OnInit {
     private storage: StorageService,
     private notaDebitoService: NotaDebitoService,
     private userService: UsuarioService,
-    private logService: LogsService
+    private logService: LogsService,
+    private formaPagoService: FormaPagoService,
+    private cuentaBancariaService: CuentaBancariaService,
+    private tipoCambioService: TipoCambioService
   ) {
     this.form = new FormGroup({
       fechaRegistro: new FormControl(null, [Validators.required]),
@@ -80,12 +83,30 @@ export class OrdenPagoCreateComponent implements OnInit {
       montoBs: new FormControl(null, [Validators.required]),
       textMetodoPago: new FormControl(),
       metodoDePago: new FormControl(),
-      cuentaBancaria: new FormControl()
+      cuentaBancaria: new FormControl(),
+      tipoCambioValor: new FormControl(null, [Validators.required, Validators.min(0.01)])
     });
 
     this.form.get("montoDolares").disable({ emitEvent: false, onlySelf: false });
     this.form.get("montoBs").disable({ emitEvent: false, onlySelf: false });
     this.form.get("numeroOrdenPago").disable({ emitEvent: false, onlySelf: false });
+
+    this.formaPagoService.getFormaPagoActivos().subscribe(result => {
+      this.formasPagoTodas = result;
+      this.actualizarCatalogosFiltrados();
+    });
+
+    this.cuentaBancariaService.getCuentaBancariaActivas().subscribe(result => {
+      this.cuentasTodas = result;
+      this.actualizarCatalogosFiltrados();
+    });
+
+    this.tipoCambioService.getActual().subscribe(result => {
+      if (result && !this.form.get('tipoCambioValor').value) {
+        this.form.get('tipoCambioValor').setValue(result.valor);
+        this.recalcularMontoBs();
+      }
+    });
   }
 
   ngOnInit() {
@@ -116,7 +137,12 @@ export class OrdenPagoCreateComponent implements OnInit {
           this.mostrarCuentas = false;
         }
       }
-      this.tituloFormaPago = this.optionsMetodoPago[data - 1].name;
+      const encontrada = this.optionsMetodoPago.find(o => o.id.toString() === data.toString());
+      this.tituloFormaPago = encontrada ? encontrada.nombre : "";
+    });
+
+    this.form.get("tipoCambioValor").valueChanges.subscribe(() => {
+      this.recalcularMontoBs();
     });
 
     this.logs = {
@@ -134,47 +160,100 @@ export class OrdenPagoCreateComponent implements OnInit {
 
   }
 
-  check(id, saldo, nordenPago) {
-    let result = this.listCheck.find(x => x == id);
+  // true si entre las NDs marcadas hay más de una moneda -- en ese caso el
+  // pago queda bloqueado hasta que el usuario desmarque para dejar una sola.
+  get hayMonedasMezcladas(): boolean {
+    const monedas = new Set(this.itemsSeleccionados.map(i => i.monedaNota));
+    return monedas.size > 1;
+  }
+
+  monedaLabel(moneda: number): string {
+    return moneda === 2 ? 'Bolivianos' : 'Dólares';
+  }
+
+  // Filtra las formas de pago y cuentas bancarias activas según la moneda
+  // del lote que se está pagando. Si todavía no hay ninguna ND marcada, o si
+  // hay monedas mezcladas (pago bloqueado), muestra todas las activas sin
+  // filtrar, para no ocultar información mientras el usuario corrige la
+  // selección.
+  private actualizarCatalogosFiltrados() {
+    if (this.monedaSeleccionada == null || this.hayMonedasMezcladas) {
+      this.optionsMetodoPago = this.formasPagoTodas;
+      this.cuentas = this.cuentasTodas;
+      return;
+    }
+    const monedaTexto = this.monedaSeleccionada === 2 ? 'BS' : 'USD';
+    this.optionsMetodoPago = this.formasPagoTodas.filter(fp => fp.moneda === 'AMBOS' || fp.moneda === monedaTexto);
+    this.cuentas = this.cuentasTodas.filter(cb => cb.moneda === monedaTexto);
+  }
+
+  private recalcularMontoBs() {
+    const tasa = this.form.get("tipoCambioValor").value || 0;
+    this.form.get("montoBs").disable({ emitEvent: false, onlySelf: false });
+    this.form.get("montoBs").setValue((this.totalPagar * tasa).toFixed(2));
+  }
+
+  check(id, saldo, nordenPago, monedaNota?, tipoCambioValor?) {
+    const monedaFila = monedaNota ? monedaNota : 1; // legacy sin moneda registrada = USD
+    const yaSeleccionado = this.itemsSeleccionados.find(x => x.id === id);
+
     this.numeroOrdenPagoID = nordenPago;
 
-    if (result == undefined) {
-      this.listCheck.push(id);
-      this.totalPagar += saldo;
-      this.totalPagar = parseFloat(this.totalPagar.toFixed(2));
-    }
-    else {
+    if (yaSeleccionado) {
+      this.itemsSeleccionados = this.itemsSeleccionados.filter(x => x.id !== id);
       this.listCheck = this.listCheck.filter(f => f !== id);
       this.totalPagar -= parseFloat(saldo.toFixed(2));
     }
-
-    if (this.totalPagar != undefined && this.totalPagar > 0) {
-      this.enablePay = false;
-    }
     else {
-      this.enablePay = true;
+      this.itemsSeleccionados.push({ id, saldo, monedaNota: monedaFila });
+      this.listCheck.push(id);
+      this.totalPagar += saldo;
+      this.totalPagar = parseFloat(this.totalPagar.toFixed(2));
+
+      // Primera ND del lote: fija la moneda y prellena el tipo de cambio.
+      if (this.itemsSeleccionados.length === 1) {
+        this.monedaSeleccionada = monedaFila;
+        if (tipoCambioValor) {
+          this.form.get('tipoCambioValor').setValue(tipoCambioValor);
+        }
+      }
     }
+
+    if (this.itemsSeleccionados.length === 0) {
+      this.monedaSeleccionada = null;
+    } else if (!this.hayMonedasMezcladas) {
+      this.monedaSeleccionada = this.itemsSeleccionados[0].monedaNota;
+    }
+    this.actualizarCatalogosFiltrados();
+
+    this.enablePay = !(this.totalPagar != undefined && this.totalPagar > 0);
 
     this.form.get("montoDolares").disable({ emitEvent: false, onlySelf: false });
-    this.form.get("montoBs").disable({ emitEvent: false, onlySelf: false });
     this.form.get("numeroOrdenPago").disable({ emitEvent: false, onlySelf: false });
     this.form.get("montoDolares").setValue(this.totalPagar.toFixed(2));
-    this.form.get("montoBs").setValue((this.totalPagar * 6.96).toFixed(2));
+    this.recalcularMontoBs();
   }
 
   saveNotaVenta() {
-    const cuentaBancaria = this.form.get('cuentaBancaria') == null ? "" : this.cuentas.find(item => item.id == this.form.get('cuentaBancaria').value);
+    if (this.hayMonedasMezcladas) {
+      return;
+    }
+    const formaPagoValue = this.form.get("metodoDePago").value;
+    const formaPagoSeleccionada = this.optionsMetodoPago.find(item => item.id.toString() == formaPagoValue.toString());
+    const requiereCuenta = formaPagoSeleccionada ? formaPagoSeleccionada.requiereCuentaBancaria : false;
+    const cuentaBancaria = requiereCuenta ? this.cuentas.find(item => item.id.toString() == this.form.get('cuentaBancaria').value) : null;
     this.ordenPago = {
       anulado: 0,
       concepto: "",
       fechaPago: this.fechaRegistro,
-      formaPago: this.form.get("metodoDePago").value,
-      formaPagoDescripcion: this.form.get("metodoDePago").value == '1' || this.form.get("metodoDePago").value == '2' || this.form.get("metodoDePago").value == '3' || this.form.get("metodoDePago").value == '5' || this.form.get("metodoDePago").value == '6' ? this.form.get('textMetodoPago').value : cuentaBancaria['name'],
-      monedaPago: 1,
+      formaPago: formaPagoValue,
+      formaPagoDescripcion: requiereCuenta ? (cuentaBancaria ? cuentaBancaria.nombre : '') : this.form.get('textMetodoPago').value,
+      monedaPago: this.monedaSeleccionada ? this.monedaSeleccionada : 1,
+      tipoCambioValor: this.form.get("tipoCambioValor").value,
       montoAPagar: this.totalPagar,
       numeroNotaDebito: 0,
       numeroPago: 0,
-      numeroTarjeta: this.form.get("metodoDePago").value == '4' ? cuentaBancaria['id'] : this.form.get("textMetodoPago").value,
+      numeroTarjeta: requiereCuenta ? (cuentaBancaria ? cuentaBancaria.id.toString() : '') : this.form.get("textMetodoPago").value,
       pagado: true,
       saldoDeudor: 0,
       codProfile: Guid.create().toString(),
@@ -186,6 +265,12 @@ export class OrdenPagoCreateComponent implements OnInit {
       modifyDate: this.fechaRegistro
     }
 
+    // Los montos se registran/guardan siempre en USD (el monto base de la ND
+    // nunca cambia de moneda). El factor de conversión es solo para que el
+    // recibo impreso muestre el equivalente en Bs cuando se paga en Bolivianos
+    // -- no afecta lo que se guarda en la base de datos.
+    const factorRecibo = this.monedaSeleccionada === 2 ? (this.form.get("tipoCambioValor").value || 1) : 1;
+
     let printList = [];
 
     this.listCheck.forEach(data => {
@@ -194,7 +279,7 @@ export class OrdenPagoCreateComponent implements OnInit {
         nombreCliente: resultI[0].idNota,
         fechaPago: this.ordenPago.fechaPago,
         concepto: this.ordenPago.concepto,
-        montoAPagar: resultI[0].saldoDeudor
+        montoAPagar: resultI[0].saldoDeudor * factorRecibo
       });
 
       this.ordenPago.numeroNotaDebito = data;
@@ -212,7 +297,7 @@ export class OrdenPagoCreateComponent implements OnInit {
 
     let tempData = this.ordenPagoService.getOrdenPago(this.listCheck[0]).subscribe(resNumber => {
       this.childPays.listOfData = printList;
-      this.childPays.montoPagado = this.totalPagar.toFixed(2);
+      this.childPays.montoPagado = (this.totalPagar * factorRecibo).toFixed(2);
       this.childPays.nombreCliente = this.listOfData[0].nombreCliente;
       this.childPays.fechaRegistro = this.fechaRegistro;
       this.childPays.formaPagoId = this.ordenPago.formaPago;

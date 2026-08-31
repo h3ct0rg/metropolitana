@@ -47,6 +47,22 @@ const routes: Routes = [
       {
         path: 'counter',
         loadChildren: () => import('./counter/counter.module').then(m => m.CounterModule)
+      },
+      {
+        path: 'forma-pago',
+        loadChildren: () => import('./forma-pago/forma-pago.module').then(m => m.FormaPagoModule)
+      },
+      {
+        path: 'cuenta-bancaria',
+        loadChildren: () => import('./cuenta-bancaria/cuenta-bancaria.module').then(m => m.CuentaBancariaModule)
+      },
+      {
+        path: 'tipo-cambio',
+        loadChildren: () => import('./tipo-cambio/tipo-cambio.module').then(m => m.TipoCambioModule)
+      },
+      {
+        path: 'flujo-caja',
+        loadChildren: () => import('./flujo-caja/flujo-caja.module').then(m => m.FlujoCajaModule)
       }],
     canActivate: [AuthGuardService],
     data: { roles: ['web.access'] },

@@ -128,6 +128,10 @@
           <i nz-icon nzType="book" nzTheme="outline"></i>
           <span>Reportes</span>
         </li>
+        <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="flujo-caja">
+          <i nz-icon nzType="wallet" nzTheme="outline"></i>
+          <span>Flujo de Caja</span>
+        </li>
 
         <li *ngIf="isAdmin(['1','2','3','4','5'])" nz-submenu nzClose>
           <span title>
@@ -138,6 +142,18 @@
             <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="sucursales">
               <i nz-icon nzType="shop" nzTheme="outline"></i>
               <span>Sucursales</span>
+            </li>
+            <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="forma-pago">
+              <i nz-icon nzType="credit-card" nzTheme="outline"></i>
+              <span>Formas de Pago</span>
+            </li>
+            <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="cuenta-bancaria">
+              <i nz-icon nzType="bank" nzTheme="outline"></i>
+              <span>Cuentas Bancarias</span>
+            </li>
+            <li *ngIf="isAdmin(['1'])" nz-menu-item routerLink="tipo-cambio">
+              <i nz-icon nzType="dollar" nzTheme="outline"></i>
+              <span>Tipo de Cambio</span>
             </li>
             <li *ngIf="isAdmin(['1','2'])" nz-submenu nzClose>
               <span title>

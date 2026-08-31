@@ -7,7 +7,7 @@
       <div nz-col nzSpan="12" style="text-align:right">
         <div class="total-badge">
           <span class="total-label">Total a Pagar</span>
-          <span class="total-value">$us {{montoPagado | number:'1.2-2' }}</span>
+          <span class="total-value">{{monedaSimbolo}} {{montoPagado | number:'1.2-2' }}</span>
         </div>
       </div>
     </div>
@@ -24,7 +24,15 @@
         </div>
         <div class="info-row">
           <span class="info-label">Son:</span>
-          <span class="info-value">{{ordenNumner.Millones(montoPagado)}} {{getDecimals(montoPagado)}}/100 USD</span>
+          <span class="info-value">{{ordenNumner.Millones(montoPagado)}} {{getDecimals(montoPagado)}}/100 {{monedaTexto}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Moneda</span>
+          <span class="info-value">{{localOrdenPago && localOrdenPago.monedaPago === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)'}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tipo de Cambio (USD → Bs)</span>
+          <span class="info-value">{{localOrdenPago && localOrdenPago.tipoCambioValor ? (localOrdenPago.tipoCambioValor | number:'1.2-2') : '-'}}</span>
         </div>
       </div>
     </div>
@@ -43,7 +51,7 @@
             <td>{{data.nombreCliente}}</td>
             <td>{{getTime(data.fechaPago)}}</td>
             <td>{{data.pasajero}}</td>
-            <td style="text-align:right">$us {{data.montoAPagar.toFixed(2) | number:'1.2-2' }}</td>
+            <td style="text-align:right">{{monedaSimbolo}} {{data.montoAPagar.toFixed(2) | number:'1.2-2' }}</td>
           </tr>
         </tbody>
       </nz-table>

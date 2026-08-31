@@ -18,4 +18,5 @@ export interface OrdenPago {
   modify?: number;
   createDate?: string;
   modifyDate?: string;
+  tipoCambioValor?: number; // tasa USD->Bs usada al pagar esta OP puntual
 }

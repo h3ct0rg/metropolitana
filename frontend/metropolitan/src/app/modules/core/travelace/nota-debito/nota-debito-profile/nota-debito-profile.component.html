@@ -7,7 +7,7 @@
       <div nz-col nzSpan="12" style="text-align:right">
         <div class="total-badge">
           <span class="total-label">A pagar a Metropolitana</span>
-          <span class="total-value">$us {{resultSum | number:'1.2-2' }}</span>
+          <span class="total-value">{{monedaSimbolo}} {{(resultSum * factorConversion) | number:'1.2-2' }}</span>
         </div>
       </div>
     </div>
@@ -56,16 +56,24 @@
           <span class="info-label">Concepto</span>
           <span class="info-value">{{concepto}}</span>
         </div>
+        <div class="info-row">
+          <span class="info-label">Moneda</span>
+          <span class="info-value">{{notaDebito.monedaNota === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)'}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Tipo de Cambio (USD → Bs)</span>
+          <span class="info-value">{{notaDebito.tipoCambioValor ? (notaDebito.tipoCambioValor | number:'1.2-2') : '-'}}</span>
+        </div>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="10" class="liquidacion-col">
         <h4>Liquidación</h4>
         <div class="info-row">
           <span class="info-label">Monto al Pax</span>
-          <span class="info-value">$us {{alPax | number:'1.2-2' }}</span>
+          <span class="info-value">{{monedaSimbolo}} {{(alPax * factorConversion) | number:'1.2-2' }}</span>
         </div>
         <div class="info-row">
           <span class="info-label">Comisión Agencia</span>
-          <span class="info-value">$us {{comicionAgencia | number:'1.2-2' }}</span>
+          <span class="info-value">{{monedaSimbolo}} {{(comicionAgencia * factorConversion) | number:'1.2-2' }}</span>
         </div>
       </div>
     </div>

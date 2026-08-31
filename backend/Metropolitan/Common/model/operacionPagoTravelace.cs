@@ -26,6 +26,7 @@ namespace Common.model
         public int modify;
         public DateTime createDate;
         public DateTime modifyDate;
+        public double? tipoCambioValor; // tasa USD->Bs usada al pagar esta OP puntual.
 
         public operacionPagoTravelace()
         {
@@ -53,6 +54,7 @@ namespace Common.model
         public int modify;
         public DateTime createDate;
         public DateTime modifyDate;
+        public double? tipoCambioValor; // tasa propia de la ND, para convertir este renglón a Bs en el reporte.
 
         public operacionPagoTravelaceReport()
         {

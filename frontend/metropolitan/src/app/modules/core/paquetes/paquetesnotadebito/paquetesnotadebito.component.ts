@@ -16,6 +16,7 @@ import { IStorageKeys } from '../../../../shared/services/local-data/storage';
 import { toNumber } from 'ng-zorro-antd';
 import { Logs } from '../../../../shared/model/Logs';
 import { LogsService } from '../../services/Logs/logs.services';
+import { TipoCambioService } from '../../services/tipo-cambio.services';
 
 @Component({
   selector: 'app-paquetesnotadebito',
@@ -48,6 +49,7 @@ export class PaquetesnotadebitoComponent implements OnInit {
   public isDisabled: boolean;
   logs: Logs;
   isSaving: boolean = false;
+  private datosUsd: NotaDebitoCalculate = null;
 
   constructor(
     private notaDebitoServices: PaquetesNotaDebitoService,
@@ -59,7 +61,8 @@ export class PaquetesnotadebitoComponent implements OnInit {
     private ordenPagoService: PaqueteOrdenPagoService,
     private storage: StorageService,
     private router: Router,
-    private logService: LogsService
+    private logService: LogsService,
+    private tipoCambioService: TipoCambioService
   ) {
     this.cargado1 = false;
     this.cargado2 = false;
@@ -83,7 +86,15 @@ export class PaquetesnotadebitoComponent implements OnInit {
       sinCalculo: new FormControl(),
       aMetro: new FormControl(),
       netoLiquida: new FormControl(),
-      fechaVencimiento: new FormControl(null, [Validators.required])
+      fechaVencimiento: new FormControl(null, [Validators.required]),
+      monedaNota: new FormControl(1, [Validators.required]),
+      tipoCambioValor: new FormControl(null, [Validators.required, Validators.min(0.01)])
+    });
+
+    this.tipoCambioService.getActual().subscribe(result => {
+      if (result && !this.form.get('tipoCambioValor').value) {
+        this.form.get('tipoCambioValor').setValue(result.valor);
+      }
     });
 
     this.loadDropdowns();
@@ -143,6 +154,14 @@ export class PaquetesnotadebitoComponent implements OnInit {
           this.runRecalculate();
         });
 
+        this.form.get("monedaNota").valueChanges.subscribe(data => {
+          this.runRecalculate();
+        });
+
+        this.form.get("tipoCambioValor").valueChanges.subscribe(data => {
+          this.runRecalculate();
+        });
+
         this.form.get("operador").valueChanges.subscribe(data => {
           //this.counterService.getCounterClient(data).subscribe(result => {
           //  this.counters = result;
@@ -168,14 +187,23 @@ export class PaquetesnotadebitoComponent implements OnInit {
       this.form.get("Voucher").setValue(result.voucher);
       this.form.get("counter").setValue(result.codCounter.toString());
       this.form.get("Concepto").setValue(result.concepto);
-      this.form.get("montoNeto").setValue(result.montoNeto.toFixed(2));
-      this.form.get("alPax").setValue(result.total.toFixed(2));
-      this.form.get("comicionAgencia").setValue(result.totalAgencia.toFixed(2));
-      this.form.get("comicionCounter").setValue(result.totalCounter.toFixed(2));
-      this.form.get("comicionMetro").setValue(result.totalMetropolitana.toFixed(2));
-      this.form.get("aMetro").setValue(result.totalArgentina.toFixed(2));
-      this.form.get("netoLiquida").setValue(result.total.toFixed(2));
+      this.datosUsd = {
+        codCliente: result.codCliente, codCounter: result.codCounter, codOperador: result.codOperador,
+        codTipoCambio: 1, typeCounter: 0,
+        montoNeto: result.montoNeto, total: result.total, totalAgencia: result.totalAgencia,
+        totalArgentina: result.totalArgentina, totalCounter: result.totalCounter, totalMetropolitana: result.totalMetropolitana
+      };
+      const fMostrar = result.monedaNota === 2 && result.tipoCambioValor ? result.tipoCambioValor : 1;
+      this.form.get("montoNeto").setValue((result.montoNeto * fMostrar).toFixed(2));
+      this.form.get("alPax").setValue((result.total * fMostrar).toFixed(2));
+      this.form.get("comicionAgencia").setValue((result.totalAgencia * fMostrar).toFixed(2));
+      this.form.get("comicionCounter").setValue((result.totalCounter * fMostrar).toFixed(2));
+      this.form.get("comicionMetro").setValue((result.totalMetropolitana * fMostrar).toFixed(2));
+      this.form.get("aMetro").setValue((result.totalArgentina * fMostrar).toFixed(2));
+      this.form.get("netoLiquida").setValue((result.total * fMostrar).toFixed(2));
       this.form.get("fechaVencimiento").setValue(result.fechaVencimiento);
+      this.form.get("monedaNota").setValue(result.monedaNota ? result.monedaNota : 1);
+      this.form.get("tipoCambioValor").setValue(result.tipoCambioValor ? result.tipoCambioValor : this.form.get("tipoCambioValor").value);
       this.waitAction = false;
 
 
@@ -191,6 +219,14 @@ export class PaquetesnotadebitoComponent implements OnInit {
         this.runRecalculate();
       });
 
+      this.form.get("monedaNota").valueChanges.subscribe(data => {
+        this.runRecalculate();
+      });
+
+      this.form.get("tipoCambioValor").valueChanges.subscribe(data => {
+        this.runRecalculate();
+      });
+
       this.form.get("operador").valueChanges.subscribe(data => {
         //this.counterService.getCounterClient(data).subscribe(result => {
         //  this.counters = result;
@@ -200,9 +236,20 @@ export class PaquetesnotadebitoComponent implements OnInit {
     });
   }
 
+  private factorMoneda(): number {
+    return this.form.get('monedaNota').value === 2 ? (this.form.get('tipoCambioValor').value || 1) : 1;
+  }
+
+  private aUsd(valorEnMoneda: number): number {
+    const valor = parseFloat(valorEnMoneda as any) || 0;
+    const f = this.factorMoneda();
+    return f ? valor / f : valor;
+  }
+
   private runRecalculate() {
     const localName = this.form.get("Servicio").value;
-    if (localName != undefined) {
+    const montoNetoRaw = this.form.get("montoNeto").value;
+    if (localName != undefined && montoNetoRaw !== null && montoNetoRaw !== '' && parseFloat(montoNetoRaw) > 0) {
       const typec = this.selectTypeCounterPercentage(localName);
       let codC = this.form.get("counter").value;
       if (codC == null) {
@@ -214,7 +261,7 @@ export class PaquetesnotadebitoComponent implements OnInit {
         codOperador: this.form.get("operador").value,
         codTipoCambio: 1,
         typeCounter: typec,
-        montoNeto: this.form.get("montoNeto").value,
+        montoNeto: this.aUsd(this.form.get("montoNeto").value),
         total: 0,
         totalAgencia: 0,
         totalArgentina: 0,
@@ -228,12 +275,14 @@ export class PaquetesnotadebitoComponent implements OnInit {
 
   calculateData() {
     this.notaDebitoCalculateServices.getNotaDebitoCalculate(this.datito).subscribe(data => {
-      this.form.get("alPax").setValue(data.total.toFixed(2));
-      this.form.get("comicionAgencia").setValue(data.totalAgencia.toFixed(2));
-      this.form.get("comicionCounter").setValue(data.totalCounter.toFixed(2));
-      this.form.get("comicionMetro").setValue(data.totalMetropolitana.toFixed(2));
-      this.form.get("aMetro").setValue(data.totalArgentina.toFixed(2));
-      this.form.get("netoLiquida").setValue(data.total.toFixed(2));
+      this.datosUsd = data;
+      const f = this.factorMoneda();
+      this.form.get("alPax").setValue((data.total * f).toFixed(2));
+      this.form.get("comicionAgencia").setValue((data.totalAgencia * f).toFixed(2));
+      this.form.get("comicionCounter").setValue((data.totalCounter * f).toFixed(2));
+      this.form.get("comicionMetro").setValue((data.totalMetropolitana * f).toFixed(2));
+      this.form.get("aMetro").setValue((data.totalArgentina * f).toFixed(2));
+      this.form.get("netoLiquida").setValue((data.total * f).toFixed(2));
     });
   }
 
@@ -309,6 +358,14 @@ export class PaquetesnotadebitoComponent implements OnInit {
       if (actualCount == null) {
         actualCount = 0;
       }
+
+      const montoNetoUsd = this.aUsd(this.form.get("montoNeto").value);
+      const totalUsd = this.isDisabled ? this.aUsd(this.form.get("netoLiquida").value) : (this.datosUsd ? this.datosUsd.total : montoNetoUsd);
+      const totalAgenciaUsd = this.isDisabled ? this.aUsd(this.form.get("comicionAgencia").value) : (this.datosUsd ? this.datosUsd.totalAgencia : 0);
+      const totalArgentinaUsd = this.isDisabled ? this.aUsd(this.form.get("aMetro").value) : (this.datosUsd ? this.datosUsd.totalArgentina : 0);
+      const totalCounterUsd = this.isDisabled ? this.aUsd(this.form.get("comicionCounter").value) : (this.datosUsd ? this.datosUsd.totalCounter : 0);
+      const totalMetropolitanaUsd = this.isDisabled ? this.aUsd(this.form.get("comicionMetro").value) : (this.datosUsd ? this.datosUsd.totalMetropolitana : 0);
+
       this.notaDev = {
         estado: this.notaDev === undefined ? 0 : this.notaDev.estado,
         codCliente: this.form.get("clienteNotaVenta").value,
@@ -323,18 +380,20 @@ export class PaquetesnotadebitoComponent implements OnInit {
         modify: 1,
         idSucursal: this.getActualSucursal(),
         modifyDate: this.fechaRegistro,
-        montoNeto: this.form.get("montoNeto").value,
+        montoNeto: montoNetoUsd,
         pasajero: this.form.get("Pasajero").value,
         servicio: this.form.get("Servicio").value,
-        total: this.form.get("netoLiquida").value,
-        totalAgencia: this.form.get("comicionAgencia").value,
-        totalArgentina: this.form.get("aMetro").value,
-        totalCounter: this.form.get("comicionCounter").value,
-        totalMetropolitana: this.form.get("comicionMetro").value,
+        total: totalUsd,
+        totalAgencia: totalAgenciaUsd,
+        totalArgentina: totalArgentinaUsd,
+        totalCounter: totalCounterUsd,
+        totalMetropolitana: totalMetropolitanaUsd,
         voucher: this.form.get("Voucher").value,
         id: toNumber(this.notaDebitoID),
         isEspecial: 0,
-        codigoUnico: this.codunic
+        codigoUnico: this.codunic,
+        monedaNota: this.form.get("monedaNota").value,
+        tipoCambioValor: this.form.get("tipoCambioValor").value
       }
       if (this.isEdit) {
         this.notaDebitoServices.updateNotaDebito(this.notaDev).subscribe(data => {
@@ -356,7 +415,8 @@ export class PaquetesnotadebitoComponent implements OnInit {
             fechaPago: "1/1/2020 01:01:00",
             formaPago: 0,
             numeroNotaDebito: data["codigoUnico"],
-            monedaPago: 0,
+            monedaPago: this.notaDev.monedaNota,
+            tipoCambioValor: this.notaDev.tipoCambioValor,
             montoAPagar: 0,
             formaPagoDescripcion: "",
             numeroPago: -1,

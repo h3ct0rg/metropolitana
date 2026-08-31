@@ -12,6 +12,10 @@ import { NotaDebitoService } from '../../../services/nota-debito.services';
 import { ClientService } from '../../../services/clientes.service';
 import { OrdenPago } from '../../../../../shared/model/orden-pago';
 import { UsuarioService } from '../../../services/usuario.service';
+import { FormaPagoService } from '../../../services/forma-pago.services';
+import { CuentaBancariaService } from '../../../services/cuenta-bancaria.services';
+import { FormaPago } from '../../../../../shared/model/forma-pago';
+import { CuentaBancaria } from '../../../../../shared/model/cuenta-bancaria';
 
 
 @Component({
@@ -37,26 +41,8 @@ export class OrdenPagoNotaComponent implements OnInit {
 
   public form: FormGroup;
 
-  optionsMetodoPago = [
-    { id: "1", name: "Efectivo" },
-    { id: "2", name: "Tarjeta Credito/Debito" },
-    { id: "3", name: "Cheque" },
-    { id: "4", name: "Cuenta de Banco" },
-    { id: "5", name: "WE TRAVEL" }
-  ];
-
-  cuentas = [
-    { id: "1", name: "BANCO BISA CUENTA 11 EN DOLARES METRO" },
-    { id: "2", name: "BANCO BISA CUENTA 19 EN BOLIVIANOS METRO" },
-    { id: "3", name: "BANCO GANADERO CUENTA 39 EN DOLARES LILIANA" },
-    { id: "4", name: "BANCO NACIONAL CUENTA 73 EN DOLARES METRO" },
-    { id: "5", name: "BCP CUENTA 17 EN BOLIVIANOS ANDREA" },
-    { id: "6", name: "BCP CUENTA 301 EN BOLIVIANOS ANDREA" },
-    { id: "7", name: "GANADERO CUENTA 361 BOLIVIANOS Lilian" },
-    { id: "8", name: "BANCO MERCANTIL SANTA CRUZ CUENTA 252 BOLIVIANOS Liliana " },
-    { id: "9", name: "BANCO UNION CUENTA 843 BOLIVIANOS Lilian Fiordoliva" },
-    { id: "10", name: "BANCO BISA CUENTA 4025 EN BS ANDREA" }
-  ]
+  optionsMetodoPago: FormaPago[] = [];
+  cuentas: CuentaBancaria[] = [];
 
   constructor(
     private storage: StorageService,
@@ -64,11 +50,21 @@ export class OrdenPagoNotaComponent implements OnInit {
     private ordenPagoService: OrdenPagoService,
     private notaDebitoService: NotaDebitoService,
     private clienteService: ClientService,
-    private userService: UsuarioService
+    private userService: UsuarioService,
+    private formaPagoService: FormaPagoService,
+    private cuentaBancariaService: CuentaBancariaService
   ) {
     this.form = new FormGroup({});
     this.ordenNumner = new changeNumbertoLetter();
     this.fechaRegistro = new Date().toDateString();
+    this.formaPagoService.getFormaPagoList().subscribe(result => {
+      this.optionsMetodoPago = result;
+      this.getFormaPago();
+    });
+    this.cuentaBancariaService.getCuentaBancariaList().subscribe(result => {
+      this.cuentas = result;
+      this.getFormaPago();
+    });
   }
 
   ngOnInit() {
@@ -100,8 +96,11 @@ export class OrdenPagoNotaComponent implements OnInit {
         });
         this.numeroOrdenPago = result.numeroPago.toString();
         this.ordenPagoService.getOrdenPagoByCodProfile(result.codProfile).subscribe(resultCodProfile => {
+          // Los montos se guardan siempre en USD; se convierten solo para
+          // mostrar el recibo en la moneda real en que se pagó esta OP.
+          const factorRecibo = result.monedaPago === 2 && result.tipoCambioValor ? result.tipoCambioValor : 1;
           let calcular = 0;
-          resultCodProfile.forEach(key => {            
+          resultCodProfile.forEach(key => {
             this.listOPN += " " + key.numeroPago + ",";
             this.notaDebitoService.getNotaDebitoByCodigoUnico(key.numeroNotaDebito, key.idSucursal).subscribe(NDResult => {
               key['nombreCliente'] = NDResult[0]['codigoUnico'];
@@ -110,9 +109,10 @@ export class OrdenPagoNotaComponent implements OnInit {
             })
 
             calcular += key.montoAPagar;
+            key.montoAPagar = key.montoAPagar * factorRecibo;
           });
           this.listOPN = this.listOPN.substring(0, this.listOPN.length - 1)+" ";
-          this.montoPagado = calcular.toFixed(2);
+          this.montoPagado = (calcular * factorRecibo).toFixed(2);
           this.listOfData = resultCodProfile;
           this.getFormaPago();
         });
@@ -135,12 +135,24 @@ export class OrdenPagoNotaComponent implements OnInit {
     this.generarPDF();
   }
 
+  get monedaSimbolo(): string {
+    return this.localOrdenPago && this.localOrdenPago.monedaPago === 2 ? 'Bs.' : '$us';
+  }
+
+  get monedaTexto(): string {
+    return this.localOrdenPago && this.localOrdenPago.monedaPago === 2 ? 'BOLIVIANOS' : 'USD';
+  }
+
   getFormaPago() {
-    let resultMetodoPago = this.optionsMetodoPago.find(item => item.id == this.formaPagoId.toString());
+    if (this.formaPagoId == undefined) { return; }
+    let resultMetodoPago = this.optionsMetodoPago.find(item => item.id.toString() == this.formaPagoId.toString());
     if (resultMetodoPago) {
-      this.formaPagoText = resultMetodoPago['name'];
-      if (this.formaPagoId == 4) {
-        this.formaPagoText += " - " + this.cuentas.find(item => parseInt(item.id) == parseInt(this.localOrdenPago.numeroTarjeta)).name;
+      this.formaPagoText = resultMetodoPago.nombre;
+      if (this.formaPagoId == 4 && this.localOrdenPago) {
+        const cuenta = this.cuentas.find(item => item.id.toString() == this.localOrdenPago.numeroTarjeta.toString());
+        if (cuenta) {
+          this.formaPagoText += " - " + cuenta.nombre;
+        }
       }
     }
   }

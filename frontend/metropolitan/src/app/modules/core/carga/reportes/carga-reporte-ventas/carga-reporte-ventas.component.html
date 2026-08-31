@@ -35,6 +35,17 @@
     </div>
   </div>
   <div nz-row>
+    <div nz-col [nzSpan]="7">
+      <label nz-checkbox [ngModel]="form.get('monedaReporte').value === 2"
+             (ngModelChange)="form.get('monedaReporte').setValue($event ? 2 : 1)"
+             [ngModelOptions]="{standalone: true}">Mostrar en Bolivianos</label>
+    </div>
+    <div nz-col [nzSpan]="10" *ngIf="form.get('monedaReporte').value === 2 && faltanTasasLegacy">
+      <nz-form-label>Tasa manual de respaldo (para filas sin tipo de cambio guardado)</nz-form-label>
+      <input nz-input type="number" step="0.01" [(ngModel)]="tasaManualRespaldo" [ngModelOptions]="{standalone: true}">
+    </div>
+  </div>
+  <div nz-row>
     <div nz-col nzSpan="24">
       <button nz-button nzType="primary" (click)="generateNote()">Reporte de Ventas</button>
     </div>

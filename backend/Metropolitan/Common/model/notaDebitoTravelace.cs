@@ -34,6 +34,8 @@ namespace Common.model
         public DateTime createDate;
         public DateTime modifyDate;
         public int estadoEditado;
+        public int? monedaNota; // 1 = USD, 2 = BS. null = legacy, mostrar como USD.
+        public double? tipoCambioValor; // tasa USD->Bs usada al crear/editar esta ND.
     }
 
     public class notaDebitoListTable
@@ -46,5 +48,7 @@ namespace Common.model
         public double total;
         public int estado;
         public int codigoUnico;
+        public int? monedaNota;
+        public double? tipoCambioValor;
     }
 }

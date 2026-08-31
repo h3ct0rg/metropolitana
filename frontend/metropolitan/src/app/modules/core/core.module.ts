@@ -27,6 +27,10 @@ import { ListaOrdenPagoReportService } from './services/orden-pago-list-report.s
 import { StorageService } from '../../shared/services/local-data/storage.service';
 import { SucursalService } from './services/sucursal.services';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { FormaPagoService } from './services/forma-pago.services';
+import { CuentaBancariaService } from './services/cuenta-bancaria.services';
+import { TipoCambioService } from './services/tipo-cambio.services';
+import { FlujoCajaService } from './services/flujo-caja.services';
 
 
 @NgModule({
@@ -48,7 +52,8 @@ import { NzAvatarModule } from 'ng-zorro-antd/avatar';
     ListaOrdenPagoPendienteService,
     OperadorService, NotaDebitoService, CounterService, ClientService,
     ProveedorService, AuthGuardService, JwtModule, UsuarioService,
-    ListaOrdenPagoReportService, StorageService, SucursalService]
+    ListaOrdenPagoReportService, StorageService, SucursalService,
+    FormaPagoService, CuentaBancariaService, TipoCambioService, FlujoCajaService]
 })
 export class CoreModule { }
 

@@ -53,7 +53,7 @@ export class OrdenPagoEditComponent implements OnInit {
           this.form.get("fechaRegistro").setValue(data.fechaPago);
           this.form.get("numeroOrden").setValue(data.numeroPago);
           this.form.get("montoPagado").setValue(data.montoAPagar);
-          this.form.get("montoPagadoBs").setValue(data.montoAPagar*6.96);
+          this.form.get("montoPagadoBs").setValue(data.montoAPagar * (data.tipoCambioValor || 6.96));
           this.form.get("fechaRegistro").disable({ emitEvent: false, onlySelf: false });
           this.form.get("numeroOrden").disable({ emitEvent: false, onlySelf: false });
           this.form.get("montoPagado").disable({ emitEvent: false, onlySelf: false });

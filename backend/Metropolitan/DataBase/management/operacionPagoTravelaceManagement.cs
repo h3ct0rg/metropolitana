@@ -41,6 +41,7 @@ namespace DataBase.management
                             ordenPago.pagado = reader.GetBoolean(11);
                             ordenPago.codProfile = reader.GetString(12);
                             ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 ordenPago.createBy = reader.GetInt32(14);
@@ -300,6 +301,7 @@ namespace DataBase.management
                             ordenPago.pagado = reader.GetBoolean(11);
                             ordenPago.codProfile = reader.GetString(12);
                             ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 ordenPago.createBy = reader.GetInt32(14);
@@ -352,6 +354,7 @@ namespace DataBase.management
                             ordenPago.pagado = reader.GetBoolean(11);
                             ordenPago.codProfile = reader.GetString(12);
                             ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 ordenPago.createBy = reader.GetInt32(14);
@@ -403,6 +406,7 @@ namespace DataBase.management
                             ordenPago.pagado = reader.GetBoolean(11);
                             ordenPago.codProfile = reader.GetString(12);
                             ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 ordenPago.createBy = reader.GetInt32(14);
@@ -454,6 +458,7 @@ namespace DataBase.management
                             ordenPago.pagado = reader.GetBoolean(11);
                             ordenPago.codProfile = reader.GetString(12);
                             ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             try
                             {
                                 ordenPago.createBy = reader.GetInt32(14);
@@ -481,30 +486,67 @@ namespace DataBase.management
             {
                 notaD.numeroPago = generateCodigoUnico(notaD.idSucursal);
             }
-            string query = string.Format(@"Insert into travelOrdenPago 
+
+            // formaPago=0 es el sentinel "aún no elegida" que se usa al crear la OP
+            // pendiente junto con la ND (recién se elige la forma de pago real al
+            // pagar, vía updateOrdenPagoTravelace) -- no validar contra el catálogo
+            // en ese caso.
+            if (notaD.formaPago > 0)
+            {
+                formaPagoManagement formaPagoGestor = new formaPagoManagement();
+                formaPago fp = formaPagoGestor.getFormaPago(notaD.formaPago);
+                if (fp == null || !fp.activo)
+                {
+                    throw new Exception("La forma de pago seleccionada no está disponible.");
+                }
+            }
+
+            string query = string.Format(@"Insert into travelOrdenPago
                                         (fechaPago,montoAPagar,monedaPago,saldoDeudor,numeroPago,
                                         formaPago,numeroTarjeta,concepto,anulado,idNotaDebito,pagado,codProfile,idSucursal,
-                                        createdBy,createDate)
+                                        createdBy,createDate,tipoCambioValor)
                                         values ('{0}','{1}','{2}','{3}','{4}',
                                                 '{5}','{6}','{7}','{8}','{9}',
-                                                '{10}','{11}','{12}','{13}','{14}')",
+                                                '{10}','{11}','{12}','{13}','{14}',{15})",
                                         notaD.fechaPago.ToString("MM/dd/yyyy"), notaD.montoAPagar, notaD.monedaPago, notaD.saldoDeudor, notaD.numeroPago,
                                         notaD.formaPago, notaD.numeroTarjeta, notaD.concepto, notaD.anulado, notaD.numeroNotaDebito, notaD.pagado, notaD.codProfile, notaD.idSucursal,
-                                        notaD.createBy, notaD.createDate.ToString("MM/dd/yyyy"));
+                                        notaD.createBy, notaD.createDate.ToString("MM/dd/yyyy"),
+                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
             return base.insertUpdateExecute(query);
         }
 
         public int updateOrdenPagoTravelace(operacionPagoTravelace notaD)
         {
-            string query = string.Format(@"Update travelOrdenPago 
-                                        set 
+            operacionPagoTravelace actual = getOrdenPago(notaD.id);
+            if (actual != null && actual.pagado)
+            {
+                if (notaD.monedaPago != actual.monedaPago || notaD.tipoCambioValor != actual.tipoCambioValor || notaD.formaPago != actual.formaPago)
+                {
+                    throw new Exception("No se puede modificar la moneda, el tipo de cambio ni la forma de pago de una Orden de Pago ya pagada.");
+                }
+            }
+            else if (notaD.formaPago > 0)
+            {
+                // formaPago=0 es el sentinel "aún no elegida" (p.ej. al reguardar la
+                // ND antes de que se pague la OP) -- no validar contra el catálogo.
+                formaPagoManagement formaPagoGestor = new formaPagoManagement();
+                formaPago fp = formaPagoGestor.getFormaPago(notaD.formaPago);
+                if (fp == null || !fp.activo)
+                {
+                    throw new Exception("La forma de pago seleccionada no está disponible.");
+                }
+            }
+
+            string query = string.Format(@"Update travelOrdenPago
+                                        set
                                         fechaPago='{0}',montoAPagar='{1}',monedaPago='{2}',saldoDeudor='{3}',
                                         formaPago='{4}',numeroTarjeta='{5}',concepto='{6}',anulado='{7}',pagado='{8}',codProfile='{9}',idSucursal='{10}',
-                                        modifyBy='{11}',modifyDate='{12}'
+                                        modifyBy='{11}',modifyDate='{12}',tipoCambioValor={14}
                                         where id={13}",
                                         notaD.fechaPago, notaD.montoAPagar, notaD.monedaPago, notaD.saldoDeudor,
                                         notaD.formaPago, notaD.numeroTarjeta, notaD.concepto, notaD.anulado, notaD.pagado, notaD.codProfile, notaD.idSucursal,
-                                        notaD.createBy, DateTime.Now, notaD.id);
+                                        notaD.createBy, DateTime.Now, notaD.id,
+                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
             return insertUpdateExecute(query);
         }
         public int generateCodigoUnico(int idSucursal)
@@ -585,13 +627,13 @@ namespace DataBase.management
             {
                 if (sucursal == -1)
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia)
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
                                             FROM travelOrdenPago as op, travelaceNotaDebito as nd, clients as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false' and cl.id = '{0}'", clientID);
                 }
                 else
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia)
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
                                             FROM travelOrdenPago as op, travelaceNotaDebito as nd, clients as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false' and cl.id = '{0}' and nd.idSucursal = '{1}' and op.idSucursal='{1}'", clientID, sucursal);
                 }
@@ -601,13 +643,13 @@ namespace DataBase.management
             {
                 if (sucursal == -1)
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia)
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
                                             FROM travelOrdenPago as op, travelaceNotaDebito as nd, clients as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false'");
                 }
                 else
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia)
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
                                             FROM travelOrdenPago as op, travelaceNotaDebito as nd, clients as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false' and nd.idSucursal = '{0}' and op.idSucursal='{0}'", sucursal);
                 }
@@ -627,6 +669,8 @@ namespace DataBase.management
                             listaOrdenPagos.nombreCliente = reader.GetString(3);
                             listaOrdenPagos.ordenMontoPagar = reader.GetDouble(4);
                             listaOrdenPagos.saldoDeudor = reader.GetDouble(5);
+                            listaOrdenPagos.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
+                            listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -654,7 +698,9 @@ namespace DataBase.management
                     idOrden = r.First().idOrden,
                     nombreCliente = r.First().nombreCliente,
                     ordenMontoPagar = r.Sum(f => f.ordenMontoPagar),
-                    saldoDeudor = r.Sum(f => f.saldoDeudor)
+                    saldoDeudor = r.Sum(f => f.saldoDeudor),
+                    monedaNota = r.First().monedaNota,
+                    tipoCambioValor = r.First().tipoCambioValor
                 }).ToList();
 
             return result;
@@ -670,6 +716,8 @@ namespace DataBase.management
                     idNota = r.First().idNota,
                     idOrden = r.First().idOrden,
                     nombreCliente = r.First().nombreCliente,
+                    monedaNota = r.First().monedaNota,
+                    tipoCambioValor = r.First().tipoCambioValor,
                     ordenMontoPagar = r.Sum(f => f.ordenMontoPagar),
                     saldoDeudor = r.Sum(f => f.saldoDeudor)
                 }).ToList();
@@ -687,7 +735,7 @@ namespace DataBase.management
             string query = "";
 
             query = string.Format(@"
-                                    select ND.codigoUnicoNota, OP.numeroPago, ND.codCliente, ND.pasajero, ND.servicios, ND.codCounter, ND.montoNeto,ND.totalArgentina,ND.totalCounter,(ND.total-ND.totalAgencia),OP.fechaPago,OP.formaPago
+                                    select ND.codigoUnicoNota, OP.numeroPago, ND.codCliente, ND.pasajero, ND.servicios, ND.codCounter, ND.montoNeto,ND.totalArgentina,ND.totalCounter,(ND.total-ND.totalAgencia),OP.fechaPago,OP.formaPago,ND.tipoCambioValor
                                     from travelaceNotaDebito as ND, travelOrdenPago as OP where ND.codigoUnicoNota = OP.idNotaDebito
                                     and '{0}' > OP.fechaPago and OP.fechaPago > '{1}'
                                     and OP.pagado='1'
@@ -713,6 +761,7 @@ namespace DataBase.management
                             listaOrdenPagos.totalAgencia = reader.GetDouble(9);
                             listaOrdenPagos.fechaPago = reader.GetDateTime(10);
                             listaOrdenPagos.formaPago = reader.GetInt32(11);
+                            listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -919,10 +968,10 @@ from travelaceNotaDebito as ND, operador as PR, clients as CL
             string query = "";
 
             query = string.Format(@"
-                                    select ND.codigoUnicoNota, OP.numeroPago, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios, ND.montoNeto,ND.totalArgentina,ND.totalCounter,ND.totalAgencia,OP.fechaPago,OP.formaPago, CL.nombre
-                                    from travelaceNotaDebito as ND, travelOrdenPago as OP 
+                                    select ND.codigoUnicoNota, OP.numeroPago, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios, ND.montoNeto,ND.totalArgentina,ND.totalCounter,ND.totalAgencia,OP.fechaPago,OP.formaPago, CL.nombre, ND.tipoCambioValor
+                                    from travelaceNotaDebito as ND, travelOrdenPago as OP
 									, operador as PR, clients as CL
-									where 
+									where
 									ND.codigoUnicoNota = OP.idNotaDebito
 									and PR.id=ND.codOperador
                                     and ND.codCliente = CL.id
@@ -956,6 +1005,7 @@ from travelaceNotaDebito as ND, operador as PR, clients as CL
                             listaOrdenPagos.fechaPago = reader.GetDateTime(11);
                             listaOrdenPagos.formaPago = reader.GetInt32(12);
                             listaOrdenPagos.nombreAgencia = reader.GetString(13);
+                            listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }

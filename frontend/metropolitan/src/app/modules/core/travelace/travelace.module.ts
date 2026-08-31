@@ -24,6 +24,8 @@ import { NzSpinModule } from 'ng-zorro-antd/spin';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzRadioModule } from 'ng-zorro-antd/radio';
+import { NzTagModule } from 'ng-zorro-antd/tag';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 import { OrdenPagoReporteComponent } from './orden-pago-reporte/orden-pago-reporte.component';
 import { OrdenPagoEditComponent } from './orden-pago/orden-pago-edit/orden-pago-edit.component';
@@ -47,7 +49,7 @@ import { ReporteVentasFiltradasComponent } from './reporte-ventas-filtradas/repo
     ReporteVentasFiltradasComponent],
   imports: [NzModalModule, NzRadioModule, NzCheckboxModule, NzSpinModule, NzDatePickerModule, NzUploadModule, NzSelectModule, NzAutocompleteModule,
     CommonModule, TravelaceRoutingModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule
-    , FormsModule, ReactiveFormsModule, NzInputModule],
+    , FormsModule, ReactiveFormsModule, NzInputModule, NzTagModule, NzIconModule],
   exports: [NotaDebitoListComponent, OrdenPagoListComponent, NotaDebitoReporteListComponent, OrdenPagoNotaComponent]
 })
 export class TravelaceModule { }

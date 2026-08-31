@@ -18,6 +18,8 @@ namespace Common.model
         public double totalCounter;
         public double totalMetropolitana;
         public double total;
-        public double montoNeto;        
+        public double montoNeto;
+        public int? monedaNota;
+        public double? tipoCambioValor;
     }
 }

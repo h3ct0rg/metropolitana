@@ -71,6 +71,10 @@
     <Compile Include="model\Logs.cs" />
     <Compile Include="model\sucursales.cs" />
     <Compile Include="model\clients.cs" />
+    <Compile Include="model\formaPago.cs" />
+    <Compile Include="model\cuentaBancaria.cs" />
+    <Compile Include="model\tipoCambioConfig.cs" />
+    <Compile Include="model\flujoCaja.cs" />
     <Compile Include="model\calcularNotaDebitoTravelace.cs" />
     <Compile Include="model\contadorNota.cs" />
     <Compile Include="model\NotaDebitoFilter.cs" />
