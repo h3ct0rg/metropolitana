@@ -100,7 +100,7 @@
       <div id="table_{{ group.items[0].nombreOperador }}">
         <h2>{{ group.items[0].nombreOperador }}</h2>
         <!--<nz-table table border="1" cellpadding="5" cellspacing="0">-->
-        <nz-table table border="1" [nzShowPagination]="false" #basicTable [nzData]="listReportAnulacion">
+        <nz-table table border="1" [nzShowPagination]="false" #basicTable [nzData]="group.items">
           <thead>
             <tr>
               <th>Voucher</th>
@@ -216,9 +216,11 @@
       </nz-table>
   </div>
 
-
-
-  <button (click)="downloadPDF2()">Descargar PDF</button>
-
+  <div class="form-actions">
+    <button nz-button nzType="primary" (click)="downloadPDF2()">
+      <i nz-icon nzType="file-pdf"></i>
+      Descargar PDF
+    </button>
+  </div>
 
 </form>

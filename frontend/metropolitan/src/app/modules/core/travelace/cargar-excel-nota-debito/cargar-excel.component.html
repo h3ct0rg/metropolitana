@@ -1,82 +1,91 @@
+<div class="page-header">
+  <h2>Cargar Excel</h2>
+</div>
+
 <nz-spin [nzSpinning]="waitAction">
-  <form nz-form [formGroup]="form">
-    <h2>Cargar Excel</h2>
-    <div nz-row>
-      <div nz-col nzSpan="6" nzOffset="1">
-        <nz-form-item>
-          <nz-form-label nzRequired>Clientes: </nz-form-label>
-          <nz-form-control>
-            <nz-select nzShowSearch nzSize="default" nzPlaceHolder="Elije un Cliente" formControlName="codCliente">
-              <nz-option *ngFor="let cliente of clientes" [nzValue]="cliente.id" [nzLabel]="cliente.name"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
+  <div class="glass-card form-card">
+    <form nz-form [formGroup]="form">
+      <h4>Datos Generales</h4>
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzXs]="24" [nzMd]="8">
+          <nz-form-item>
+            <nz-form-label nzRequired>Cliente</nz-form-label>
+            <nz-form-control>
+              <nz-select style="width:100%" nzShowSearch nzPlaceHolder="Elije un Cliente" formControlName="codCliente">
+                <nz-option *ngFor="let cliente of clientes" [nzValue]="cliente.id" [nzLabel]="cliente.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="8">
+          <nz-form-item>
+            <nz-form-label nzRequired>Fecha de Registro</nz-form-label>
+            <nz-form-control>
+              <nz-date-picker style="width:100%" ngModelChange="onChange()" formControlName="fechaRegistro" nzPlaceHolder="Fecha Registro"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-    </div>
 
-    <div nz-row>
-      <div nz-col nzSpan="6" nzOffset="1">
-        <nz-form-item>
-          <nz-form-label>Operador Normal: </nz-form-label>
-          <nz-form-control>
-            <nz-select nzShowSearch nzSize="default" nzPlaceHolder="Elije un Operador" formControlName="codOperadorNormal">
-              <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
+      <h4>Operadores</h4>
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzXs]="24" [nzMd]="6">
+          <nz-form-item>
+            <nz-form-label>Operador Normal</nz-form-label>
+            <nz-form-control>
+              <nz-select style="width:100%" nzShowSearch nzAllowClear nzPlaceHolder="Elije un Operador" formControlName="codOperadorNormal">
+                <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="6">
+          <nz-form-item>
+            <nz-form-label>Operador Low Cost</nz-form-label>
+            <nz-form-control>
+              <nz-select style="width:100%" nzShowSearch nzAllowClear nzPlaceHolder="Elije un Operador" formControlName="codOperadorLowCost">
+                <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="6">
+          <nz-form-item>
+            <nz-form-label>Operador AMP</nz-form-label>
+            <nz-form-control>
+              <nz-select style="width:100%" nzShowSearch nzAllowClear nzPlaceHolder="Elije un Operador" formControlName="codOperadorAMP">
+                <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div nz-col [nzXs]="24" [nzMd]="6">
+          <nz-form-item>
+            <nz-form-label>Operador Nacional</nz-form-label>
+            <nz-form-control>
+              <nz-select style="width:100%" nzShowSearch nzAllowClear nzPlaceHolder="Elije un Operador" formControlName="codOperadorNacional">
+                <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
-      <div nz-col nzSpan="6" nzOffset="1">
-        <nz-form-item>
-          <nz-form-label>Operador Low: </nz-form-label>
-          <nz-form-control>
-            <nz-select nzShowSearch nzSize="default" nzPlaceHolder="Elije un Operador" formControlName="codOperadorLowCost">
-              <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
-    <div nz-row>
-      <div nz-col nzSpan="6" nzOffset="1">
-        <nz-form-item>
-          <nz-form-label>Operador AMP: </nz-form-label>
-          <nz-form-control>
-            <nz-select nzShowSearch nzSize="default" nzPlaceHolder="Elije un Operador" formControlName="codOperadorAMP">
-              <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-      <div nz-col nzSpan="6" nzOffset="1">
-        <nz-form-item>
-          <nz-form-label>Operador Nacional: </nz-form-label>
-          <nz-form-control>
-            <nz-select nzShowSearch nzSize="default" nzPlaceHolder="Elije un Operador" formControlName="codOperadorNacional">
-              <nz-option *ngFor="let operador of operadores" [nzValue]="operador.id" [nzLabel]="operador.name"></nz-option>
-            </nz-select>
-          </nz-form-control>
-        </nz-form-item>
-      </div>
-    </div>
 
-    <nz-form-item>
-      <nz-form-label nzRequired>Fecha de Registro: </nz-form-label>
-      <nz-form-control>
-        <nz-date-picker ngModelChange="onChange()" formControlName="fechaRegistro" nzPlaceHolder="Fecha Registro"></nz-date-picker>
-      </nz-form-control>
-    </nz-form-item>
+      <h4>Archivo</h4>
+      <nz-upload class="upload-dragger" nzType="drag" [(nzFileList)]="fileList" [nzBeforeUpload]="beforeUpload">
+        <p class="ant-upload-drag-icon">
+          <i nz-icon nzType="file-excel" nzTheme="outline"></i>
+        </p>
+        <p class="ant-upload-text">Haz clic o arrastra aquí el archivo Excel</p>
+        <p class="ant-upload-hint">Se admite un solo archivo (.xls, .xlsx)</p>
+      </nz-upload>
 
-
-    <nz-upload [(nzFileList)]="fileList" [nzBeforeUpload]="beforeUpload">
-      <button nz-button><i nz-icon nzType="upload"></i><span>Elegir el archivo Excel</span></button>
-    </nz-upload>
-  </form>
+      <div class="form-actions">
+        <button nz-button nzType="primary" [nzLoading]="uploading" [disabled]="fileList.length == 0" (click)="handleUpload()">
+          <i nz-icon nzType="cloud-upload"></i>
+          Subir Archivo
+        </button>
+      </div>
+    </form>
+  </div>
 </nz-spin>
-<button nz-button
-        [nzType]="'primary'"
-        [nzLoading]="uploading"
-        (click)="handleUpload()"
-        [disabled]="fileList.length == 0"
-        style="margin-top: 16px">
-  Subir Archivo
-</button>

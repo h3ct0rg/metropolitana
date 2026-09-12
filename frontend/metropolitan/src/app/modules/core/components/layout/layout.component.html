@@ -254,6 +254,11 @@
           <img src="assets/img/logo1.png" class="header-logo" alt="Logo" />
         </div>
         <div class="header-right">
+          <div class="header-tipo-cambio" *ngIf="tipoCambioActual" title="Tipo de cambio vigente">
+            <i nz-icon nzType="swap" class="tipo-cambio-icon"></i>
+            <span class="tipo-cambio-label">1 US$ =</span>
+            <span class="tipo-cambio-value">{{ tipoCambioActual | number:'1.2-2' }} Bs</span>
+          </div>
           <div class="header-user" routerLink="usuarios/edit-usuario/{{userId}}" *ngIf="userId">
             <nz-avatar nzSize="small" nzIcon="user"></nz-avatar>
             <span class="header-user-name">{{nombreUsuario}}</span>

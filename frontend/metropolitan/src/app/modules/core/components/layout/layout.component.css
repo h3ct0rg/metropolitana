@@ -264,6 +264,34 @@ nz-header {
   gap: 16px;
 }
 
+.header-tipo-cambio {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(250, 173, 20, 0.12);
+  border: 1px solid rgba(250, 173, 20, 0.35);
+  white-space: nowrap;
+}
+
+.tipo-cambio-icon {
+  color: #d48806;
+  font-size: 13px;
+}
+
+.tipo-cambio-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #ad6800;
+}
+
+.tipo-cambio-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ad6800;
+}
+
 .header-user {
   display: flex;
   align-items: center;
@@ -340,6 +368,10 @@ nz-header {
 
   .header-logo {
     height: 24px;
+  }
+
+  .header-tipo-cambio {
+    display: none;
   }
 
   .header-user-name {

@@ -8,6 +8,7 @@ import { StorageService } from './../../../../shared/services/local-data/storage
 import { IStorageKeys } from './../../../../shared/services/local-data/storage';
 import { CoreUiService } from '../../services/ui/core-ui.service';
 import { UsuarioService } from '../../services/usuario.service';
+import { TipoCambioService } from '../../services/tipo-cambio.services';
 
 @Component({
   selector: 'app-layout',
@@ -25,6 +26,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterContentInit {
   userId: number;
   nombreUsuario: string;
   screenWidth: number;
+  tipoCambioActual: number;
   @HostListener('window:load') setBrowserRefreshingFn() {
     this.showSettingsMenu = this.router.url.includes('settings');
   }
@@ -36,13 +38,17 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterContentInit {
     private filterService: FilterService,
     public coreUIService: CoreUiService,
     private storageService: StorageService,
-    private userService: UsuarioService
+    private userService: UsuarioService,
+    private tipoCambioService: TipoCambioService
   ) { }
 
   ngOnInit() {
     this.setUserName();
     this.setShowingSettingsMenuConfig();
     this.getScreenSize();
+    this.tipoCambioService.getActual().subscribe(result => {
+      this.tipoCambioActual = result ? result.valor : null;
+    });
   }
 
   @HostListener('window:resize')

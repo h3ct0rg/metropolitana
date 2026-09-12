@@ -1,13 +1,35 @@
-nz-select {
-/*  width: 200px;*/
+.form-card {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-nz-date-picker {
-  width: 100%;
-  max-width: 400px;
+.form-card h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
 }
 
-input {
-  width: 100%;
-  max-width: 400px;
+.form-card h4:not(:first-child) {
+  margin-top: 28px;
+}
+
+.upload-dragger {
+  display: block;
+}
+
+.upload-dragger .ant-upload-drag-icon i {
+  font-size: 40px;
+  color: #1890ff;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
 }
