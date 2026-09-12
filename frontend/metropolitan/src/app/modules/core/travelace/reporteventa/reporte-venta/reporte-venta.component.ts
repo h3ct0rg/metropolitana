@@ -189,7 +189,8 @@ export class ReporteVentaComponent implements OnInit {
               totalArgentina: 0,
               totalFinal: 0,
               fechaPago: value.fechaPago,
-              formaPago: (listOptions.find(element => element.id.toString() === value.formaPago.toString()) || { nombre: '' }).nombre
+              formaPago: (listOptions.find(element => element.id.toString() === value.formaPago.toString()) || { nombre: '' }).nombre,
+              tipoCambioValor: value.tipoCambioValor
             };
             resultSum.push(res[value.codUnicoNota])
           }
@@ -345,17 +346,32 @@ export class ReporteVentaComponent implements OnInit {
     this.logService.saveLogItem(this.logs).subscribe(sucess => { });
   }
 
-  generarPDF() {
+  private getLogoDataUrl(): Promise<string> {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = Math.round(300 * (img.height / img.width));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = "../../../../assets/img/metropolitana-slogan.jpg";
+    });
+  }
+
+  async generarPDF() {
     const numneroHeader = this.getTimeForFile(new Date());
     const name = "reporte_venta_travelace" + numneroHeader + ".pdf";
     const doc2 = new jsPDF("landscape");
     const nombreSucursal = this.listSucursales.find(item => item.id = this.form.get("sucursal").value)['nombre'];
     const monedaTexto = this.form.get('monedaReporte').value === 2 ? '(en Bolivianos)' : '(en Dólares)';
     const tittle = "Reporte De Ventas " + nombreSucursal + " " + monedaTexto;
-    const img = new Image();
-    img.src = "../../../../assets/img/metropolitana-slogan.jpg";
-    img.style.display = "block";
-    doc2.addImage(img, 'JPEG', 75, 10, 50, 23);
+    const logoDataUrl = await this.getLogoDataUrl();
+    doc2.addImage(logoDataUrl, 'JPEG', 75, 10, 50, 23);
 
     autoTable(doc2, {
       margin: { top: 40, bottom: 10 },
@@ -383,6 +399,7 @@ export class ReporteVentaComponent implements OnInit {
               internal['pasajero'],
               this.getTime(internal['fechaPago']),
               internal['formaPago'],
+              internal['tipoCambioValor'] ? internal['tipoCambioValor'].toFixed(2) : '-',
               internal['montoNeto'].toFixed(2),
               internal['totalAgencia'].toFixed(2),
               internal['totalCounter'].toFixed(2),
@@ -393,7 +410,7 @@ export class ReporteVentaComponent implements OnInit {
 
         tempRow.push(
           [
-            "", "", "", "", "", "Totales",
+            "", "", "", "", "", "Totales", "",
             this.getSum('montoNeto', item).toFixed(2),
             this.getSum('totalAgencia', item).toFixed(2),
             this.getSum('totalCounter', item).toFixed(2),
@@ -404,8 +421,8 @@ export class ReporteVentaComponent implements OnInit {
 
         autoTable(doc2, {
           head: [
-            [nameSection, '','', '', '', '', '', '', '', '', ''],
-            ['Nro Debito', 'Nro Orden', 'Agencia', 'Pasajero','Fecha', 'Forma Pago', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
+            [nameSection, '','', '', '', '', '', '', '', '', '', ''],
+            ['Nro Debito', 'Nro Orden', 'Agencia', 'Pasajero','Fecha', 'Forma Pago', 'Tipo de Cambio', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
           body: tempRow,
           theme: 'grid'
         });
@@ -425,6 +442,7 @@ export class ReporteVentaComponent implements OnInit {
             internal['pasajero'],
             internal['servicios'],
             this.getTime(internal['fechaPago']),
+            internal['tipoCambioValor'] ? internal['tipoCambioValor'].toFixed(2) : '-',
             internal['montoNeto'].toFixed(2),
             internal['totalAgencia'].toFixed(2),
             internal['totalCounter'].toFixed(2),
@@ -435,8 +453,8 @@ export class ReporteVentaComponent implements OnInit {
 
       autoTable(doc2, {
         head: [
-          [nameSection, '', '', '', '', '', '', '', ''],
-          ['Nro Debito', 'Pasajero', 'Servicio', 'Fecha', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
+          [nameSection, '', '', '', '', '', '', '', '', ''],
+          ['Nro Debito', 'Pasajero', 'Servicio', 'Fecha', 'Tipo de Cambio', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
         body: tempRow,
         theme: 'grid'
       });
@@ -455,7 +473,8 @@ export class ReporteVentaComponent implements OnInit {
             internal['codUnicoNota'],
             internal['nombreAgencia'],
             internal['pasajero'],
-            internal['servicios'],            
+            internal['servicios'],
+            internal['tipoCambioValor'] ? internal['tipoCambioValor'].toFixed(2) : '-',
             internal['montoNeto'].toFixed(2),
             internal['totalAgencia'].toFixed(2),
             internal['totalCounter'].toFixed(2),
@@ -466,8 +485,8 @@ export class ReporteVentaComponent implements OnInit {
 
       autoTable(doc2, {
         head: [
-          [nameSection, '', '', '', '', '', '', '', ''],
-          ['Nro Debito', 'Agencia', 'Pasajero', 'Servicio', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
+          [nameSection, '', '', '', '', '', '', '', '', ''],
+          ['Nro Debito', 'Agencia', 'Pasajero', 'Servicio', 'Tipo de Cambio', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
         body: tempRow,
         theme: 'grid'
       });
@@ -487,6 +506,7 @@ export class ReporteVentaComponent implements OnInit {
             internal['nombreAgencia'],
             internal['pasajero'],
             internal['servicios'],
+            internal['tipoCambioValor'] ? internal['tipoCambioValor'].toFixed(2) : '-',
             internal['montoNeto'].toFixed(2),
             internal['totalAgencia'].toFixed(2),
             internal['totalCounter'].toFixed(2),
@@ -497,8 +517,8 @@ export class ReporteVentaComponent implements OnInit {
 
       autoTable(doc2, {
         head: [
-          [nameSection, '', '', '', '', '', '', '', ''],
-          ['Nro Debito','Agencia', 'Pasajero', 'Servicio', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
+          [nameSection, '', '', '', '', '', '', '', '', ''],
+          ['Nro Debito','Agencia', 'Pasajero', 'Servicio', 'Tipo de Cambio', 'Precio', 'Com Agencia', 'Com Counter', 'Com Metro', 'Neto']],
         body: tempRow,
         theme: 'grid'
       });

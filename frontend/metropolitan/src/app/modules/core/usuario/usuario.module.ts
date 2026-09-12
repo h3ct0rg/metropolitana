@@ -9,6 +9,8 @@ import { NzGridModule } from 'ng-zorro-antd/grid';
 import { NzFormModule } from 'ng-zorro-antd/form';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzSelectModule } from 'ng-zorro-antd/select';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzIconModule } from 'ng-zorro-antd/icon';
 
 
 import { UsuarioCreateComponent } from './create-usuario/create-usuario.component';
@@ -16,7 +18,7 @@ import { UsuarioCreateComponent } from './create-usuario/create-usuario.componen
 @NgModule({
   declarations: [UsuarioListComponent, UsuarioCreateComponent],
   imports: [CommonModule, UsuarioRoutingModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule
-    , FormsModule, ReactiveFormsModule, NzSelectModule],
+    , FormsModule, ReactiveFormsModule, NzSelectModule, NzInputModule, NzIconModule],
   exports: [UsuarioListComponent]
 })
 export class UsuarioModule { }

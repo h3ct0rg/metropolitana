@@ -22,6 +22,7 @@ export class UsuarioCreateComponent implements OnInit {
   public idroles: any[] = [];
   public listSucursales: any[];
   public isAdmin: boolean = false;
+  public passwordVisible: boolean = false;
 
   constructor(private userService: UsuarioService,
     private route: ActivatedRoute,
