@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import * as jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { FlujoCajaService } from '../../services/flujo-caja.services';
+import { SucursalService } from '../../services/sucursal.services';
 import { FlujoCajaResumen, FlujoCajaMovimiento } from '../../../../shared/model/flujo-caja';
 
 @Component({
@@ -17,30 +18,60 @@ export class FlujoCajaReportComponent implements OnInit {
   public detalle: FlujoCajaMovimiento[] = [];
   public fechaIni: string;
   public fechaF: string;
+  public listSucursales = [];
+  public listAreas = [
+    { value: 'TODAS', label: 'Todas las áreas' },
+    { value: 'TRAVELACE', label: 'Travelace (UA)' },
+    { value: 'PAQUETES', label: 'Paquetes' },
+    { value: 'CARGA', label: 'Carga' }
+  ];
 
-  constructor(private flujoCajaService: FlujoCajaService) {
+  constructor(
+    private flujoCajaService: FlujoCajaService,
+    private sucursalesService: SucursalService
+  ) {
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     this.form = new FormGroup({
-      fechaStardDate: new FormControl(null, [Validators.required]),
-      fechaEndDate: new FormControl(null, [Validators.required])
+      fechaStardDate: new FormControl(inicioMes, [Validators.required]),
+      fechaEndDate: new FormControl(hoy, [Validators.required]),
+      area: new FormControl('TODAS'),
+      sucursal: new FormControl(0)
+    });
+
+    this.sucursalesService.getSucursalList().subscribe(result => {
+      this.listSucursales = result;
     });
   }
 
   ngOnInit() {
   }
 
+  get rangoFechasInvalido(): boolean {
+    const inicio = this.form.get('fechaStardDate').value;
+    const fin = this.form.get('fechaEndDate').value;
+    if (!inicio || !fin) { return false; }
+    return new Date(fin) < new Date(inicio);
+  }
+
   generarReporte() {
+    if (this.rangoFechasInvalido) {
+      return;
+    }
     const fechaStart = this.form.get("fechaStardDate").value;
     const fechaEnd = this.form.get("fechaEndDate").value;
+    const area = this.form.get("area").value;
+    const sucursal = this.form.get("sucursal").value;
     this.isSpinning = true;
     this.fechaIni = this.getTime(fechaStart);
     this.fechaF = this.getTime(fechaEnd);
 
-    this.flujoCajaService.getResumen(fechaStart, fechaEnd).subscribe(result => {
+    this.flujoCajaService.getResumen(fechaStart, fechaEnd, area, sucursal).subscribe(result => {
       this.resumen = result;
       this.isSpinning = false;
     });
 
-    this.flujoCajaService.getDetalle(fechaStart, fechaEnd).subscribe(result => {
+    this.flujoCajaService.getDetalle(fechaStart, fechaEnd, area, sucursal).subscribe(result => {
       this.detalle = result;
     });
   }
@@ -81,9 +112,10 @@ export class FlujoCajaReportComponent implements OnInit {
     });
 
     autoTable(doc, {
-      head: [['Fecha', 'Módulo', 'ND', 'Cuenta', 'Forma de Pago', 'Moneda', 'Monto', 'Concepto']],
+      head: [['Fecha', 'Módulo', 'ND', 'Cuenta', 'Forma de Pago', 'Moneda', 'Tipo de Cambio', 'Monto', 'Concepto']],
       body: this.detalle.map(m => [
-        this.getTime(m.fechaPago), m.modulo, m.idNotaDebito.toString(), m.cuenta, m.formaPago, m.moneda, m.monto.toFixed(2), m.concepto
+        this.getTime(m.fechaPago), m.modulo, m.idNotaDebito.toString(), m.cuenta, m.formaPago, m.moneda,
+        m.tipoCambioValor ? m.tipoCambioValor.toFixed(2) : '-', m.monto.toFixed(2), m.concepto
       ]),
       theme: 'grid'
     });

@@ -12,11 +12,11 @@ export class FlujoCajaService extends BaseService<FlujoCajaResumen> {
     super(httpClient, storageService);
   }
 
-  getResumen(startDate: string, endDate: string): Observable<FlujoCajaResumen[]> {
-    return this.post('/FlujoCaja/GetFlujoCaja', { startDate, endDate }) as Observable<any[]>;
+  getResumen(startDate: string, endDate: string, area: string = 'TODAS', sucursal: number = 0): Observable<FlujoCajaResumen[]> {
+    return this.post('/FlujoCaja/GetFlujoCaja', { startDate, endDate, area, sucursal }) as Observable<any[]>;
   }
 
-  getDetalle(startDate: string, endDate: string): Observable<FlujoCajaMovimiento[]> {
-    return this.post('/FlujoCaja/GetFlujoCajaDetalle', { startDate, endDate }) as Observable<any[]>;
+  getDetalle(startDate: string, endDate: string, area: string = 'TODAS', sucursal: number = 0): Observable<FlujoCajaMovimiento[]> {
+    return this.post('/FlujoCaja/GetFlujoCajaDetalle', { startDate, endDate, area, sucursal }) as Observable<any[]>;
   }
 }

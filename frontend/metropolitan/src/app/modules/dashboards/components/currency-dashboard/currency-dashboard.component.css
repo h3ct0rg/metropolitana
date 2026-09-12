@@ -1,0 +1,43 @@
+.kpi-row {
+  margin-bottom: 16px;
+}
+
+.chart-row {
+  margin-bottom: 16px;
+}
+
+.kpi-row [nz-col],
+.chart-row [nz-col] {
+  margin-bottom: 16px;
+}
+
+.chart-card h3 {
+  margin: 0 0 12px 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  font-family: 'Poppins', sans-serif;
+}
+
+.chart-container {
+  position: relative;
+  height: 260px;
+}
+
+.chart-container.chart-tall {
+  height: 320px;
+}
+
+@media (max-width: 576px) {
+  .chart-container {
+    height: 220px;
+  }
+
+  .chart-container.chart-tall {
+    height: 260px;
+  }
+
+  .chart-card h3 {
+    font-size: 13px;
+  }
+}

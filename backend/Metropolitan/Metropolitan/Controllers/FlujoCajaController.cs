@@ -13,22 +13,26 @@ namespace Metropolitan.Controllers
     {
         flujoCajaManagement gestordb = new flujoCajaManagement();
 
-        // POST api/FlujoCaja/GetFlujoCaja  { startDate, endDate }
+        // POST api/FlujoCaja/GetFlujoCaja  { startDate, endDate, area, sucursal }
         [HttpPost("GetFlujoCaja")]
         public ActionResult<IEnumerable<FlujoCajaResumen>> GetFlujoCaja([FromBody] JObject filtro)
         {
             DateTime startDate = filtro["startDate"].ToObject<DateTime>();
             DateTime endDate = filtro["endDate"].ToObject<DateTime>();
-            return gestordb.getResumen(startDate, endDate);
+            string area = filtro["area"] != null ? filtro["area"].ToObject<string>() : "TODAS";
+            int sucursal = filtro["sucursal"] != null ? filtro["sucursal"].ToObject<int>() : 0;
+            return gestordb.getResumen(startDate, endDate, area, sucursal);
         }
 
-        // POST api/FlujoCaja/GetFlujoCajaDetalle  { startDate, endDate }
+        // POST api/FlujoCaja/GetFlujoCajaDetalle  { startDate, endDate, area, sucursal }
         [HttpPost("GetFlujoCajaDetalle")]
         public ActionResult<IEnumerable<FlujoCajaMovimiento>> GetFlujoCajaDetalle([FromBody] JObject filtro)
         {
             DateTime startDate = filtro["startDate"].ToObject<DateTime>();
             DateTime endDate = filtro["endDate"].ToObject<DateTime>();
-            return gestordb.getMovimientos(startDate, endDate);
+            string area = filtro["area"] != null ? filtro["area"].ToObject<string>() : "TODAS";
+            int sucursal = filtro["sucursal"] != null ? filtro["sucursal"].ToObject<int>() : 0;
+            return gestordb.getMovimientos(startDate, endDate, area, sucursal);
         }
     }
 }

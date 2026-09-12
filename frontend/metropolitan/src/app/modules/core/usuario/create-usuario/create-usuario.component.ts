@@ -18,7 +18,7 @@ export class UsuarioCreateComponent implements OnInit {
   public form: FormGroup;
   public usuario: User;
   private userId: number;
-  private isEdit: boolean;
+  public isEdit: boolean;
   public idroles: any[] = [];
   public listSucursales: any[];
   public isAdmin: boolean = false;
@@ -129,6 +129,10 @@ export class UsuarioCreateComponent implements OnInit {
         this.router.navigate(['/main/usuarios']);
       });
     }
+  }
+
+  cancel() {
+    this.router.navigate(['/main/usuarios']);
   }
 
   setUserName = () => {

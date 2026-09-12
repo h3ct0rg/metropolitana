@@ -12,51 +12,59 @@ namespace DataBase.management
     public class flujoCajaManagement : gestorDB
     {
         private const string DetalleQuery = @"
-select 'TRAVELACE' as modulo, OP.id as idOrdenPago, OP.idNotaDebito, OP.fechaPago, OP.montoAPagar,
-       FP.nombre as formaPagoNombre,
-       COALESCE(CB.nombre, FP.nombre, 'Sin forma de pago') as cuenta,
-       COALESCE(NULLIF(FP.moneda, 'AMBOS'), CB.moneda, 'USD') as moneda,
-       ND.concepto
-from travelOrdenPago OP
-left join formaPago FP on FP.id = OP.formaPago
-left join cuentaBancaria CB on FP.requiereCuentaBancaria = 1 and TRY_CONVERT(int, OP.numeroTarjeta) = CB.id
-left join travelaceNotaDebito ND on ND.codigoUnicoNota = OP.idNotaDebito and ND.idSucursal = OP.idSucursal
-where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
-  and OP.fechaPago between @startDate and @endDate
+select * from (
+    select 'TRAVELACE' as modulo, OP.id as idOrdenPago, OP.idNotaDebito, OP.fechaPago, OP.montoAPagar, OP.idSucursal,
+           FP.nombre as formaPagoNombre,
+           COALESCE(CB.nombre, FP.nombre, 'Sin forma de pago') as cuenta,
+           COALESCE(NULLIF(FP.moneda, 'AMBOS'), CB.moneda, 'USD') as moneda,
+           ND.concepto, ND.tipoCambioValor
+    from travelOrdenPago OP
+    left join formaPago FP on FP.id = OP.formaPago
+    left join cuentaBancaria CB on FP.requiereCuentaBancaria = 1 and TRY_CONVERT(int, OP.numeroTarjeta) = CB.id
+    left join travelaceNotaDebito ND on ND.codigoUnicoNota = OP.idNotaDebito and ND.idSucursal = OP.idSucursal
+    where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
+      and OP.fechaPago between @startDate and @endDate
 
-union all
+    union all
 
-select 'PAQUETES' as modulo, OP.id as idOrdenPago, OP.idNotaDebito, OP.fechaPago, OP.montoAPagar,
-       FP.nombre as formaPagoNombre,
-       COALESCE(CB.nombre, FP.nombre, 'Sin forma de pago') as cuenta,
-       COALESCE(NULLIF(FP.moneda, 'AMBOS'), CB.moneda, 'USD') as moneda,
-       ND.concepto
-from paquetesOrdenPago OP
-left join formaPago FP on FP.id = OP.formaPago
-left join cuentaBancaria CB on FP.requiereCuentaBancaria = 1 and TRY_CONVERT(int, OP.numeroTarjeta) = CB.id
-left join paquetesNotaDebito ND on ND.codigoUnicoNota = OP.idNotaDebito and ND.idSucursal = OP.idSucursal
-where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
-  and OP.fechaPago between @startDate and @endDate
+    select 'PAQUETES' as modulo, OP.id as idOrdenPago, OP.idNotaDebito, OP.fechaPago, OP.montoAPagar, OP.idSucursal,
+           FP.nombre as formaPagoNombre,
+           COALESCE(CB.nombre, FP.nombre, 'Sin forma de pago') as cuenta,
+           COALESCE(NULLIF(FP.moneda, 'AMBOS'), CB.moneda, 'USD') as moneda,
+           ND.concepto, ND.tipoCambioValor
+    from paquetesOrdenPago OP
+    left join formaPago FP on FP.id = OP.formaPago
+    left join cuentaBancaria CB on FP.requiereCuentaBancaria = 1 and TRY_CONVERT(int, OP.numeroTarjeta) = CB.id
+    left join paquetesNotaDebito ND on ND.codigoUnicoNota = OP.idNotaDebito and ND.idSucursal = OP.idSucursal
+    where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
+      and OP.fechaPago between @startDate and @endDate
 
-union all
+    union all
 
-select 'CARGA' as modulo, OP.id as idOrdenPago, OP.idNotaDebito, OP.fechaPago, OP.montoAPagar,
-       FP.nombre as formaPagoNombre,
-       COALESCE(CB.nombre, FP.nombre, 'Sin forma de pago') as cuenta,
-       COALESCE(NULLIF(FP.moneda, 'AMBOS'), CB.moneda, 'USD') as moneda,
-       ND.concepto
-from cargaOrdenPago OP
-left join formaPago FP on FP.id = OP.formaPago
-left join cuentaBancaria CB on FP.requiereCuentaBancaria = 1 and TRY_CONVERT(int, OP.numeroTarjeta) = CB.id
-left join cargaNotaDebito ND on ND.codigoUnicoNota = OP.idNotaDebito and ND.idSucursal = OP.idSucursal
-where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
-  and OP.fechaPago between @startDate and @endDate
+    select 'CARGA' as modulo, OP.id as idOrdenPago, OP.idNotaDebito, OP.fechaPago, OP.montoAPagar, OP.idSucursal,
+           FP.nombre as formaPagoNombre,
+           COALESCE(CB.nombre, FP.nombre, 'Sin forma de pago') as cuenta,
+           COALESCE(NULLIF(FP.moneda, 'AMBOS'), CB.moneda, 'USD') as moneda,
+           ND.concepto, ND.tipoCambioValor
+    from cargaOrdenPago OP
+    left join formaPago FP on FP.id = OP.formaPago
+    left join cuentaBancaria CB on FP.requiereCuentaBancaria = 1 and TRY_CONVERT(int, OP.numeroTarjeta) = CB.id
+    left join cargaNotaDebito ND on ND.codigoUnicoNota = OP.idNotaDebito and ND.idSucursal = OP.idSucursal
+    where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
+      and OP.fechaPago between @startDate and @endDate
+) as T
+where (@area = 'TODAS' OR modulo = @area)
+  and (@sucursal = 0 OR idSucursal = @sucursal)
 ";
 
-        public List<FlujoCajaMovimiento> getMovimientos(DateTime startDate, DateTime endDate)
+        public List<FlujoCajaMovimiento> getMovimientos(DateTime startDate, DateTime endDate, string area = "TODAS", int sucursal = 0)
         {
             startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0);
             endDate = new DateTime(endDate.Year, endDate.Month, endDate.Day, 23, 59, 59);
+            if (string.IsNullOrEmpty(area))
+            {
+                area = "TODAS";
+            }
 
             List<FlujoCajaMovimiento> lista = new List<FlujoCajaMovimiento>();
             base.sqlConnection.open();
@@ -66,6 +74,8 @@ where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
                 {
                     command.Parameters.AddWithValue("@startDate", startDate);
                     command.Parameters.AddWithValue("@endDate", endDate);
+                    command.Parameters.AddWithValue("@area", area);
+                    command.Parameters.AddWithValue("@sucursal", sucursal);
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())
@@ -80,6 +90,7 @@ where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
                             m.cuenta = GetStringByName(reader, "cuenta");
                             m.moneda = GetStringByName(reader, "moneda");
                             m.concepto = GetStringByName(reader, "concepto");
+                            m.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             lista.Add(m);
                         }
                     }
@@ -94,9 +105,9 @@ where OP.pagado = 1 and (OP.anulado is null or OP.anulado = 0)
             return lista;
         }
 
-        public List<FlujoCajaResumen> getResumen(DateTime startDate, DateTime endDate)
+        public List<FlujoCajaResumen> getResumen(DateTime startDate, DateTime endDate, string area = "TODAS", int sucursal = 0)
         {
-            return getMovimientos(startDate, endDate)
+            return getMovimientos(startDate, endDate, area, sucursal)
                 .GroupBy(m => new { m.cuenta, m.moneda })
                 .Select(g => new FlujoCajaResumen
                 {

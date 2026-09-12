@@ -13,6 +13,7 @@ import { Logs } from '../../../../../shared/model/Logs';
 import { LogsService } from '../../../services/Logs/logs.services';
 import { FormaPagoService } from '../../../services/forma-pago.services';
 import { FormaPago } from '../../../../../shared/model/forma-pago';
+import { TipoCambioService } from '../../../services/tipo-cambio.services';
 
 @Component({
   selector: 'app-carga-reporte-ventas',
@@ -55,7 +56,8 @@ export class CargaReporteVentasComponent implements OnInit {
     private storage: StorageService,
     private sucursalesService: SucursalService,
     private logService: LogsService,
-    private formaPagoService: FormaPagoService
+    private formaPagoService: FormaPagoService,
+    private tipoCambioService: TipoCambioService
   ) {
     this.isSpinning = true;
     this.listRestas.push(0);
@@ -66,9 +68,16 @@ export class CargaReporteVentasComponent implements OnInit {
     this.listRestas.push(0);
     this.listRestas.push(0);
     this.listReportExtra = [];
+
+    this.tipoCambioService.getActual().subscribe(result => {
+      this.tasaManualRespaldo = result.valor;
+    });
+
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     this.form = new FormGroup({
-      fechaStardDate: new FormControl(null, [Validators.required]),
-      fechaEndDate: new FormControl(null, [Validators.required]),
+      fechaStardDate: new FormControl(inicioMes, [Validators.required]),
+      fechaEndDate: new FormControl(hoy, [Validators.required]),
       sucursal: new FormControl(null, [Validators.required]),
       monedaReporte: new FormControl(1)
     });
@@ -103,6 +112,13 @@ export class CargaReporteVentasComponent implements OnInit {
     }
   }
 
+  get rangoFechasInvalido(): boolean {
+    const inicio = this.form.get('fechaStardDate').value;
+    const fin = this.form.get('fechaEndDate').value;
+    if (!inicio || !fin) { return false; }
+    return new Date(fin) < new Date(inicio);
+  }
+
   groupByLocal(list, keyGetter) {
     const map = new Map();
     list.forEach((item) => {
@@ -118,12 +134,16 @@ export class CargaReporteVentasComponent implements OnInit {
   }
 
   generateNote() {
+    if (this.rangoFechasInvalido) {
+      return;
+    }
 
     this.totalTotal = 0;
     this.totalCounter = 0;
     this.totalArgentina = 0;
     this.totalNeto = 0;
     this.totalAgencia = 0;
+    this.faltanTasasLegacy = false;
     const fechaStart = this.form.get("fechaStardDate").value;
     const fechaEnd = this.form.get("fechaEndDate").value;
 
@@ -132,7 +152,7 @@ export class CargaReporteVentasComponent implements OnInit {
     this.fechaIni = this.getTime(fechaStart);
     this.fechaF = this.getTime(fechaEnd);
     this.ordenPagoService.getReportOrdenPagoByDateDetailByCity(fechaStart, fechaEnd, this.form.get("sucursal").value).subscribe(result => {
-      result = this.convertirResultadoAMoneda(result);
+      result = this.convertirFilasAMoneda(result, ['montoNeto', 'totalArgentina', 'totalCounter', 'totalAgencia']);
       const rrGroup = this.groupByLocal(result, result => result.codOperador);
       this.listOperadoresSelect = [[]];
       let totalArgentinaTempo = 0;
@@ -208,21 +228,22 @@ export class CargaReporteVentasComponent implements OnInit {
       this.listReport = result;
 
       this.ordenPagoService.getReportOrdenPagoByDateTotalesRest(this.form.get("sucursal").value, fechaStart, fechaEnd).subscribe(res => {
-        this.listRestas = res;
+        const tasa = this.form.get('monedaReporte').value === 2 ? (this.tasaManualRespaldo || 1) : 1;
+        this.listRestas = res.map(v => v * tasa);
       })
 
     });
 
     this.ordenPagoService.getReportOrdenPagoByDateDetailPpf(this.form.get("sucursal").value, fechaStart, fechaEnd).subscribe(dataR => {
-      this.listReportExtra = dataR;
+      this.listReportExtra = this.convertirFilasAMoneda(dataR, ['montoNeto', 'totalArgentina', 'totalCounter', 'totalAgencia']);
     });
 
     this.ordenPagoService.getReportOrdenPagoByDateDetailAnulacion(this.form.get("sucursal").value, fechaStart, fechaEnd).subscribe(res => {
-      this.listReportAnulacion = res;
+      this.listReportAnulacion = this.convertirFilasAMoneda(res, ['montoNeto', 'totalArgentina', 'totalCounter', 'totalAgencia', 'totalMetro']);
     });
 
     this.ordenPagoService.getReportOrdenPagoByDateDetailRemision(this.form.get("sucursal").value, fechaStart, fechaEnd).subscribe(dataR => {
-      this.listReportRemision = dataR;
+      this.listReportRemision = this.convertirFilasAMoneda(dataR, ['montoNeto', 'totalArgentina', 'totalCounter', 'totalAgencia', 'totalMetro']);
     });
 
     this.isSpinning = false;
@@ -237,21 +258,18 @@ export class CargaReporteVentasComponent implements OnInit {
     return this.token.sucursal;
   }
 
-  convertirResultadoAMoneda(result: any[]): any[] {
+  convertirFilasAMoneda(filas: any[], campos: string[]): any[] {
     if (this.form.get('monedaReporte').value !== 2) {
-      this.faltanTasasLegacy = false;
-      return result;
+      return filas;
     }
-    this.faltanTasasLegacy = result.some(r => !r.tipoCambioValor);
-    return result.map(r => {
+    if (filas.some(r => !r.tipoCambioValor)) {
+      this.faltanTasasLegacy = true;
+    }
+    return filas.map(r => {
       const tasa = r.tipoCambioValor || this.tasaManualRespaldo || 1;
-      return {
-        ...r,
-        montoNeto: r.montoNeto * tasa,
-        totalArgentina: r.totalArgentina * tasa,
-        totalCounter: r.totalCounter * tasa,
-        totalAgencia: r.totalAgencia * tasa
-      };
+      const convertida = { ...r };
+      campos.forEach(campo => { convertida[campo] = r[campo] * tasa; });
+      return convertida;
     });
   }
 
@@ -293,7 +311,8 @@ export class CargaReporteVentasComponent implements OnInit {
     const numneroHeader = this.getTimeForFile(new Date());
     const name = "reporte_venta_carga_" + numneroHeader + ".pdf";
     const doc2 = new jsPDF("landscape");
-    const tittle = "Reporte De Ventas Carga " + this.listSucursales[(this.form.get("sucursal").value) - 1]['nombre'];
+    const monedaTexto = this.form.get('monedaReporte').value === 2 ? '(en Bolivianos)' : '(en Dólares)';
+    const tittle = "Reporte De Ventas Carga " + this.listSucursales[(this.form.get("sucursal").value) - 1]['nombre'] + " " + monedaTexto;
 
     const img = new Image();
     img.src = "../../../../assets/img/metropolitana-slogan.jpg";

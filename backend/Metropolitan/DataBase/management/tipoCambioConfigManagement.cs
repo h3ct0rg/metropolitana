@@ -73,6 +73,35 @@ namespace DataBase.management
             return lista;
         }
 
+        public List<tipoCambioConfig> getHistorial(DateTime start, DateTime end)
+        {
+            List<tipoCambioConfig> lista = new List<tipoCambioConfig>();
+            sqlConnection.open();
+            string query = "select * from tipoCambioConfig where createdDate between @start and @end order by id desc";
+            try
+            {
+                using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
+                {
+                    command.Parameters.AddWithValue("@start", start);
+                    command.Parameters.AddWithValue("@end", end);
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lista.Add(readRow(reader));
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            sqlConnection.close();
+            return lista;
+        }
+
         public int create(tipoCambioConfig tc)
         {
             string query = string.Format(@"Insert into tipoCambioConfig

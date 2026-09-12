@@ -1,0 +1,114 @@
+<div class="filter-row">
+  <nz-form-item>
+    <nz-form-label>Sucursal</nz-form-label>
+    <nz-form-control>
+      <nz-select [(ngModel)]="idSucursal" (ngModelChange)="onFiltroChange()">
+        <nz-option [nzLabel]="'Todas las sucursales'" [nzValue]="-1"></nz-option>
+        <nz-option *ngFor="let s of listSucursales" [nzLabel]="s.nombre" [nzValue]="s.id"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Módulo</nz-form-label>
+    <nz-form-control>
+      <nz-select [(ngModel)]="modulo" (ngModelChange)="onFiltroChange()">
+        <nz-option *ngFor="let m of listModulos" [nzLabel]="m.label" [nzValue]="m.value"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Rango de fechas</nz-form-label>
+    <nz-form-control>
+      <nz-range-picker [(ngModel)]="rangoFechas" (ngModelChange)="onFiltroChange()"></nz-range-picker>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-row [nzGutter]="16" class="kpi-row">
+  <div nz-col [nzXs]="24" [nzMd]="6">
+    <app-kpi-card titulo="Tipo de Cambio Actual" icono="dollar" [loading]="loadingSummary"
+      [valor]="((summary.tipoCambioActual || 0) | number:'1.2-2') + ' Bs'"
+      [delta]="summary.variacionPorcentual" deltaLabel="en el periodo"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="6">
+    <app-kpi-card titulo="ND en Bolivianos" icono="pie-chart" [loading]="loadingSummary"
+      [valor]="((summary.pctNdBolivianos || 0) | number:'1.1-1') + '%'"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="6">
+    <app-kpi-card titulo="Total ND en el periodo" icono="file-add" [loading]="loadingSummary"
+      [valor]="(summary.totalNd || 0).toString()"></app-kpi-card>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="6">
+    <app-kpi-card titulo="Forma de Pago Más Usada" icono="wallet" [loading]="loadingSummary"
+      [valor]="(summary.formaPagoMasUsada || '-') + (summary.formaPagoMasUsada ? ' (' + summary.cantidadFormaPagoMasUsada + ')' : '')"></app-kpi-card>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24">
+    <nz-spin [nzSpinning]="loadingRateChart">
+      <div class="glass-card chart-card">
+        <h3>Evolución del Tipo de Cambio</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="rateDatasets" [labels]="rateLabels" [options]="rateOptions" [chartType]="'line'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingOverTimeChart">
+      <div class="glass-card chart-card">
+        <h3>ND por Moneda en el tiempo</h3>
+        <div class="chart-container">
+          <canvas baseChart [datasets]="overTimeDatasets" [labels]="overTimeLabels" [options]="overTimeOptions" [chartType]="'bar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingDistributionChart">
+      <div class="glass-card chart-card">
+        <h3>Distribución de ND por Moneda</h3>
+        <div class="chart-container">
+          <canvas baseChart [data]="distributionData" [labels]="distributionLabels" [options]="donutOptions" [colors]="distributionColors" [chartType]="'doughnut'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="8">
+    <nz-spin [nzSpinning]="loadingPaymentChart">
+      <div class="glass-card chart-card">
+        <h3>Formas de Pago más usadas</h3>
+        <div class="chart-container">
+          <canvas baseChart [datasets]="paymentDatasets" [labels]="paymentLabels" [options]="paymentOptions" [chartType]="'horizontalBar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-spin [nzSpinning]="loadingBranchChart">
+      <div class="glass-card chart-card">
+        <h3>ND por Moneda por Sucursal</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="branchDatasets" [labels]="branchLabels" [options]="branchOptions" [chartType]="'bar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-spin [nzSpinning]="loadingModuleChart">
+      <div class="glass-card chart-card">
+        <h3>ND por Moneda por Módulo</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="moduleDatasets" [labels]="moduleLabels" [options]="moduleOptions" [chartType]="'bar'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>

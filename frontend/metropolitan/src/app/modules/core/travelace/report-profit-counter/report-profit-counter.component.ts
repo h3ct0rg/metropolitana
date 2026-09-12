@@ -9,6 +9,7 @@ import { StorageService } from '../../../../shared/services/local-data/storage.s
 import { IStorageKeys } from '../../../../shared/services/local-data/storage';
 import { Logs } from '../../../../shared/model/Logs';
 import { LogsService } from '../../services/Logs/logs.services';
+import { TipoCambioService } from '../../services/tipo-cambio.services';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class ReportProfitCounterComponent implements OnInit {
   public totalSumar: number;
   public isSpinning: boolean;
   public listSucursales = [];
+  public tasaManualRespaldo: number = null;
   logs: Logs;
   token: any;
 
@@ -34,13 +36,21 @@ export class ReportProfitCounterComponent implements OnInit {
     private counterService: CounterService,
     private sucursalesService: SucursalService,
     private storage: StorageService,
-    private logService: LogsService
+    private logService: LogsService,
+    private tipoCambioService: TipoCambioService
   ) {
     this.isSpinning = true;
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     this.form = new FormGroup({
-      fechaStardDate: new FormControl(null, [Validators.required]),
-      fechaEndDate: new FormControl(null, [Validators.required]),
-      sucursal: new FormControl(null)
+      fechaStardDate: new FormControl(inicioMes, [Validators.required]),
+      fechaEndDate: new FormControl(hoy, [Validators.required]),
+      sucursal: new FormControl(null),
+      monedaReporte: new FormControl(1)
+    });
+
+    this.tipoCambioService.getActual().subscribe(result => {
+      this.tasaManualRespaldo = result.valor;
     });
 
     this.sucursalesService.getSucursalList().subscribe(result => {
@@ -98,11 +108,22 @@ export class ReportProfitCounterComponent implements OnInit {
     return hora;
   }
 
+  get rangoFechasInvalido(): boolean {
+    const inicio = this.form.get('fechaStardDate').value;
+    const fin = this.form.get('fechaEndDate').value;
+    if (!inicio || !fin) { return false; }
+    return new Date(fin) < new Date(inicio);
+  }
+
   generateNote() {
+    if (this.rangoFechasInvalido) {
+      return;
+    }
     this.totalCounter = 0;
     this.totalSumar = 0;
     const fechaStart = this.form.get("fechaStardDate").value;
     const fechaEnd = this.form.get("fechaEndDate").value;
+    const tasa = this.form.get('monedaReporte').value === 2 ? (this.tasaManualRespaldo || 1) : 1;
 
     this.fechaIni = this.getTime(fechaStart);
     this.fechaF = this.getTime(fechaEnd);
@@ -110,6 +131,8 @@ export class ReportProfitCounterComponent implements OnInit {
     this.counterService.getCounterProfitByDateByCity(this.form.get("fechaStardDate").value, this.form.get("fechaEndDate").value, this.form.get("sucursal").value).subscribe(result => {
       this.listCounters = result;
       this.listCounters.forEach(result => {
+        result.total = result.total * tasa;
+        result.totalSales = result.totalSales * tasa;
         this.listTablePDF.push([result['agencia'], result['nombre'], result['total'].toFixed(2), result['totalSales'].toFixed(2)]);
         this.totalCounter += result.total;
         this.totalSumar += result.totalSales;
@@ -141,7 +164,8 @@ export class ReportProfitCounterComponent implements OnInit {
   generarPDF() {
     const doc2 = new jsPDF();
     const nombreSucursal = this.listSucursales.find(item => item.id = this.form.get("sucursal").value)['nombre']
-    const tittle = "Reporte Counters Universal Assistance de " + nombreSucursal;
+    const monedaTexto = this.form.get('monedaReporte').value === 2 ? '(en Bolivianos)' : '(en Dólares)';
+    const tittle = "Reporte Counters Universal Assistance de " + nombreSucursal + " " + monedaTexto;
 
     const img = new Image();
     img.src = "../../../../assets/img/metropolitana-slogan.jpg";

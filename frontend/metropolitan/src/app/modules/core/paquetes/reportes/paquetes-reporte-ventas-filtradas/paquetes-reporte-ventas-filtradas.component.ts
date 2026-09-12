@@ -10,6 +10,7 @@ import html2canvas from 'html2canvas';
 import autoTable from 'jspdf-autotable';
 import { ClientService } from '../../../services/clientes.service';
 import { title } from 'process';
+import { TipoCambioService } from '../../../services/tipo-cambio.services';
 
 @Component({
   selector: 'app-paquetes-reporte-ventas-filtradas',
@@ -46,6 +47,9 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
     totalMetro: 0
   }]
 
+  public tasaManualRespaldo: number = null;
+  public faltanTasasLegacy: boolean = false;
+
 
   token: any;
 
@@ -54,15 +58,23 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
     private storage: StorageService,
     private sucursalesService: SucursalService,
     private operadorService: OperadorService,
-    private clientService: ClientService
+    private clientService: ClientService,
+    private tipoCambioService: TipoCambioService
   ) {
     this.isSpinning = true;
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     this.form = new FormGroup({
-      fechaStardDate: new FormControl(null, [Validators.required]),
-      fechaEndDate: new FormControl(null, [Validators.required]),
+      fechaStardDate: new FormControl(inicioMes, [Validators.required]),
+      fechaEndDate: new FormControl(hoy, [Validators.required]),
       sucursal: new FormControl(null),
       voucherItem: new FormControl(null),
-      operador: new FormControl(null)
+      operador: new FormControl(null),
+      monedaReporte: new FormControl(1)
+    });
+
+    this.tipoCambioService.getActual().subscribe(result => {
+      this.tasaManualRespaldo = result.valor;
     });
 
     this.sucursalesService.getSucursalList().subscribe(result => {
@@ -99,6 +111,28 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
     this.listGlobalTotalsAnulados['totalMetro'] = 0;
   }
 
+  get rangoFechasInvalido(): boolean {
+    const inicio = this.form.get('fechaStardDate').value;
+    const fin = this.form.get('fechaEndDate').value;
+    if (!inicio || !fin) { return false; }
+    return new Date(fin) < new Date(inicio);
+  }
+
+  convertirFilasAMoneda(filas: any[], campos: string[]): any[] {
+    if (this.form.get('monedaReporte').value !== 2) {
+      return filas;
+    }
+    if (filas.some(r => !r.tipoCambioValor)) {
+      this.faltanTasasLegacy = true;
+    }
+    return filas.map(r => {
+      const tasa = r.tipoCambioValor || this.tasaManualRespaldo || 1;
+      const convertida = { ...r };
+      campos.forEach(campo => { convertida[campo] = r[campo] * tasa; });
+      return convertida;
+    });
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -115,6 +149,10 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
   }
 
   generateNote() {
+    if (this.rangoFechasInvalido) {
+      return;
+    }
+    this.faltanTasasLegacy = false;
     this.listGlobalTotals['precio'] = 0;
     this.listGlobalTotals['pagoMetro'] = 0;
     this.listGlobalTotals['totalAgencia'] = 0;
@@ -143,8 +181,7 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
     console.log(this.nombreSucursal);
 
     this.ordenPagoService.getReportOrdenPagoByDateDetailByCityFiltered(fechaStart, fechaEnd, idSucursal, voucher, idAgencia).subscribe(result => {
-      console.log(result);
-
+      result = this.convertirFilasAMoneda(result, ['precio', 'totalArgentina', 'pagoMetro', 'totalCounter', 'totalMetro', 'totalAgencia']);
 
       const groupedByOperador = result.reduce((acc, current) => {
         const operador = current.nombreOperador;
@@ -193,7 +230,7 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
     })
 
     this.ordenPagoService.getReportOrdenPagoByDateDetailByCityFilteredAnulado(fechaStart, fechaEnd, idSucursal, voucher, idAgencia).subscribe(result => {
-      this.listReportAnulacion = result;
+      this.listReportAnulacion = this.convertirFilasAMoneda(result, ['precio', 'totalArgentina', 'pagoMetro', 'totalCounter', 'totalMetro', 'totalAgencia']);
     });
 
   }
@@ -259,8 +296,9 @@ export class PaquetesReporteVentasFiltradasComponent implements OnInit {
 
     const fecha = new Date();
     const fechaDocumento = `Fecha: ${fecha.toLocaleDateString('es-ES')}`;
+    const monedaTexto = this.form.get('monedaReporte').value === 2 ? '(en Bolivianos)' : '(en Dólares)';
     const tittle = "Reporte De Ventas Filtradas";
-    const tittle2 = "Paquetes " + this.listSucursales[(this.form.get("sucursal").value) - 1]['nombre'];
+    const tittle2 = "Paquetes " + this.listSucursales[(this.form.get("sucursal").value) - 1]['nombre'] + " " + monedaTexto;
 
     let tempItem = this.listClients.find(d => d.id === this.form.get("operador").value);
     let voucherItemReport = this.form.get("voucherItem").value;

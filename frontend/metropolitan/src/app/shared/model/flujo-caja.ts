@@ -15,4 +15,5 @@ export interface FlujoCajaMovimiento {
   moneda: string;
   monto: number;
   concepto: string;
+  tipoCambioValor?: number;
 }

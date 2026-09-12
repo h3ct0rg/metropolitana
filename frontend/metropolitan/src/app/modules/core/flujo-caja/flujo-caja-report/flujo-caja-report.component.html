@@ -1,80 +1,119 @@
-<h2>Flujo de Caja</h2>
+<div class="page-header">
+  <h2>Flujo de Caja</h2>
+</div>
 
 <form nz-form [formGroup]="form">
-  <div nz-row>
-    <div nz-col [nzSpan]="7">
-      <nz-form-item>
-        <nz-form-label nzRequired>Fecha Inicio: </nz-form-label>
-        <nz-form-control>
-          <nz-date-picker formControlName="fechaStardDate" nzPlaceHolder="Fecha Inicio"></nz-date-picker>
-        </nz-form-control>
-      </nz-form-item>
+  <div class="glass-card filtros-card">
+    <h4>Filtros del Reporte</h4>
+    <div nz-row [nzGutter]="24">
+      <div nz-col [nzXs]="24" [nzMd]="6">
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha Inicio</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker style="width:100%" formControlName="fechaStardDate" nzPlaceHolder="Fecha Inicio"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="6">
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha Final</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker style="width:100%" formControlName="fechaEndDate" nzPlaceHolder="Fecha Final"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="6">
+        <nz-form-item>
+          <nz-form-label>Área</nz-form-label>
+          <nz-form-control>
+            <nz-select style="width:100%" formControlName="area">
+              <nz-option *ngFor="let option of listAreas" [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="6">
+        <nz-form-item>
+          <nz-form-label>Sucursal</nz-form-label>
+          <nz-form-control>
+            <nz-select style="width:100%" formControlName="sucursal">
+              <nz-option [nzValue]="0" nzLabel="Todas las sucursales"></nz-option>
+              <nz-option *ngFor="let option of listSucursales" [nzValue]="option.id" [nzLabel]="option.nombre"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
     </div>
-    <div nz-col [nzSpan]="7">
-      <nz-form-item>
-        <nz-form-label nzRequired>Fecha Final: </nz-form-label>
-        <nz-form-control>
-          <nz-date-picker formControlName="fechaEndDate" nzPlaceHolder="Fecha Final"></nz-date-picker>
-        </nz-form-control>
-      </nz-form-item>
+
+    <div class="rango-invalido-msg" *ngIf="rangoFechasInvalido">
+      La Fecha Final no puede ser anterior a la Fecha Inicio.
     </div>
-  </div>
-  <div nz-row>
-    <div nz-col nzSpan="24">
-      <button nz-button nzType="primary" [disabled]="!form.valid" (click)="generarReporte()">Generar Flujo de Caja</button>
-      <button nz-button style="margin-left:10px" [disabled]="resumen.length === 0" (click)="generarPDF()">Exportar PDF</button>
+
+    <div class="form-actions">
+      <button nz-button nzType="primary" [disabled]="!form.valid || rangoFechasInvalido" (click)="generarReporte()">Generar Flujo de Caja</button>
+      <button nz-button [disabled]="resumen.length === 0" (click)="generarPDF()">Exportar PDF</button>
     </div>
   </div>
 </form>
 
 <nz-spin [nzSpinning]="isSpinning">
   <div id="pdfContainer">
-    <h3>Resumen por Cuenta</h3>
-    <nz-table #resumenTable [nzData]="resumen">
-      <thead>
-        <tr>
-          <th>Cuenta</th>
-          <th>Moneda</th>
-          <th>Cantidad de Operaciones</th>
-          <th>Total Ingresado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of resumenTable.data">
-          <td>{{ data.cuenta }}</td>
-          <td>{{ data.moneda }}</td>
-          <td>{{ data.cantidadOperaciones }}</td>
-          <td>{{ data.totalIngresos | number:'1.2-2' }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    <div class="glass-card table-card">
+      <h4>Resumen por Cuenta</h4>
+      <div class="table-scroll">
+        <nz-table #resumenTable [nzData]="resumen" [nzShowPagination]="false">
+          <thead>
+            <tr>
+              <th>Cuenta</th>
+              <th>Moneda</th>
+              <th>Cantidad de Operaciones</th>
+              <th>Total Ingresado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of resumenTable.data">
+              <td>{{ data.cuenta }}</td>
+              <td>{{ data.moneda }}</td>
+              <td>{{ data.cantidadOperaciones }}</td>
+              <td>{{ data.totalIngresos | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
 
-    <h3>Detalle de Movimientos</h3>
-    <nz-table #detalleTable [nzData]="detalle">
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Módulo</th>
-          <th>ND</th>
-          <th>Cuenta</th>
-          <th>Forma de Pago</th>
-          <th>Moneda</th>
-          <th>Monto</th>
-          <th>Concepto</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let data of detalleTable.data">
-          <td>{{ data.fechaPago | date:'dd/MM/yyyy' }}</td>
-          <td>{{ data.modulo }}</td>
-          <td>{{ data.idNotaDebito }}</td>
-          <td>{{ data.cuenta }}</td>
-          <td>{{ data.formaPago }}</td>
-          <td>{{ data.moneda }}</td>
-          <td>{{ data.monto | number:'1.2-2' }}</td>
-          <td>{{ data.concepto }}</td>
-        </tr>
-      </tbody>
-    </nz-table>
+    <div class="glass-card table-card">
+      <h4>Detalle de Movimientos</h4>
+      <div class="table-scroll">
+        <nz-table #detalleTable [nzData]="detalle">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Módulo</th>
+              <th>ND</th>
+              <th>Cuenta</th>
+              <th>Forma de Pago</th>
+              <th>Moneda</th>
+              <th>Tipo de Cambio</th>
+              <th>Monto</th>
+              <th>Concepto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of detalleTable.data">
+              <td>{{ data.fechaPago | date:'dd/MM/yyyy' }}</td>
+              <td>{{ data.modulo }}</td>
+              <td>{{ data.idNotaDebito }}</td>
+              <td>{{ data.cuenta }}</td>
+              <td>{{ data.formaPago }}</td>
+              <td>{{ data.moneda }}</td>
+              <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
+              <td>{{ data.monto | number:'1.2-2' }}</td>
+              <td>{{ data.concepto }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
   </div>
 </nz-spin>

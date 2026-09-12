@@ -57,6 +57,10 @@ export class FormaPagoCreateComponent implements OnInit {
     }
   }
 
+  cancel() {
+    this.router.navigate(['/main/forma-pago']);
+  }
+
   private buildAreas(): string {
     const areas = [];
     if (this.form.get('areaTravelace').value) areas.push('TRAVELACE');

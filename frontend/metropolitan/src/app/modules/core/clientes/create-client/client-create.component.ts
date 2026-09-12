@@ -17,7 +17,7 @@ export class ClientCreateComponent implements OnInit {
   public form: FormGroup;
   private cliente: Cliente;
   private clientId: number;
-  private isEdit: boolean;
+  public isEdit: boolean;
   public listSucursal: any[];
   public listCiudad: any[] = [
     { id: 1, nombre: "Cochabamba" },
@@ -127,6 +127,10 @@ export class ClientCreateComponent implements OnInit {
         this.router.navigate(['/main/clients']);
       });
     }
+  }
+
+  cancel() {
+    this.router.navigate(['/main/clients']);
   }
 
   getActualSucursal() {

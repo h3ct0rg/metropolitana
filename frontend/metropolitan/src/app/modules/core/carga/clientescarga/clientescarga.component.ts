@@ -16,7 +16,7 @@ export class ClientesCargaComponent implements OnInit {
   public form: FormGroup;
   private cliente: Cliente;
   private clientId: number;
-  private isEdit: boolean;
+  public isEdit: boolean;
   public listSucursal: any[];
   public listCiudad: any[] = [
     { id: 1, nombre: "Cochabamba" },
@@ -126,6 +126,10 @@ export class ClientesCargaComponent implements OnInit {
         this.router.navigate(['/main/carga/clientesList']);
       });
     }
+  }
+
+  cancel() {
+    this.router.navigate(['/main/carga/clientesList']);
   }
 
   getActualSucursal() {

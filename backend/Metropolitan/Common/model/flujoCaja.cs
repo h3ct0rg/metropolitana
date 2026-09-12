@@ -21,5 +21,6 @@ namespace Common.model
         public string moneda;
         public double monto;
         public string concepto;
+        public double? tipoCambioValor;
     }
 }

@@ -1,0 +1,30 @@
+.filtros-card {
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+}
+
+.filtros-card h4 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  color: #1a1a1a;
+  margin: 0 0 16px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.rango-invalido-msg {
+  color: #cf1322;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}

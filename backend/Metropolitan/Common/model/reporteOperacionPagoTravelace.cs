@@ -60,6 +60,7 @@ namespace Common.model
         public double totalCounter { get; set; }
         public double totalMetro { get; set; }
         public double totalAgencia { get; set; }
+        public double? tipoCambioValor { get; set; }
     }
 
 }

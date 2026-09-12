@@ -10,6 +10,7 @@ import { SucursalService } from '../../services/sucursal.services';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import autoTable from 'jspdf-autotable';
+import { TipoCambioService } from '../../services/tipo-cambio.services';
 
 
 
@@ -28,6 +29,8 @@ export class ReporteVentasFiltradasComponent implements OnInit {
   public listSucursales = [];
   public listClients = [];
   public listResults = [];
+  public tasaManualRespaldo: number = null;
+  public faltanTasasLegacy: boolean = false;
 
 
   token: any;
@@ -39,14 +42,22 @@ export class ReporteVentasFiltradasComponent implements OnInit {
     private operadorService: OperadorService,
     private logService: LogsService,
     private clientService: ClientService,
+    private tipoCambioService: TipoCambioService,
   ) {
     this.isSpinning = true;
+    const hoy = new Date();
+    const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
     this.form = new FormGroup({
-      fechaStardDate: new FormControl(null, [Validators.required]),
-      fechaEndDate: new FormControl(null, [Validators.required]),
+      fechaStardDate: new FormControl(inicioMes, [Validators.required]),
+      fechaEndDate: new FormControl(hoy, [Validators.required]),
       sucursal: new FormControl(null),
       voucherItem: new FormControl(null),
-      operador: new FormControl(null)
+      operador: new FormControl(null),
+      monedaReporte: new FormControl(1)
+    });
+
+    this.tipoCambioService.getActual().subscribe(result => {
+      this.tasaManualRespaldo = result.valor;
     });
 
     this.sucursalesService.getSucursalList().subscribe(result => {
@@ -70,6 +81,28 @@ export class ReporteVentasFiltradasComponent implements OnInit {
   ngOnInit() {
   }
 
+  get rangoFechasInvalido(): boolean {
+    const inicio = this.form.get('fechaStardDate').value;
+    const fin = this.form.get('fechaEndDate').value;
+    if (!inicio || !fin) { return false; }
+    return new Date(fin) < new Date(inicio);
+  }
+
+  convertirFilasAMoneda(filas: any[], campos: string[]): any[] {
+    if (this.form.get('monedaReporte').value !== 2) {
+      return filas;
+    }
+    if (filas.some(r => !r.tipoCambioValor)) {
+      this.faltanTasasLegacy = true;
+    }
+    return filas.map(r => {
+      const tasa = r.tipoCambioValor || this.tasaManualRespaldo || 1;
+      const convertida = { ...r };
+      campos.forEach(campo => { convertida[campo] = r[campo] * tasa; });
+      return convertida;
+    });
+  }
+
   formatDate(dateString: string): string {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -80,12 +113,16 @@ export class ReporteVentasFiltradasComponent implements OnInit {
   }
 
   generateNote() {
+    if (this.rangoFechasInvalido) {
+      return;
+    }
+    this.faltanTasasLegacy = false;
     const fechaStart = this.form.get("fechaStardDate").value;
     const fechaEnd = this.form.get("fechaEndDate").value;
     const voucher = this.form.get("voucherItem").value;
     const idAgencia = this.form.get("operador").value;
     this.ordenPagoService.getReportOrdenPagoByDateDetailByCityFiltered(fechaStart, fechaEnd, this.form.get("sucursal").value, voucher, idAgencia).subscribe(result => {
-      console.log(result);
+      result = this.convertirFilasAMoneda(result, ['precio', 'totalArgentina', 'pagoMetro', 'totalCounter', 'totalMetro', 'totalAgencia']);
 
       const groupedByOperador = result.reduce((acc, current) => {
         const operador = current.nombreOperador;
@@ -183,8 +220,9 @@ export class ReporteVentasFiltradasComponent implements OnInit {
     const doc = new jsPDF();
 
     // Configurar el título del documento
+    const monedaTexto = this.form.get('monedaReporte').value === 2 ? '(en Bolivianos)' : '(en Dólares)';
     doc.setFontSize(18);
-    doc.text('Resumen de Pagos', 14, 22);
+    doc.text('Resumen de Pagos ' + monedaTexto, 14, 22);
 
     // Establecer el margen
     const margin = 5;

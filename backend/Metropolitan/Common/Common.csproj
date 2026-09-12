@@ -81,6 +81,7 @@
     <Compile Include="model\PagedResult.cs" />
     <Compile Include="model\dashboard\FinancialDashboardModels.cs" />
     <Compile Include="model\dashboard\ActivityDashboardModels.cs" />
+    <Compile Include="model\dashboard\CurrencyDashboardModels.cs" />
     <Compile Include="model\listaOrdenDePagoTravelace.cs" />
     <Compile Include="model\reporteOperacionPagoTravelace.cs" />
     <Compile Include="model\ordenPagoReporteTravelace.cs" />

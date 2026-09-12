@@ -790,8 +790,8 @@ namespace DataBase.management
 
             query = string.Format(@"
                                     select
-                                    codigoUnicoNota, PR.nombre, codCounter,pasajero,servicios,montoNeto,totalArgentina,totalCounter,totalAgencia, fechaGestion
-  FROM travelaceNotaDebito as ND, operador as PR where 
+                                    codigoUnicoNota, PR.nombre, codCounter,pasajero,servicios,montoNeto,totalArgentina,totalCounter,totalAgencia, fechaGestion, ND.tipoCambioValor
+  FROM travelaceNotaDebito as ND, operador as PR where
   ND.codOperador = PR.id
   and Nd.idSucursal = '{0}' 
   and ND.concepto like '%ppf%' 
@@ -817,6 +817,7 @@ namespace DataBase.management
                             listaOrdenPagos.totalCounter = reader.GetDouble(7);
                             listaOrdenPagos.totalAgencia = reader.GetDouble(8);
                             listaOrdenPagos.fechaPago = reader.GetDateTime(9);
+                            listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -843,9 +844,9 @@ namespace DataBase.management
             string query = "";
 
             query = string.Format(@"
-                                    select ND.codigoUnicoNota,ND.fechaVencimiento, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios, 
+                                    select ND.codigoUnicoNota,ND.fechaVencimiento, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios,
 ND.montoNeto,ND.totalArgentina,ND.totalCounter,ND.totalAgencia, ND.totalMetropolitan,
-CL.nombre
+CL.nombre, ND.tipoCambioValor
 from travelaceNotaDebito as ND, operador as PR, clients as CL
 									where 									
 									PR.id=ND.codOperador
@@ -878,6 +879,7 @@ from travelaceNotaDebito as ND, operador as PR, clients as CL
                             listaOrdenPagos.totalAgencia = reader.GetDouble(10);
                             listaOrdenPagos.totalMetro = reader.GetDouble(11);
                             listaOrdenPagos.nombreAgencia = reader.GetString(12);
+                            listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -1038,8 +1040,9 @@ ROUND(ND.totalArgentina,2) as totalArgentina,
 ROUND((ND.montoNeto-ND.totalArgentina),2) as PagadoMetro,
 ROUND(ND.totalCounter,2) as totalCounter,
 ROUND(ND.totalMetropolitan,2) as totalMetropolitana,
-ROUND(ND.totalAgencia,2) as totalAgencia
-                                    from travelaceNotaDebito as ND, 
+ROUND(ND.totalAgencia,2) as totalAgencia,
+ND.tipoCambioValor
+                                    from travelaceNotaDebito as ND,
 									travelOrdenPago as OP, 
 									operador as PR, 
 									clients as CL									
@@ -1076,6 +1079,7 @@ ROUND(ND.totalAgencia,2) as totalAgencia
                             listaOrdenPagos.totalCounter = reader.GetDouble(8);
                             listaOrdenPagos.totalMetro = reader.GetDouble(9);
                             listaOrdenPagos.totalAgencia = reader.GetDouble(10);
+                            listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }

@@ -1,21 +1,24 @@
-<h2>Forma de Pago</h2>
+<div class="page-header">
+  <h2>{{ isEdit ? 'Editar Forma de Pago' : 'Nueva Forma de Pago' }}</h2>
+</div>
 
-<form nz-form [formGroup]="form">
-  <div class="gutter-example">
-    <div nz-row>
-      <div nz-col class="gutter-row" nzSpan="8">
+<div class="glass-card form-card">
+  <form nz-form [formGroup]="form">
+    <h4>Datos Generales</h4>
+    <div nz-row [nzGutter]="24">
+      <div nz-col [nzXs]="24" [nzMd]="10">
         <nz-form-item>
           <nz-form-label nzRequired nzFor="nombre">Nombre</nz-form-label>
           <nz-form-control>
-            <input nz-input name="nombre" type="text" formControlName="nombre" nzSpan="20">
+            <input nz-input name="nombre" type="text" formControlName="nombre" placeholder="Ej. Efectivo Dólares">
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col class="gutter-row" nzSpan="8">
+      <div nz-col [nzXs]="24" [nzMd]="8">
         <nz-form-item>
           <nz-form-label nzRequired nzFor="moneda">Moneda</nz-form-label>
           <nz-form-control>
-            <nz-select formControlName="moneda">
+            <nz-select style="width:100%" formControlName="moneda">
               <nz-option nzValue="USD" nzLabel="Dólares (USD)"></nz-option>
               <nz-option nzValue="BS" nzLabel="Bolivianos (BS)"></nz-option>
               <nz-option nzValue="AMBOS" nzLabel="Ambos / depende de la cuenta"></nz-option>
@@ -23,44 +26,42 @@
           </nz-form-control>
         </nz-form-item>
       </div>
-      <div nz-col class="gutter-row" nzSpan="8">
+      <div nz-col [nzXs]="24" [nzMd]="6">
         <nz-form-item>
           <nz-form-label nzFor="orden">Orden en el listado</nz-form-label>
           <nz-form-control>
-            <input nz-input name="orden" type="number" formControlName="orden" nzSpan="20">
+            <input nz-input name="orden" type="number" formControlName="orden">
           </nz-form-control>
         </nz-form-item>
       </div>
     </div>
 
-    <div nz-row style="padding-bottom:20px;">
-      <div nz-col nzSpan="24">
-        <nz-form-label>Áreas donde aplica</nz-form-label>
+    <h4>Áreas donde aplica</h4>
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzXs]="24" [nzMd]="8">
+        <label class="option-card" nz-checkbox formControlName="areaTravelace">Travelace (UA)</label>
       </div>
-      <div nz-col nzSpan="8">
-        <label nz-checkbox formControlName="areaTravelace">Travelace (UA)</label>
+      <div nz-col [nzXs]="24" [nzMd]="8">
+        <label class="option-card" nz-checkbox formControlName="areaPaquetes">Paquetes</label>
       </div>
-      <div nz-col nzSpan="8">
-        <label nz-checkbox formControlName="areaPaquetes">Paquetes</label>
-      </div>
-      <div nz-col nzSpan="8">
-        <label nz-checkbox formControlName="areaCarga">Carga</label>
+      <div nz-col [nzXs]="24" [nzMd]="8">
+        <label class="option-card" nz-checkbox formControlName="areaCarga">Carga</label>
       </div>
     </div>
 
-    <div nz-row style="padding-bottom:20px;">
-      <div nz-col nzSpan="12">
-        <label nz-checkbox formControlName="requiereCuentaBancaria">Requiere elegir una cuenta bancaria</label>
+    <h4>Configuración Adicional</h4>
+    <div nz-row [nzGutter]="16">
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <label class="option-card" nz-checkbox formControlName="requiereCuentaBancaria">Requiere elegir una cuenta bancaria</label>
       </div>
-      <div nz-col nzSpan="12">
-        <label nz-checkbox formControlName="activo">Activo (seleccionable en nuevas ND/OP)</label>
+      <div nz-col [nzXs]="24" [nzMd]="12">
+        <label class="option-card" nz-checkbox formControlName="activo">Activo (seleccionable en nuevas ND/OP)</label>
       </div>
     </div>
-  </div>
-</form>
 
-<div nz-row>
-  <div nz-col nzSpan="24" nzOffset="9" style="padding-top:20px;">
-    <button nz-button [disabled]="!form.valid" nzType="primary" (click)="saveFormaPago()">Guardar Forma de Pago</button>
-  </div>
+    <div class="form-actions">
+      <button nz-button nzType="default" (click)="cancel()">Cancelar</button>
+      <button nz-button nzType="primary" [disabled]="!form.valid" (click)="saveFormaPago()">Guardar Forma de Pago</button>
+    </div>
+  </form>
 </div>
