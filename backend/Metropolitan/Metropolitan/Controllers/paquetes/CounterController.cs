@@ -37,6 +37,17 @@ namespace Metropolitan.Controllers.paquetes
             return results;
         }
 
+        [HttpPost("GetReporteByCounterDetalle")]
+        public ActionResult<List<reportByCounterDetalle>> GetReporteByCounterDetalle([FromBody] JObject actionRequest)
+        {
+            dynamic apRequest = (dynamic)actionRequest;
+            var starDate = (string)apRequest.startDate;
+            var endDate = (string)apRequest.endDate;
+            List<reportByCounterDetalle> results = new List<reportByCounterDetalle>();
+            results = gestordb.getProfitByCounterDetalle(Convert.ToDateTime(starDate), Convert.ToDateTime(endDate));
+            return results;
+        }
+
         // GET api/values
         [HttpGet("GetById")]
         public ActionResult<Counter> GetById(int id)

@@ -26,12 +26,22 @@ namespace DataBase.model
         public DateTime modifyDate;
     }
 
-    public class reportByCounter 
+    public class reportByCounter
     {
         public int id;
         public string agencia;
         public string nombre;
         public double total;
         public double totalSales;
+    }
+
+    public class reportByCounterDetalle
+    {
+        public int idNota;
+        public string agencia;
+        public string nombreCounter;
+        public double totalCounter;
+        public double totalSales;
+        public double? tipoCambioValor;
     }
 }

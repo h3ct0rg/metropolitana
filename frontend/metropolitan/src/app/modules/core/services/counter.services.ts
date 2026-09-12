@@ -52,7 +52,12 @@ export class CounterService extends BaseService<Counter> {
     return this.post('/Counter/GetReporteByCounterByCity', dateRange) as Observable<any[]>;
   }
 
-  
+  getCounterProfitByDateByCityDetalle(startedDate: string, endedDate: string, idCityList: string) {
+    const dateRange = { startDate: startedDate, endDate: endedDate, idCity: idCityList };
+    return this.post('/Counter/GetReporteByCounterByCityDetalle', dateRange) as Observable<any[]>;
+  }
+
+
 
   //------------------------------------/ Paquetes /-----------------------------------------------------
 
@@ -90,6 +95,11 @@ export class CounterService extends BaseService<Counter> {
     return this.post('/CounterPaquetes/GetReporteByCounter', dateRange) as Observable<any[]>;
   }
 
+  getCounterProfitByDatePaquetDetalle(startedDate: string, endedDate: string) {
+    const dateRange = { startDate: startedDate, endDate: endedDate };
+    return this.post('/CounterPaquetes/GetReporteByCounterDetalle', dateRange) as Observable<any[]>;
+  }
+
   //------------------------------------/ Carga /-----------------------------------------------------
 
   getCounterListCarga = (): Observable<any> => {
@@ -124,5 +134,10 @@ export class CounterService extends BaseService<Counter> {
   getCounterProfitByDateCarga(startedDate: string, endedDate: string) {
     const dateRange = { startDate: startedDate, endDate: endedDate };
     return this.post('/CounterCarga/GetReporteByCounter', dateRange) as Observable<any[]>;
+  }
+
+  getCounterProfitByDateCargaDetalle(startedDate: string, endedDate: string) {
+    const dateRange = { startDate: startedDate, endDate: endedDate };
+    return this.post('/CounterCarga/GetReporteByCounterDetalle', dateRange) as Observable<any[]>;
   }
 }

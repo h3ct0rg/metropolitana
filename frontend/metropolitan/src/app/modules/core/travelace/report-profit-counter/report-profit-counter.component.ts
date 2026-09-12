@@ -29,6 +29,10 @@ export class ReportProfitCounterComponent implements OnInit {
   public isSpinning: boolean;
   public listSucursales = [];
   public tasaManualRespaldo: number = null;
+  public detalleVisible: boolean = false;
+  public detalleSeleccionado: any[] = [];
+  public detalleTotalUsd: number = 0;
+  public detalleTotalBs: number = 0;
   logs: Logs;
   token: any;
 
@@ -123,19 +127,40 @@ export class ReportProfitCounterComponent implements OnInit {
     this.totalSumar = 0;
     const fechaStart = this.form.get("fechaStardDate").value;
     const fechaEnd = this.form.get("fechaEndDate").value;
-    const tasa = this.form.get('monedaReporte').value === 2 ? (this.tasaManualRespaldo || 1) : 1;
+    const esBolivianos = this.form.get('monedaReporte').value === 2;
 
     this.fechaIni = this.getTime(fechaStart);
     this.fechaF = this.getTime(fechaEnd);
     this.listTablePDF = [];
-    this.counterService.getCounterProfitByDateByCity(this.form.get("fechaStardDate").value, this.form.get("fechaEndDate").value, this.form.get("sucursal").value).subscribe(result => {
-      this.listCounters = result;
-      this.listCounters.forEach(result => {
-        result.total = result.total * tasa;
-        result.totalSales = result.totalSales * tasa;
-        this.listTablePDF.push([result['agencia'], result['nombre'], result['total'].toFixed(2), result['totalSales'].toFixed(2)]);
-        this.totalCounter += result.total;
-        this.totalSumar += result.totalSales;
+    this.counterService.getCounterProfitByDateByCityDetalle(this.form.get("fechaStardDate").value, this.form.get("fechaEndDate").value, this.form.get("sucursal").value).subscribe(result => {
+      const grupos = new Map<string, any>();
+
+      result.forEach(fila => {
+        const tasa = esBolivianos ? (fila.tipoCambioValor || this.tasaManualRespaldo || 1) : 1;
+        const totalCounterConvertido = fila.totalCounter * tasa;
+        const totalSalesConvertido = fila.totalSales * tasa;
+
+        const clave = fila.agencia + '|' + fila.nombreCounter;
+        if (!grupos.has(clave)) {
+          grupos.set(clave, { agencia: fila.agencia, nombre: fila.nombreCounter, total: 0, totalSales: 0, detalle: [] });
+        }
+        const grupo = grupos.get(clave);
+        grupo.total += totalCounterConvertido;
+        grupo.totalSales += totalSalesConvertido;
+        grupo.detalle.push({
+          idNota: fila.idNota,
+          agencia: fila.agencia,
+          totalCounterUsd: fila.totalCounter,
+          tipoCambioValor: fila.tipoCambioValor,
+          totalCounterBs: fila.totalCounter * (fila.tipoCambioValor || this.tasaManualRespaldo || 1)
+        });
+      });
+
+      this.listCounters = Array.from(grupos.values());
+      this.listCounters.forEach(grupo => {
+        this.listTablePDF.push([grupo.agencia, grupo.nombre, grupo.total.toFixed(2), grupo.totalSales.toFixed(2)]);
+        this.totalCounter += grupo.total;
+        this.totalSumar += grupo.totalSales;
       });
       this.listTablePDF.push(["", "", "Total Counter", "Total Ventas"]);
       this.listTablePDF.push(["", "", this.totalCounter.toFixed(2), this.totalSumar.toFixed(2)]);
@@ -145,6 +170,13 @@ export class ReportProfitCounterComponent implements OnInit {
       this.logService.saveLogItem(this.logs).subscribe(sucess => { });
     });
 
+  }
+
+  verDetalle(grupo: any) {
+    this.detalleSeleccionado = grupo.detalle;
+    this.detalleTotalUsd = grupo.detalle.reduce((sum, item) => sum + item.totalCounterUsd, 0);
+    this.detalleTotalBs = grupo.detalle.reduce((sum, item) => sum + item.totalCounterBs, 0);
+    this.detalleVisible = true;
   }
 
   onChange() {
@@ -161,16 +193,31 @@ export class ReportProfitCounterComponent implements OnInit {
     return hora;
   }
 
-  generarPDF() {
+  private getLogoDataUrl(): Promise<string> {
+    return new Promise(resolve => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 300;
+        canvas.height = Math.round(300 * (img.height / img.width));
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85));
+      };
+      img.src = "../../../../assets/img/metropolitana-slogan.jpg";
+    });
+  }
+
+  async generarPDF() {
     const doc2 = new jsPDF();
     const nombreSucursal = this.listSucursales.find(item => item.id = this.form.get("sucursal").value)['nombre']
     const monedaTexto = this.form.get('monedaReporte').value === 2 ? '(en Bolivianos)' : '(en Dólares)';
     const tittle = "Reporte Counters Universal Assistance de " + nombreSucursal + " " + monedaTexto;
 
-    const img = new Image();
-    img.src = "../../../../assets/img/metropolitana-slogan.jpg";
-    img.style.display = "block";
-    doc2.addImage(img, 'JPEG', 75, 10, 50, 23);
+    const logoDataUrl = await this.getLogoDataUrl();
+    doc2.addImage(logoDataUrl, 'JPEG', 75, 10, 50, 23);
 
     autoTable(doc2, {
       margin: { top: 40, bottom: 10 },

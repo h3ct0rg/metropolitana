@@ -37,7 +37,7 @@
     <div nz-row [nzGutter]="24" style="margin-top:8px">
       <div nz-col [nzXs]="24" [nzMd]="10">
         <label nz-checkbox [ngModel]="form.get('monedaReporte').value === 2"
-               (ngModelChange)="form.get('monedaReporte').setValue($event ? 2 : 1)"
+               (ngModelChange)="form.get('monedaReporte').setValue($event ? 2 : 1); generateNote()"
                [ngModelOptions]="{standalone: true}">Mostrar en Bolivianos</label>
       </div>
       <div nz-col [nzXs]="24" [nzMd]="14" *ngIf="form.get('monedaReporte').value === 2">
@@ -79,9 +79,11 @@
         <nz-table [nzShowPagination]="false" #basicTable [nzData]="listCounters">
           <thead>
             <tr>
+              <th>Agencia</th>
               <th>Nombre</th>
               <th>Total Counter</th>
               <th>Total Ventas</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -90,16 +92,21 @@
               <td>{{ data.nombre }}</td>
               <td>{{ form.get('monedaReporte').value === 2 ? 'Bs' : '$us' }} {{ data.total.toFixed(2) }}</td>
               <td>{{ form.get('monedaReporte').value === 2 ? 'Bs' : '$us' }} {{ data.totalSales.toFixed(2) }}</td>
+              <td><button nz-button nzSize="small" (click)="verDetalle(data)">Detalle</button></td>
             </tr>
             <tr>
+              <td></td>
               <td></td>
               <td><h3>Total Counter</h3></td>
               <td><h3>Total Ventas</h3></td>
+              <td></td>
             </tr>
             <tr>
               <td></td>
+              <td></td>
               <td>{{ form.get('monedaReporte').value === 2 ? 'Bs' : '$us' }} {{ totalCounter.toFixed(2) }}</td>
               <td>{{ form.get('monedaReporte').value === 2 ? 'Bs' : '$us' }} {{ totalSumar.toFixed(2) }}</td>
+              <td></td>
             </tr>
           </tbody>
 
@@ -112,4 +119,37 @@
 
 </form>
 <button [disabled]="isSpinning" nz-button [nzType]="'primary'" (click)="onPrint()">Imprimir</button>
+
+<nz-modal [(nzVisible)]="detalleVisible" nzTitle="Detalle por Nota de Débito" [nzContent]="modalDetalleTpl" [nzFooter]="null" [nzWidth]="900" (nzOnCancel)="detalleVisible = false"></nz-modal>
+
+<ng-template #modalDetalleTpl>
+  <nz-table [nzData]="detalleSeleccionado" [nzShowPagination]="false">
+    <thead>
+      <tr>
+        <th>ND</th>
+        <th>Agencia</th>
+        <th>Monto Counter (Dólares)</th>
+        <th>Tipo de Cambio</th>
+        <th>Monto Counter (Bolivianos)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of detalleSeleccionado">
+        <td>{{ item.idNota }}</td>
+        <td>{{ item.agencia }}</td>
+        <td>$us {{ item.totalCounterUsd.toFixed(2) }}</td>
+        <td>{{ item.tipoCambioValor ? (item.tipoCambioValor | number:'1.2-2') : '-' }}</td>
+        <td>Bs {{ item.totalCounterBs.toFixed(2) }}</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2"><strong>Total</strong></td>
+        <td><strong>$us {{ detalleTotalUsd.toFixed(2) }}</strong></td>
+        <td></td>
+        <td><strong>Bs {{ detalleTotalBs.toFixed(2) }}</strong></td>
+      </tr>
+    </tfoot>
+  </nz-table>
+</ng-template>
 

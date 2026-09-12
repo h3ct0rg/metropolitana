@@ -57,6 +57,53 @@ Sum(ND.totalCounter) as totalCounter, sum(ND.total) as totalSales
         }
 
 
+        public List<reportByCounterDetalle> getProfitByCounterDetalle(DateTime startDate, DateTime endDate)
+        {
+            startDate = new DateTime(startDate.Year, startDate.Month, startDate.Day, 1, 1, 0);
+            endDate = new DateTime(endDate.Year, endDate.Month, endDate.Day, 23, 59, 0);
+            List<reportByCounterDetalle> listP = new List<reportByCounterDetalle>();
+            base.sqlConnection.open();
+
+            string query = string.Format(@"select ND.id, AG.nombre, CO.nombre,
+ND.totalCounter, ND.total, ND.tipoCambioValor
+                                    from paquetesNotaDebito as ND, paquetesOrdenPago as OP
+									, counterPaquetes as CO, clientePaquetes as AG
+									where
+									ND.codigoUnicoNota = OP.idNotaDebito
+									and ND.codCounter = CO.id
+                                    and CO.idAgencia = AG.id
+                                    and '{1}' > OP.fechaPago and OP.fechaPago > '{0}'
+									and ND.codigoUnicoNota>0
+									order by AG.nombre, CO.nombre", startDate, endDate);
+            try
+            {
+                using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            reportByCounterDetalle detalle = new reportByCounterDetalle();
+                            detalle.idNota = reader.GetInt32(0);
+                            detalle.agencia = reader.GetString(1);
+                            detalle.nombreCounter = reader.GetString(2);
+                            detalle.totalCounter = reader.GetDouble(3);
+                            detalle.totalSales = reader.GetDouble(4);
+                            detalle.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            listP.Add(detalle);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            base.sqlConnection.close();
+            return listP;
+        }
+
         public List<Counter> getListCounter()
         {
             Counter lCounter = new Counter();
