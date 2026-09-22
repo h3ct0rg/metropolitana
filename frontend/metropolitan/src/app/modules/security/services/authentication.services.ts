@@ -2,15 +2,17 @@ import { Injectable, Self, Inject } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
 import { Router } from '@angular/router';
 import * as jwt_decode from 'jwt-decode';
-import { environment } from './../../../../environments/environment';
 import { StorageService, BROWSER_STORAGE } from './../../../shared/services/local-data/storage.service';
 import { IStorageKeys } from './../../../shared/services/local-data/storage';
+import { AppConfigService } from './../../../shared/services/app-config.service';
 
 @Injectable()
 export class AuthenticationService {
   userRoles: any;
 
-  private loginUrl = environment.apiAuthenticationUrl + 'Login';
+  private get loginUrl(): string {
+    return AppConfigService.baseUrlApi + '/Login';
+  }
   private headers = new Headers({
     'Content-Type': 'application/json',
     'Access-Control-Allow-Origin': '*',

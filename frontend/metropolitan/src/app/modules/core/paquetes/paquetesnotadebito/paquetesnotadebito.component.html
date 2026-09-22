@@ -19,6 +19,12 @@
             </nz-form-control>
           </nz-form-item>
           <nz-form-item>
+            <nz-form-label>Fecha de Salida: </nz-form-label>
+            <nz-form-control>
+              <nz-date-picker formControlName="fechaSalida" nzPlaceHolder="Fecha de Salida"></nz-date-picker>
+            </nz-form-control>
+          </nz-form-item>
+          <nz-form-item>
             <nz-form-label nzRequired>Cliente</nz-form-label>
             <nz-form-control>
               <nz-select nzShowSearch nzAllowClear nzPlaceHolder="Elige una Agencia" formControlName="clienteNotaVenta" (ngModelChange)="counterChange($event)">

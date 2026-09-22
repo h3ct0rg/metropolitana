@@ -24,12 +24,16 @@ namespace DataBase
         //                            User ID=metropolitanam_SQLLogin_1;
         //                            pwd=m3tafxnioq;";
 
-        private string connection = @"Data Source=192.168.0.128;
+        // Fallback usado solo si AppConfig.ConnectionString no llegó a setearse
+        // (p.ej. algo que use DataBase sin pasar por Metropolitan/Startup.cs).
+        // El valor real en uso normalmente viene de appsettings.json.
+        private const string fallbackConnection = @"Data Source=192.168.0.128;
                                     Initial Catalog=demoTurismoDev;
                                     Persist Security Info=False;
                                     User ID=sa;
                                     pwd=YourPassword123!;";
 
+        private string connection => !string.IsNullOrEmpty(AppConfig.ConnectionString) ? AppConfig.ConnectionString : fallbackConnection;
 
         public connectionDB()
         {

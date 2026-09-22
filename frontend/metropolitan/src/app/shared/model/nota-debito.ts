@@ -27,6 +27,7 @@ export interface NotaDebito {
   estadoEditado?: number;
   monedaNota?: number; // 1 = USD, 2 = BS. undefined/null = legacy, mostrar como USD.
   tipoCambioValor?: number; // tasa USD->Bs usada al crear/editar esta ND.
+  fechaSalida?: string; // solo Paquetes -- fecha de viaje.
 }
 
 export interface NotaDebitoList {

@@ -51,6 +51,7 @@ namespace DataBase.management
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
                             notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            notadebitoTravelace.fechaSalida = GetNullableDateTimeByName(reader, "fechaSalida");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -127,7 +128,7 @@ namespace DataBase.management
 
             string query = @"
 select ND.id, C.nombre, ND.pasajero, ND.servicios, ND.voucher, ND.total, ND.estado, ND.codigoUnicoNota,
-       COUNT(*) OVER() as TotalRows, ND.monedaNota, ND.tipoCambioValor
+       COUNT(*) OVER() as TotalRows, ND.monedaNota, ND.tipoCambioValor, ND.fechaSalida
 from paquetesNotaDebito as ND
 left join clientePaquetes as C
 on C.id = ND.codCliente
@@ -168,6 +169,7 @@ offset @offset rows fetch next @pageSize rows only";
                             notadebitoTravelace.codigoUnico = reader.GetInt32(7);
                             notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            notadebitoTravelace.fechaSalida = GetNullableDateTimeByName(reader, "fechaSalida");
                             result.data.Add(notadebitoTravelace);
                             result.total = reader.GetInt32(8);
                         }
@@ -312,6 +314,7 @@ order by ND.codigoUnicoNota DESC
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
                             notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            notadebitoTravelace.fechaSalida = GetNullableDateTimeByName(reader, "fechaSalida");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -377,6 +380,7 @@ order by ND.codigoUnicoNota DESC
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
                             notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            notadebitoTravelace.fechaSalida = GetNullableDateTimeByName(reader, "fechaSalida");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -425,6 +429,56 @@ order by ND.codigoUnicoNota DESC
                 }
             }
             return query;
+        }
+
+        public List<notaDebitoFechaSalidaDto> getNotaDebitoByFechaSalida(DateTime startDate, DateTime endDate, int idSucursal)
+        {
+            List<notaDebitoFechaSalidaDto> lista = new List<notaDebitoFechaSalidaDto>();
+            base.sqlConnection.open();
+            try
+            {
+                string query = string.Format(@"
+select ND.id, ND.codigoUnicoNota, ND.voucher, ND.pasajero, CL.nombre as nombreAgencia, PR.nombre as nombreOperador,
+       ND.fechaSalida, ND.fechaGestion, ND.montoNeto, ND.total, ND.estado, ND.idSucursal
+from paquetesNotaDebito ND
+left join clientePaquetes CL on CL.id = ND.codCliente
+left join operadorPaquetes PR on PR.id = ND.codOperador
+where ND.fechaSalida is not null
+  and ND.fechaSalida between '{0}' and '{1}'
+  and ND.idSucursal = '{2}'
+order by ND.fechaSalida", startDate, endDate, idSucursal);
+
+                using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            notaDebitoFechaSalidaDto dto = new notaDebitoFechaSalidaDto();
+                            dto.id = reader.GetInt32(0);
+                            dto.codigoUnico = reader.GetInt32(1);
+                            dto.voucher = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                            dto.pasajero = reader.IsDBNull(3) ? "" : reader.GetString(3);
+                            dto.nombreAgencia = reader.IsDBNull(4) ? "" : reader.GetString(4);
+                            dto.nombreOperador = reader.IsDBNull(5) ? "" : reader.GetString(5);
+                            dto.fechaSalida = reader.GetDateTime(6);
+                            dto.fechaGestion = reader.GetDateTime(7);
+                            dto.montoNeto = reader.GetDouble(8);
+                            dto.total = reader.GetDouble(9);
+                            dto.estado = reader.GetInt32(10);
+                            dto.idSucursal = reader.GetInt32(11);
+                            lista.Add(dto);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            base.sqlConnection.close();
+            return lista;
         }
 
         public calcularNotaDebitoTravelace calcularNotadebitoTravelace(calcularNotaDebitoTravelace calculos)
@@ -586,6 +640,7 @@ order by ND.codigoUnicoNota DESC
                             notadebitoTravelace.idSucursal = reader.GetInt32(20);
                             notadebitoTravelace.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             notadebitoTravelace.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            notadebitoTravelace.fechaSalida = GetNullableDateTimeByName(reader, "fechaSalida");
                             try
                             {
                                 notadebitoTravelace.createBy = reader.GetInt32(21);
@@ -618,18 +673,19 @@ order by ND.codigoUnicoNota DESC
                                         pasajero,servicios,voucher,fechaVencimiento,totalArgentina,totalAgencia,
                                         totalCounter,totalMetropolitan,total,montoNeto,concepto,
                                         isEspecial,codigoUnicoNota,estado,idSucursal,
-                                        createdBy,createdDate,monedaNota,tipoCambioValor)
+                                        createdBy,createdDate,monedaNota,tipoCambioValor,fechaSalida)
                                         values ('{0}','{1}','{2}','{3}','{4}',
                                                 '{5}','{6}','{7}','{8}','{9}',
                                                 '{10}','{11}','{12}','{13}','{14}',
-                                                '{15}','{16}','{17}','{18}','{19}','{20}','{21}',{22},{23})",
+                                                '{15}','{16}','{17}','{18}','{19}','{20}','{21}',{22},{23},{24})",
                                         notaD.codCliente, notaD.codCounter, notaD.codOperador, notaD.codTipoCambio, notaD.fechaGestion,
                                         notaD.pasajero, notaD.servicio, notaD.voucher, notaD.fechaVencimiento, notaD.totalArgentina, notaD.totalAgencia,
                                         notaD.totalCounter, notaD.totalMetropolitana, notaD.total, notaD.montoNeto, notaD.concepto,
                                         notaD.isEspecial, notaD.codigoUnico, notaD.estado, notaD.idSucursal,
                                         notaD.createBy, notaD.createDate,
                                         notaD.monedaNota.HasValue ? notaD.monedaNota.Value.ToString() : "NULL",
-                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
+                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL",
+                                        notaD.fechaSalida.HasValue ? "'" + notaD.fechaSalida.Value.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) + "'" : "NULL");
             base.insertUpdateExecute(query);
             return getListNotaDebito(notaD.codigoUnico, notaD.idSucursal)[0];
         }
@@ -742,7 +798,7 @@ order by ND.codigoUnicoNota DESC
                                         pasajero='{5}',servicios='{6}',voucher='{7}',fechaVencimiento='{8}',totalArgentina='{9}',totalAgencia='{10}',
                                         totalCounter='{11}',totalMetropolitan='{12}',total='{13}',montoNeto='{14}',concepto='{15}',
                                         isEspecial='{16}',codigoUnicoNota='{17}',estado='{18}', idSucursal='{19}',
-                                        modifyBy={20},modifyDate='{21}',monedaNota={23},tipoCambioValor={24}
+                                        modifyBy={20},modifyDate='{21}',monedaNota={23},tipoCambioValor={24},fechaSalida={25}
                                         where id={22}",
                                         notaD.codCliente, notaD.codCounter, notaD.codOperador,
                                         notaD.codTipoCambio, notaD.fechaGestion,
@@ -751,7 +807,8 @@ order by ND.codigoUnicoNota DESC
                                         notaD.isEspecial, notaD.codigoUnico, notaD.estado, notaD.idSucursal,
                                         notaD.modify, notaD.modifyDate, notaD.id,
                                         notaD.monedaNota.HasValue ? notaD.monedaNota.Value.ToString() : "NULL",
-                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
+                                        notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL",
+                                        notaD.fechaSalida.HasValue ? "'" + notaD.fechaSalida.Value.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) + "'" : "NULL");
             return insertUpdateExecute(query);
         }
 
@@ -821,19 +878,20 @@ order by ND.codigoUnicoNota DESC
                                         pasajero,servicios,voucher,fechaVencimiento,totalArgentina,totalAgencia,
                                         totalCounter,totalMetropolitan,total,montoNeto,concepto,
                                         isEspecial,codigoUnicoNota,estado,idSucursal,estadoEditado,
-                                        createdBy,createdDate, modifyBy, modifyDate,monedaNota,tipoCambioValor)
+                                        createdBy,createdDate, modifyBy, modifyDate,monedaNota,tipoCambioValor,fechaSalida)
                                         values ('{0}','{1}','{2}','{3}','{4}',
                                                 '{5}','{6}','{7}','{8}','{9}','{10}',
                                                 '{11}','{12}','{13}','{14}','{15}',
                                                 '{16}','{17}','{18}','{19}','{20}',
-                                                '{21}','{22}','{23}','{24}',{25},{26})",
+                                                '{21}','{22}','{23}','{24}',{25},{26},{27})",
                                             notaD.codCliente, notaD.codCounter, notaD.codOperador, notaD.codTipoCambio, notaD.fechaGestion,
                                             notaD.pasajero, notaD.servicio, notaD.voucher, notaD.fechaVencimiento, notaD.totalArgentina, notaD.totalAgencia,
                                             notaD.totalCounter, notaD.totalMetropolitana, notaD.total, notaD.montoNeto, notaD.concepto,
                                             notaD.isEspecial, notaD.codigoUnico, notaD.estado, notaD.idSucursal, 0,
                                             notaD.createBy, notaD.createDate, iduser, DateTime.Now,
                                             notaD.monedaNota.HasValue ? notaD.monedaNota.Value.ToString() : "NULL",
-                                            notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL");
+                                            notaD.tipoCambioValor.HasValue ? notaD.tipoCambioValor.Value.ToString(System.Globalization.CultureInfo.InvariantCulture) : "NULL",
+                                            notaD.fechaSalida.HasValue ? "'" + notaD.fechaSalida.Value.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.CultureInfo.InvariantCulture) + "'" : "NULL");
                     res = insertUpdateExecute(query);
                 }
 

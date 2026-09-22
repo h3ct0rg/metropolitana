@@ -3,16 +3,16 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 // import { appConfig } from 'src/app/app.config';
 
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
 import { StorageService } from './local-data/storage.service';
 import { IStorageKeys } from './local-data/storage';
+import { AppConfigService } from './app-config.service';
 
 export class BaseService<T> {
-  protected baseUrl: string;
-
-  constructor(protected http: HttpClient, protected storageService: StorageService) {
-    this.baseUrl = environment.baseUrlApi;
+  protected get baseUrl(): string {
+    return AppConfigService.baseUrlApi;
   }
+
+  constructor(protected http: HttpClient, protected storageService: StorageService) { }
 
   private getAuthHeader = (): HttpHeaders => {
     const token: string = this.storageService.parse(IStorageKeys.Token);

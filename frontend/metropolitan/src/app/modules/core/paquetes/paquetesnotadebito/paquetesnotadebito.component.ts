@@ -87,6 +87,7 @@ export class PaquetesnotadebitoComponent implements OnInit {
       aMetro: new FormControl(),
       netoLiquida: new FormControl(),
       fechaVencimiento: new FormControl(null, [Validators.required]),
+      fechaSalida: new FormControl(null),
       monedaNota: new FormControl(1, [Validators.required]),
       tipoCambioValor: new FormControl(null, [Validators.required, Validators.min(0.01)])
     });
@@ -202,6 +203,7 @@ export class PaquetesnotadebitoComponent implements OnInit {
       this.form.get("aMetro").setValue((result.totalArgentina * fMostrar).toFixed(2));
       this.form.get("netoLiquida").setValue((result.total * fMostrar).toFixed(2));
       this.form.get("fechaVencimiento").setValue(result.fechaVencimiento);
+      this.form.get("fechaSalida").setValue(result.fechaSalida ? result.fechaSalida : null);
       this.form.get("monedaNota").setValue(result.monedaNota ? result.monedaNota : 1);
       this.form.get("tipoCambioValor").setValue(result.tipoCambioValor ? result.tipoCambioValor : this.form.get("tipoCambioValor").value);
       this.waitAction = false;
@@ -377,6 +379,7 @@ export class PaquetesnotadebitoComponent implements OnInit {
         createDate: this.fechaRegistro,
         fechaGestion: this.form.get("fechaRegistro").value,
         fechaVencimiento: this.form.get("fechaVencimiento").value,
+        fechaSalida: this.form.get("fechaSalida").value,
         modify: 1,
         idSucursal: this.getActualSucursal(),
         modifyDate: this.fechaRegistro,

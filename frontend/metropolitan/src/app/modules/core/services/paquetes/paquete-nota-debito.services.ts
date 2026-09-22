@@ -57,4 +57,9 @@ export class PaquetesNotaDebitoService extends BaseService<NotaDebito> {
   getNotaDebitoBySucursalandDate(idSucursal: string, fecha: string) {
     return this.get('/NotaDebitoPaquetes/GetBySucursalDate/?id=' + idSucursal + '&fecha=' + fecha) as Observable<NotaDebito[]>;
   }
+
+  getReporteFechaSalida(startDate: string, endDate: string, idSucursal: number) {
+    const dateRange = { startDate, endDate, idSucursal };
+    return this.post('/NotaDebitoPaquetes/ReporteFechaSalida', dateRange) as Observable<any[]>;
+  }
 }

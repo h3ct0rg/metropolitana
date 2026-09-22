@@ -18,19 +18,21 @@ import { KpiCardComponent } from './components/kpi-card/kpi-card.component';
 import { FinancialDashboardComponent } from './components/financial-dashboard/financial-dashboard.component';
 import { ActivityDashboardComponent } from './components/activity-dashboard/activity-dashboard.component';
 import { CurrencyDashboardComponent } from './components/currency-dashboard/currency-dashboard.component';
+import { PaquetesDashboardComponent } from './components/paquetes-dashboard/paquetes-dashboard.component';
 
 import { DashboardFinancialService } from './services/dashboard-financial.services';
 import { DashboardActivityService } from './services/dashboard-activity.services';
 import { DashboardCurrencyService } from './services/dashboard-currency.services';
+import { DashboardPaquetesService } from './services/dashboard-paquetes.services';
 
 @NgModule({
-    declarations: [MainDashboardComponent, KpiCardComponent, FinancialDashboardComponent, ActivityDashboardComponent, CurrencyDashboardComponent],
+    declarations: [MainDashboardComponent, KpiCardComponent, FinancialDashboardComponent, ActivityDashboardComponent, CurrencyDashboardComponent, PaquetesDashboardComponent],
     imports: [
         CommonModule, FormsModule, DashboardsRoutingModule, ChartsModule,
         NzTabsModule, NzGridModule, NzFormModule, NzSelectModule, NzDatePickerModule,
         NzSpinModule, NzTableModule, NzIconModule
     ],
-    providers: [DashboardFinancialService, DashboardActivityService, DashboardCurrencyService, ThemeService],
+    providers: [DashboardFinancialService, DashboardActivityService, DashboardCurrencyService, DashboardPaquetesService, ThemeService],
     exports: [MainDashboardComponent]
 })
 export class DashboardsModule {}

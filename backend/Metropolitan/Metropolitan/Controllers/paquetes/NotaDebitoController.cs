@@ -4,6 +4,7 @@ using DataBase.management;
 using DataBase.model;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,6 +94,18 @@ namespace Metropolitan.Controllers.paquetes
             result = gestordb.getListNotaDebito(notaDebitoFilter);
             return result;
 
+        }
+
+        [HttpPost("ReporteFechaSalida")]
+        public ActionResult<List<notaDebitoFechaSalidaDto>> ReporteFechaSalida([FromBody] JObject actionRequest)
+        {
+            dynamic apRequest = (dynamic)actionRequest;
+            var starDate = (string)apRequest.startDate;
+            var endDate = (string)apRequest.endDate;
+            var idSucursal = (int)apRequest.idSucursal;
+
+            List<notaDebitoFechaSalidaDto> result = gestordb.getNotaDebitoByFechaSalida(Convert.ToDateTime(starDate), Convert.ToDateTime(endDate), idSucursal);
+            return result;
         }
 
         [HttpPost("UpdateNotaDebito")]

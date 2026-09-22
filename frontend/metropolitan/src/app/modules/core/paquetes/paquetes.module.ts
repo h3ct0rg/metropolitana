@@ -31,13 +31,14 @@ import { PaquetesordendepagoprofileComponent } from './paquetesordendepagoprofil
 import { PaquetesReporteVentasComponent } from './reportes/paquetes-reporte-ventas/paquetes-reporte-ventas.component';
 import { PaquetesReporteProfitCounterComponent } from './reportes/paquetes-reporte-profit-counter/paquetes-reporte-profit-counter.component';
 import { PaquetesReporteVentasFiltradasComponent } from './reportes/paquetes-reporte-ventas-filtradas/paquetes-reporte-ventas-filtradas.component';
+import { PaquetesReporteFechaSalidaComponent } from './reportes/paquetes-reporte-fecha-salida/paquetes-reporte-fecha-salida.component';
 
 
 
 @NgModule({
   declarations: [ClientespaquetesComponent, ClienteslistpaquetesComponent, ProveedoreslistpaquetesComponent,
     ProveedorespaquetesComponent, CounterpaquetesComponent, CounterlistpaquetesComponent, PaquetesnotadebitoComponent,
-    PaquetesnotadebitolistComponent, PaquetesnotadebitoprofileComponent, notaDebitoFilter, paqueteOrdenPagoFilter, PaquetesordendepagolistComponent, PaquetesordendepagoeditComponent, PaquetesordendepagocreateComponent, PaquetesordendepagonotaComponent, PaquetesordendepareporteComponent, PaquetesordendepagoprofileComponent, PaquetesReporteVentasComponent, PaquetesReporteProfitCounterComponent, PaquetesReporteVentasFiltradasComponent],
+    PaquetesnotadebitolistComponent, PaquetesnotadebitoprofileComponent, notaDebitoFilter, paqueteOrdenPagoFilter, PaquetesordendepagolistComponent, PaquetesordendepagoeditComponent, PaquetesordendepagocreateComponent, PaquetesordendepagonotaComponent, PaquetesordendepareporteComponent, PaquetesordendepagoprofileComponent, PaquetesReporteVentasComponent, PaquetesReporteProfitCounterComponent, PaquetesReporteVentasFiltradasComponent, PaquetesReporteFechaSalidaComponent],
   imports: [
     CommonModule, PaquetesRoutingModule,
     NzSpinModule, NzTableModule, NzGridModule, NzFormModule, NzButtonModule

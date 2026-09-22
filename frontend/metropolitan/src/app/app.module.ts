@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { LoginComponent } from './modules/security/components/login/login.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -12,8 +12,13 @@ import { SecurityModule } from './modules/security/security.module';
 import { SharedModule } from './shared/shared.module';
 import { registerLocaleData } from '@angular/common';
 import en from '@angular/common/locales/en';
+import { AppConfigService } from './shared/services/app-config.service';
 
 registerLocaleData(en);
+
+export function initAppConfig(appConfigService: AppConfigService) {
+  return () => appConfigService.load();
+}
 
 @NgModule({
   declarations: [
@@ -30,7 +35,17 @@ registerLocaleData(en);
     SharedModule,
     ReactiveFormsModule
   ],
-  providers: [{ provide: NZ_I18N, useValue: en_US }, AuthenticationService, SecurityModule],
+  providers: [
+    { provide: NZ_I18N, useValue: en_US },
+    AuthenticationService,
+    SecurityModule,
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initAppConfig,
+      deps: [AppConfigService],
+      multi: true
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

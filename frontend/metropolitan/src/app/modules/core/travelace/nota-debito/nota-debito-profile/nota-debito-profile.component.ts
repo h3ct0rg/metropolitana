@@ -37,9 +37,9 @@ export class NotaDebitoProfileComponent implements OnInit {
   concepto: string;
   liquidacion: string;
   montoNeto: number;
-  public resultSum: string;
-  public alPax: string;
-  public comicionAgencia: string;
+  public resultSum: number;
+  public alPax: number;
+  public comicionAgencia: number;
   comicionCounter: number;
   comisionMetropolitana: number;
   comisionArgentina: number;
@@ -161,9 +161,9 @@ export class NotaDebitoProfileComponent implements OnInit {
           this.concepto = this.notaDebito.concepto;
 
           this.montoNeto = this.notaDebito.montoNeto;
-          this.alPax = this.notaDebito.total.toFixed(2);
-          this.comicionAgencia = this.notaDebito.totalAgencia.toFixed(2);
-          this.resultSum = (this.montoNeto - parseFloat(this.comicionAgencia)).toFixed(2);
+          this.alPax = this.notaDebito.total;
+          this.comicionAgencia = this.notaDebito.totalAgencia;
+          this.resultSum = this.montoNeto - this.comicionAgencia;
           this.comicionCounter = this.notaDebito.totalCounter;
           this.comisionMetropolitana = this.notaDebito.totalMetropolitana;
           this.comisionArgentina = this.notaDebito.totalArgentina;

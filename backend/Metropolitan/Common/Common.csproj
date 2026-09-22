@@ -80,6 +80,7 @@
     <Compile Include="model\NotaDebitoFilter.cs" />
     <Compile Include="model\PagedResult.cs" />
     <Compile Include="model\dashboard\FinancialDashboardModels.cs" />
+    <Compile Include="model\dashboard\PaquetesDashboardModels.cs" />
     <Compile Include="model\dashboard\ActivityDashboardModels.cs" />
     <Compile Include="model\dashboard\CurrencyDashboardModels.cs" />
     <Compile Include="model\listaOrdenDePagoTravelace.cs" />

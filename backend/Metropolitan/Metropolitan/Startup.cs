@@ -18,6 +18,7 @@ namespace Metropolitan
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            DataBase.AppConfig.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
         }
 
         public IConfiguration Configuration { get; }

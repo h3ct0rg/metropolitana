@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="connectionDB.cs" />
+    <Compile Include="AppConfig.cs" />
     <Compile Include="gestorDB.cs" />
     <Compile Include="management\carga\cargaClientManagement.cs" />
     <Compile Include="management\carga\cargaCounterManagement.cs" />
@@ -50,6 +51,7 @@
     <Compile Include="management\carga\cargaOrdendePagoTravelaceManagement.cs" />
     <Compile Include="management\Logs\LogsManagement.cs" />
     <Compile Include="management\dashboard\DashboardFinancialManagement.cs" />
+    <Compile Include="management\dashboard\DashboardPaquetesManagement.cs" />
     <Compile Include="management\dashboard\DashboardActivityManagement.cs" />
     <Compile Include="management\dashboard\DashboardCurrencyManagement.cs" />
     <Compile Include="management\paquetes\paquetesOrdendePagoTravelaceManagement.cs" />

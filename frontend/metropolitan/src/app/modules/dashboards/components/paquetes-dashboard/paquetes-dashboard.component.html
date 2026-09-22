@@ -1,0 +1,43 @@
+<div class="filter-row">
+  <nz-form-item>
+    <nz-form-label>Sucursal</nz-form-label>
+    <nz-form-control>
+      <nz-select [(ngModel)]="idSucursal" (ngModelChange)="onFiltroChange()">
+        <nz-option [nzLabel]="'Todas las sucursales'" [nzValue]="-1"></nz-option>
+        <nz-option *ngFor="let s of listSucursales" [nzLabel]="s.nombre" [nzValue]="s.id"></nz-option>
+      </nz-select>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label>Rango de fechas</nz-form-label>
+    <nz-form-control>
+      <nz-range-picker [(ngModel)]="rangoFechas" (ngModelChange)="onFiltroChange()"></nz-range-picker>
+    </nz-form-control>
+  </nz-form-item>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24">
+    <nz-spin [nzSpinning]="loadingFechaChart">
+      <div class="glass-card chart-card">
+        <h3>Notas de Débito por Fecha de Salida — Reporte Fecha de Salida de Paquetes</h3>
+        <div class="chart-container chart-tall">
+          <canvas baseChart [datasets]="fechaDatasets" [labels]="fechaLabels" [options]="fechaOptions" [chartType]="'line'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>
+
+<div nz-row [nzGutter]="16" class="chart-row">
+  <div nz-col [nzXs]="24" [nzMd]="12">
+    <nz-spin [nzSpinning]="loadingSucursalChart">
+      <div class="glass-card chart-card">
+        <h3>Distribución por Sucursal (% de ND por Fecha de Salida)</h3>
+        <div class="chart-container">
+          <canvas baseChart [data]="sucursalData" [labels]="sucursalLabels" [options]="donutOptions" [colors]="sucursalColors" [chartType]="'doughnut'"></canvas>
+        </div>
+      </div>
+    </nz-spin>
+  </div>
+</div>

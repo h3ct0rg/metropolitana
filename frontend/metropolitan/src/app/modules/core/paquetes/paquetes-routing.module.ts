@@ -17,6 +17,7 @@ import { PaquetesordendepagoprofileComponent } from './paquetesordendepagoprofil
 import { PaquetesReporteVentasComponent } from './reportes/paquetes-reporte-ventas/paquetes-reporte-ventas.component';
 import { PaquetesReporteProfitCounterComponent } from './reportes/paquetes-reporte-profit-counter/paquetes-reporte-profit-counter.component';
 import { PaquetesReporteVentasFiltradasComponent } from './reportes/paquetes-reporte-ventas-filtradas/paquetes-reporte-ventas-filtradas.component';
+import { PaquetesReporteFechaSalidaComponent } from './reportes/paquetes-reporte-fecha-salida/paquetes-reporte-fecha-salida.component';
 
 const routes: Routes = [  
   {
@@ -102,6 +103,10 @@ const routes: Routes = [
   {
     path: 'reporte-ventas-filtradas',
     component: PaquetesReporteVentasFiltradasComponent
+  },
+  {
+    path: 'reporte-fecha-salida',
+    component: PaquetesReporteFechaSalidaComponent
   }
 ];
 

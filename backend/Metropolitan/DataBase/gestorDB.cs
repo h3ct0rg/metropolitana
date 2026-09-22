@@ -186,6 +186,12 @@ namespace DataBase
             return (i < 0 || reader.IsDBNull(i)) ? default(DateTime) : reader.GetDateTime(i);
         }
 
+        protected DateTime? GetNullableDateTimeByName(SqlDataReader reader, string columnName)
+        {
+            int i = GetOrdinalOrDefault(reader, columnName);
+            return (i < 0 || reader.IsDBNull(i)) ? (DateTime?)null : reader.GetDateTime(i);
+        }
+
         private clients readClientRow(SqlDataReader reader)
         {
             clients Client = new clients();

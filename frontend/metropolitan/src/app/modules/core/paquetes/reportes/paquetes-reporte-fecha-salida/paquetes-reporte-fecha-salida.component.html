@@ -1,0 +1,80 @@
+<form nz-form [formGroup]="form">
+
+  <div class="glass-card filtros-card">
+    <h4>Filtros del Reporte</h4>
+    <div nz-row [nzGutter]="24">
+      <div nz-col [nzXs]="24" [nzMd]="7">
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha de Salida (Inicio)</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker style="width:100%" formControlName="fechaStardDate" nzPlaceHolder="Fecha Inicio"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="7">
+        <nz-form-item>
+          <nz-form-label nzRequired>Fecha de Salida (Fin)</nz-form-label>
+          <nz-form-control>
+            <nz-date-picker style="width:100%" formControlName="fechaEndDate" nzPlaceHolder="Fecha Final"></nz-date-picker>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+      <div nz-col [nzXs]="24" [nzMd]="10">
+        <nz-form-item>
+          <nz-form-label nzRequired>Ciudad</nz-form-label>
+          <nz-form-control>
+            <nz-select style="width:100%" nzPlaceHolder="Sucursal" formControlName="sucursal">
+              <nz-option *ngFor="let option of listSucursales" [nzLabel]="option['nombre']" [nzValue]="option['id']"></nz-option>
+            </nz-select>
+          </nz-form-control>
+        </nz-form-item>
+      </div>
+    </div>
+
+    <div class="rango-invalido-msg" *ngIf="rangoFechasInvalido">
+      La Fecha Final no puede ser anterior a la Fecha Inicio.
+    </div>
+
+    <div class="form-actions">
+      <button nz-button nzType="primary" [disabled]="rangoFechasInvalido" (click)="generateNote()">Generar Reporte</button>
+      <button nz-button [disabled]="listResultados.length === 0" (click)="generarPDF()">
+        <i nz-icon nzType="file-pdf"></i>
+        Descargar PDF
+      </button>
+    </div>
+  </div>
+
+  <nz-spin [nzSpinning]="isSpinning">
+    <div class="glass-card table-card">
+      <h4>Notas de Débito por Fecha de Salida</h4>
+      <div class="table-scroll">
+        <nz-table [nzData]="listResultados" [nzShowPagination]="true" [nzPageSize]="20">
+          <thead>
+            <tr>
+              <th>ND</th>
+              <th>Voucher</th>
+              <th>Agencia</th>
+              <th>Operador</th>
+              <th>Pasajero</th>
+              <th>Fecha de Salida</th>
+              <th>Fecha Gestión</th>
+              <th>Monto Neto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of listResultados">
+              <td>{{ item.codigoUnico }}</td>
+              <td>{{ item.voucher }}</td>
+              <td>{{ item.nombreAgencia }}</td>
+              <td>{{ item.nombreOperador }}</td>
+              <td>{{ item.pasajero }}</td>
+              <td>{{ getTime(item.fechaSalida) }}</td>
+              <td>{{ getTime(item.fechaGestion) }}</td>
+              <td>{{ item.montoNeto.toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+  </nz-spin>
+</form>

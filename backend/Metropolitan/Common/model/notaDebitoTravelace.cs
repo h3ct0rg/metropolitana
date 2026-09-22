@@ -36,6 +36,24 @@ namespace Common.model
         public int estadoEditado;
         public int? monedaNota; // 1 = USD, 2 = BS. null = legacy, mostrar como USD.
         public double? tipoCambioValor; // tasa USD->Bs usada al crear/editar esta ND.
+        public DateTime? fechaSalida; // solo Paquetes -- fecha de viaje. null en travelace/carga.
+    }
+
+    // Fila de resultado del reporte de Paquetes "ND por Fecha de Salida".
+    public class notaDebitoFechaSalidaDto
+    {
+        public int id;
+        public int codigoUnico;
+        public string voucher;
+        public string pasajero;
+        public string nombreAgencia;
+        public string nombreOperador;
+        public DateTime fechaSalida;
+        public DateTime fechaGestion;
+        public double montoNeto;
+        public double total;
+        public int estado;
+        public int idSucursal;
     }
 
     public class notaDebitoListTable
@@ -50,5 +68,6 @@ namespace Common.model
         public int codigoUnico;
         public int? monedaNota;
         public double? tipoCambioValor;
+        public DateTime? fechaSalida;
     }
 }
