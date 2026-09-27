@@ -47,6 +47,26 @@ export class FlujoCajaReportComponent implements OnInit {
   ngOnInit() {
   }
 
+  get resumenDolares(): FlujoCajaResumen[] {
+    return this.resumen.filter(r => r.moneda === 'USD');
+  }
+
+  get resumenBolivianos(): FlujoCajaResumen[] {
+    return this.resumen.filter(r => r.moneda === 'BS');
+  }
+
+  getSumaIngresos(lista: FlujoCajaResumen[]): number {
+    return lista.reduce((acc, r) => acc + r.totalIngresos, 0);
+  }
+
+  monedaSimbolo(moneda: string): string {
+    return moneda === 'BS' ? 'Bs.' : '$us';
+  }
+
+  getSumaOperaciones(lista: FlujoCajaResumen[]): number {
+    return lista.reduce((acc, r) => acc + r.cantidadOperaciones, 0);
+  }
+
   get rangoFechasInvalido(): boolean {
     const inicio = this.form.get('fechaStardDate').value;
     const fin = this.form.get('fechaEndDate').value;
@@ -107,7 +127,33 @@ export class FlujoCajaReportComponent implements OnInit {
 
     autoTable(doc, {
       head: [['Cuenta', 'Moneda', 'Cantidad de Operaciones', 'Total Ingresado']],
-      body: this.resumen.map(r => [r.cuenta, r.moneda, r.cantidadOperaciones.toString(), r.totalIngresos.toFixed(2)]),
+      body: this.resumen.map(r => [r.cuenta, r.moneda, r.cantidadOperaciones.toString(), this.monedaSimbolo(r.moneda) + ' ' + r.totalIngresos.toFixed(2)]),
+      theme: 'grid'
+    });
+
+    autoTable(doc, {
+      head: [['Resumen en Dólares (USD)', '', '']],
+      theme: 'plain',
+    });
+    autoTable(doc, {
+      head: [['Cuenta', 'Cantidad de Operaciones', 'Total Ingresado']],
+      body: [
+        ...this.resumenDolares.map(r => [r.cuenta, r.cantidadOperaciones.toString(), '$us ' + r.totalIngresos.toFixed(2)]),
+        ['Total', this.getSumaOperaciones(this.resumenDolares).toString(), '$us ' + this.getSumaIngresos(this.resumenDolares).toFixed(2)]
+      ],
+      theme: 'grid'
+    });
+
+    autoTable(doc, {
+      head: [['Resumen en Bolivianos (BS)', '', '']],
+      theme: 'plain',
+    });
+    autoTable(doc, {
+      head: [['Cuenta', 'Cantidad de Operaciones', 'Total Ingresado']],
+      body: [
+        ...this.resumenBolivianos.map(r => [r.cuenta, r.cantidadOperaciones.toString(), 'Bs. ' + r.totalIngresos.toFixed(2)]),
+        ['Total', this.getSumaOperaciones(this.resumenBolivianos).toString(), 'Bs. ' + this.getSumaIngresos(this.resumenBolivianos).toFixed(2)]
+      ],
       theme: 'grid'
     });
 
@@ -115,7 +161,7 @@ export class FlujoCajaReportComponent implements OnInit {
       head: [['Fecha', 'Módulo', 'ND', 'Cuenta', 'Forma de Pago', 'Moneda', 'Tipo de Cambio', 'Monto', 'Concepto']],
       body: this.detalle.map(m => [
         this.getTime(m.fechaPago), m.modulo, m.idNotaDebito.toString(), m.cuenta, m.formaPago, m.moneda,
-        m.tipoCambioValor ? m.tipoCambioValor.toFixed(2) : '-', m.monto.toFixed(2), m.concepto
+        m.tipoCambioValor ? m.tipoCambioValor.toFixed(2) : '-', this.monedaSimbolo(m.moneda) + ' ' + m.monto.toFixed(2), m.concepto
       ]),
       theme: 'grid'
     });

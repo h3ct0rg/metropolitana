@@ -75,7 +75,61 @@
               <td>{{ data.cuenta }}</td>
               <td>{{ data.moneda }}</td>
               <td>{{ data.cantidadOperaciones }}</td>
-              <td>{{ data.totalIngresos | number:'1.2-2' }}</td>
+              <td>{{ monedaSimbolo(data.moneda) }} {{ data.totalIngresos | number:'1.2-2' }}</td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+
+    <div class="glass-card table-card">
+      <h4>Resumen en Dólares (USD)</h4>
+      <div class="table-scroll">
+        <nz-table #resumenUsdTable [nzData]="resumenDolares" [nzShowPagination]="false">
+          <thead>
+            <tr>
+              <th>Cuenta</th>
+              <th>Cantidad de Operaciones</th>
+              <th>Total Ingresado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of resumenUsdTable.data">
+              <td>{{ data.cuenta }}</td>
+              <td>{{ data.cantidadOperaciones }}</td>
+              <td>$us {{ data.totalIngresos | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td><strong>{{ getSumaOperaciones(resumenDolares) }}</strong></td>
+              <td><strong>$us {{ getSumaIngresos(resumenDolares) | number:'1.2-2' }}</strong></td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </div>
+
+    <div class="glass-card table-card">
+      <h4>Resumen en Bolivianos (BS)</h4>
+      <div class="table-scroll">
+        <nz-table #resumenBsTable [nzData]="resumenBolivianos" [nzShowPagination]="false">
+          <thead>
+            <tr>
+              <th>Cuenta</th>
+              <th>Cantidad de Operaciones</th>
+              <th>Total Ingresado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let data of resumenBsTable.data">
+              <td>{{ data.cuenta }}</td>
+              <td>{{ data.cantidadOperaciones }}</td>
+              <td>Bs. {{ data.totalIngresos | number:'1.2-2' }}</td>
+            </tr>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td><strong>{{ getSumaOperaciones(resumenBolivianos) }}</strong></td>
+              <td><strong>Bs. {{ getSumaIngresos(resumenBolivianos) | number:'1.2-2' }}</strong></td>
             </tr>
           </tbody>
         </nz-table>
@@ -108,7 +162,7 @@
               <td>{{ data.formaPago }}</td>
               <td>{{ data.moneda }}</td>
               <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
-              <td>{{ data.monto | number:'1.2-2' }}</td>
+              <td>{{ monedaSimbolo(data.moneda) }} {{ data.monto | number:'1.2-2' }}</td>
               <td>{{ data.concepto }}</td>
             </tr>
           </tbody>
