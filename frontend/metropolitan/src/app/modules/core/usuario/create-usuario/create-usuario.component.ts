@@ -57,7 +57,7 @@ export class UsuarioCreateComponent implements OnInit {
       modifieDate: "0001-01-01T00:00:00",
       modifyBy: 1
     };
-    this.idroles = [{ id: 1, name: "Admin" }, { id: 2, name: "Travelace" }, { id: 3, name: "Paquetes" }, { id: 4, name: "Carga" }];
+    this.idroles = [{ id: 1, name: "Admin" }, { id: 2, name: "Universal Assistance" }, { id: 3, name: "Paquetes" }, { id: 4, name: "Carga" }];
 
     this.sucursalesService.getSucursalList().subscribe(result => {
       this.listSucursales = result;

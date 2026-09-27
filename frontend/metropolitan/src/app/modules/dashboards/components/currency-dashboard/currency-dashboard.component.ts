@@ -20,7 +20,7 @@ export class CurrencyDashboardComponent implements OnInit {
   modulo: string = 'TODOS';
   listModulos = [
     { value: 'TODOS', label: 'Todos los módulos' },
-    { value: 'Travelace', label: 'Travelace (UA)' },
+    { value: 'Travelace', label: 'Universal Assistance (UA)' },
     { value: 'Paquetes', label: 'Paquetes' },
     { value: 'Carga', label: 'Carga' }
   ];

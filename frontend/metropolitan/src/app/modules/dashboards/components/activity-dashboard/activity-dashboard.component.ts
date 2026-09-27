@@ -16,6 +16,13 @@ const MODULE_COLORS: { [key: string]: string } = {
   Otro: '#8c8c8c'
 };
 
+// El backend sigue identificando este módulo como "Travelace" (así se
+// registra en los logs de actividad); solo el texto mostrado cambia a
+// "Universal Assistance".
+const MODULE_LABELS: { [key: string]: string } = {
+  Travelace: 'Universal Assistance'
+};
+
 @Component({
   selector: 'app-activity-dashboard',
   templateUrl: './activity-dashboard.component.html',
@@ -147,7 +154,7 @@ export class ActivityDashboardComponent implements OnInit {
         const fila = rows.find(r => r.usuario === u && r.modulo === modulo);
         return fila ? fila.cantidad : 0;
       }),
-      label: modulo,
+      label: MODULE_LABELS[modulo] || modulo,
       backgroundColor: MODULE_COLORS[modulo],
       maxBarThickness: 20
     }));

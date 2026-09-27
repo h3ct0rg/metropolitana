@@ -21,7 +21,7 @@ export class FlujoCajaReportComponent implements OnInit {
   public listSucursales = [];
   public listAreas = [
     { value: 'TODAS', label: 'Todas las áreas' },
-    { value: 'TRAVELACE', label: 'Travelace (UA)' },
+    { value: 'TRAVELACE', label: 'Universal Assistance (UA)' },
     { value: 'PAQUETES', label: 'Paquetes' },
     { value: 'CARGA', label: 'Carga' }
   ];

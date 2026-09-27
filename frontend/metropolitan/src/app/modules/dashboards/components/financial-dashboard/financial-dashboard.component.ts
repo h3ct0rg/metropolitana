@@ -19,6 +19,12 @@ const MODULE_COLORS: { [key: string]: string } = {
   Paquetes: COLOR_PAQUETES
 };
 
+// El backend sigue identificando este módulo como "Travelace" (así se
+// registra en los datos); solo el texto mostrado cambia a "Universal Assistance".
+const MODULE_LABELS: { [key: string]: string } = {
+  Travelace: 'Universal Assistance'
+};
+
 @Component({
   selector: 'app-financial-dashboard',
   templateUrl: './financial-dashboard.component.html',
@@ -128,7 +134,7 @@ export class FinancialDashboardComponent implements OnInit {
 
     this.loadingModuleChart = true;
     this.financialService.getModuleDistribution(this.idSucursal, inicioMes, finMes).subscribe((result: any[]) => {
-      this.moduleLabels = result.map(r => r.modulo);
+      this.moduleLabels = result.map(r => MODULE_LABELS[r.modulo] || r.modulo);
       this.moduleData = result.map(r => r.total);
       this.moduleColors = [{ backgroundColor: result.map(r => MODULE_COLORS[r.modulo] || '#8c8c8c') }];
       this.loadingModuleChart = false;
