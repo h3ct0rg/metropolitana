@@ -23,5 +23,11 @@ namespace Metropolitan.Controllers.dashboard
         {
             return gestordb.getNdPorFechaSalidaBySucursal(start, end);
         }
+
+        [HttpGet("NdPendientesDeCobro")]
+        public ActionResult<List<NdAlertaCobroDto>> NdPendientesDeCobro(int idSucursal)
+        {
+            return gestordb.getNdPendientesDeCobro(idSucursal);
+        }
     }
 }

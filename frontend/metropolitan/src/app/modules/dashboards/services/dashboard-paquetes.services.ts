@@ -23,4 +23,8 @@ export class DashboardPaquetesService extends BaseService<any> {
   getNdPorSucursal(start: Date, end: Date): Observable<any> {
     return this.get(`/DashboardPaquetes/NdPorSucursal?start=${this.fmt(start)}&end=${this.fmt(end)}`);
   }
+
+  getNdPendientesDeCobro(idSucursal: number): Observable<any> {
+    return this.get(`/DashboardPaquetes/NdPendientesDeCobro?idSucursal=${idSucursal}`);
+  }
 }

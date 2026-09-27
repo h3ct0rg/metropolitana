@@ -16,6 +16,41 @@
   </nz-form-item>
 </div>
 
+<nz-spin [nzSpinning]="loadingAlerta">
+  <div class="glass-card chart-card alerta-card">
+    <h3><i nz-icon nzType="warning" nzTheme="fill"></i> ND de Paquetes por Cobrar (sin ningún pago)</h3>
+    <div class="table-scroll" *ngIf="alertaData.length > 0; else sinPendientes">
+      <nz-table [nzData]="alertaData" [nzShowPagination]="alertaData.length > 10" [nzPageSize]="10" #alertaTable>
+        <thead>
+          <tr>
+            <th>N° ND</th>
+            <th>Voucher</th>
+            <th>Pasajero</th>
+            <th>Agencia</th>
+            <th>Fecha de Salida</th>
+            <th>Días Restantes</th>
+            <th>Saldo Pendiente</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of alertaTable.data" [ngClass]="{'fila-alta': severidad(item) === 'alta', 'fila-media': severidad(item) === 'media'}">
+            <td><strong>{{ item.codigoUnico }}</strong></td>
+            <td>{{ item.voucher }}</td>
+            <td>{{ item.pasajero }}</td>
+            <td>{{ item.nombreAgencia }}</td>
+            <td>{{ item.fechaSalida | date:'dd/MM/yyyy' }}</td>
+            <td>{{ item.diasRestantes < 0 ? 'Vencido' : (item.diasRestantes + ' día(s)') }}</td>
+            <td>{{ monedaSimbolo(item) }} {{ montoNativo(item) | number:'1.2-2' }}</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </div>
+    <ng-template #sinPendientes>
+      <p class="sin-pendientes-msg">Sin pendientes de cobro por fecha de salida.</p>
+    </ng-template>
+  </div>
+</nz-spin>
+
 <div nz-row [nzGutter]="16" class="chart-row">
   <div nz-col [nzXs]="24">
     <nz-spin [nzSpinning]="loadingFechaChart">

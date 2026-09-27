@@ -18,6 +18,9 @@ export class PaquetesDashboardComponent implements OnInit {
   idSucursal: number = -1;
   rangoFechas: Date[] = [this.primerDiaDelMes(), new Date()];
 
+  alertaData: any[] = [];
+  loadingAlerta = true;
+
   loadingFechaChart = true;
   loadingSucursalChart = true;
 
@@ -60,10 +63,12 @@ export class PaquetesDashboardComponent implements OnInit {
       this.listSucursales = result;
     });
     this.cargarTodo();
+    this.cargarAlerta();
   }
 
   onFiltroChange() {
     this.cargarTodo();
+    this.cargarAlerta();
   }
 
   cargarTodo() {
@@ -87,6 +92,30 @@ export class PaquetesDashboardComponent implements OnInit {
       this.sucursalData = result.map(r => r.cantidad);
       this.loadingSucursalChart = false;
     });
+  }
+
+  // Alerta de ND sin ningún pago realizado, cerca de su fecha de salida.
+  // Independiente del rango de fechas de los gráficos -- es "lo que hay que
+  // cobrar ahora mismo", no un reporte histórico.
+  cargarAlerta() {
+    this.loadingAlerta = true;
+    this.paquetesDashboardService.getNdPendientesDeCobro(this.idSucursal).subscribe((result: any[]) => {
+      this.alertaData = result;
+      this.loadingAlerta = false;
+    });
+  }
+
+  severidad(item): 'alta' | 'media' {
+    return item.diasRestantes <= 2 ? 'alta' : 'media';
+  }
+
+  monedaSimbolo(item): string {
+    return item.monedaNota === 2 ? 'Bs.' : '$us';
+  }
+
+  montoNativo(item): number {
+    const tasa = item.monedaNota === 2 && item.tipoCambioValor ? item.tipoCambioValor : 1;
+    return item.saldoPendiente * tasa;
   }
 
   private primerDiaDelMes(): Date {
