@@ -19,7 +19,8 @@
           <th>Cliente</th>
           <th>Moneda</th>
           <th>Tipo de Cambio</th>
-          <th>Saldo</th>
+          <th>Saldo $us</th>
+          <th>Saldo Bs</th>
           <th></th>
         </tr>
       </thead>
@@ -34,8 +35,10 @@
           </td>
           <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
           <td>{{ data.saldoDeudor.toFixed(2) }}</td>
+          <td>{{ data.tipoCambioValor ? (data.saldoDeudor * data.tipoCambioValor).toFixed(2) : '-' }}</td>
           <td>
             <label nz-checkbox (nzCheckedChange)="this.check(data.idOrden,data.saldoDeudor, data.numeroOrdenPago, data.monedaNota, data.tipoCambioValor)">Pagar</label>
+            <button nz-button nzSize="small" class="btn-adelanto" [disabled]="!puedeAdelantar(data)" (click)="abrirAdelanto(data)">Adelanto</button>
           </td>
         </tr>
       </tbody>
@@ -119,3 +122,88 @@
 <nz-modal [(nzVisible)]="isVisible" nzWidth="900" nzTitle="" (nzOnCancel)="handleCancel()" (nzOnOk)="handleOk()">
   <orden-pago-nota #listPays></orden-pago-nota>
 </nz-modal>
+
+<nz-modal [(nzVisible)]="isAdelantoVisible" nzTitle="Registrar Adelanto" (nzOnCancel)="cancelarAdelanto()" (nzOnOk)="confirmarAdelanto()" [nzOkDisabled]="!adelantoForm.valid">
+  <form nz-form [formGroup]="adelantoForm" *ngIf="filaAdelanto">
+    <div class="info-row">
+      <span class="info-label">ND</span>
+      <span class="info-value">{{ filaAdelanto.idNota }} - {{ filaAdelanto.nombreCliente }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Moneda</span>
+      <span class="info-value">{{ filaAdelanto.monedaNota === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Saldo Pendiente Actual</span>
+      <span class="info-value">{{ filaAdelanto.monedaNota === 2 ? 'Bs.' : '$us' }} {{ saldoPendienteNativo | number:'1.2-2' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">Fecha Límite para Pagar el Total</span>
+      <span class="info-value">{{ filaAdelanto.fechaVencimiento ? (filaAdelanto.fechaVencimiento | date:'dd/MM/yyyy') : '-' }}</span>
+    </div>
+    <nz-form-item>
+      <nz-form-label nzRequired>Monto del Adelanto ({{ filaAdelanto.monedaNota === 2 ? 'Bs.' : '$us' }})</nz-form-label>
+      <nz-form-control>
+        <input nz-input type="number" step="0.01" formControlName="monto">
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item>
+      <nz-form-label>Descripción</nz-form-label>
+      <nz-form-control>
+        <textarea nz-input formControlName="concepto" rows="2"></textarea>
+      </nz-form-control>
+    </nz-form-item>
+  </form>
+</nz-modal>
+
+<div id="reciboAdelantoContainer" class="glass-card" style="position:absolute; left:-9999px; top:0; width:650px;" *ngIf="reciboAdelanto">
+  <div nz-row>
+    <div nz-col nzSpan="12">
+      <img src="../../../../assets/img/metropolitana-slogan.jpg" width="220" />
+    </div>
+    <div nz-col nzSpan="12" style="text-align:right">
+      <div class="total-badge">
+        <span class="total-label">Monto Recibido</span>
+        <span class="total-value">{{ reciboAdelanto.monedaSimbolo }} {{ reciboAdelanto.montoRecibido | number:'1.2-2' }}</span>
+      </div>
+    </div>
+  </div>
+  <div nz-row>
+    <div nz-col nzSpan="24" style="text-align:center">
+      <h2 style="margin:0">Recibo de Adelanto</h2>
+    </div>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Cliente</span>
+    <span class="info-value">{{ reciboAdelanto.nombreCliente }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">N° ND</span>
+    <span class="info-value">{{ reciboAdelanto.idNota }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Moneda</span>
+    <span class="info-value">{{ reciboAdelanto.monedaTexto }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Descripción</span>
+    <span class="info-value">{{ reciboAdelanto.concepto }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Monto Recibido</span>
+    <span class="info-value">{{ reciboAdelanto.monedaSimbolo }} {{ reciboAdelanto.montoRecibido | number:'1.2-2' }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Monto Pendiente</span>
+    <span class="info-value">{{ reciboAdelanto.monedaSimbolo }} {{ reciboAdelanto.montoPendiente | number:'1.2-2' }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Fecha de Pago</span>
+    <span class="info-value">{{ reciboAdelanto.fechaPago }}</span>
+  </div>
+  <div class="info-row">
+    <span class="info-label">Fecha Límite para Pagar el Total</span>
+    <span class="info-value">{{ reciboAdelanto.fechaLimite }}</span>
+  </div>
+  <div class="creator-line">Creado por: {{ reciboAdelanto.nombreCreador }}</div>
+</div>

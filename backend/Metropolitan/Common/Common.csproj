@@ -87,6 +87,7 @@
     <Compile Include="model\reporteOperacionPagoTravelace.cs" />
     <Compile Include="model\ordenPagoReporteTravelace.cs" />
     <Compile Include="model\operacionPagoTravelace.cs" />
+    <Compile Include="model\ordenPagoAdelanto.cs" />
     <Compile Include="model\notaDebitoTravelace.cs" />
     <Compile Include="model\operadores.cs" />
     <Compile Include="model\counter.cs" />

@@ -109,23 +109,26 @@ export class CargaordendepagonotaComponent implements OnInit {
         this.ordenPagoService.getOrdenPagoByCodProfile(result.codProfile).subscribe(resultCodProfile => {
           // Cada fila (ND) trae su propio tipo de cambio -- no se usa una
           // tasa única del encabezado, ya que cada ND pudo crearse con una
-          // tasa distinta.
-          let totalPagado = 0;
+          // tasa distinta. El recibo muestra el total original de cada ND
+          // (montoNeto - totalAgencia), no el monto real de esta OP puntual
+          // -- si hubo un adelanto previo, esta OP solo transacciona el saldo
+          // restante, pero el recibo debe reflejar el total completo de la ND.
           resultCodProfile.forEach(key => {
             this.listOPN += " " + key.numeroPago + ",";
             this.notaDebitoService.getNotaDebitoByCodigoUnico(key.numeroNotaDebito, key.idSucursal).subscribe(NDResult => {
               key['nombreCliente'] = NDResult[0]['codigoUnico'];
               key['pasajero'] = NDResult[0]['servicio'];
+
+              const montoOriginalUSD = NDResult[0]['montoNeto'] - NDResult[0]['totalAgencia'];
+              const factorFila = result.monedaPago === 2 && key.tipoCambioValor ? key.tipoCambioValor : 1;
+              key.montoUSD = montoOriginalUSD;
+              key.montoAPagar = montoOriginalUSD * factorFila;
+
+              this.montoPagado = resultCodProfile.reduce((acc, k) => acc + (k.montoAPagar || 0), 0).toFixed(2);
               this.isSpinning = false;
             })
-
-            const factorFila = result.monedaPago === 2 && key.tipoCambioValor ? key.tipoCambioValor : 1;
-            key.montoUSD = key.montoAPagar;
-            key.montoAPagar = key.montoAPagar * factorFila;
-            totalPagado += key.montoAPagar;
           });
           this.listOPN = this.listOPN.substring(0, this.listOPN.length - 1) + " ";
-          this.montoPagado = totalPagado.toFixed(2);
           this.listOfData = resultCodProfile;
           this.getFormaPago();
         });

@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { BaseService } from '../../../../shared/services/base.service';
 import { StorageService } from './../../../../shared/services/local-data/storage.service';
 import { OrdenPago } from '../../../../shared/model/orden-pago';
+import { OrdenPagoAdelanto } from '../../../../shared/model/orden-pago-adelanto';
 
 @Injectable()
 export class CargaOrdenPagoService extends BaseService<OrdenPago> {
@@ -36,6 +37,10 @@ export class CargaOrdenPagoService extends BaseService<OrdenPago> {
 
   getOrdenPagoByIDNotaIDSucursal(idNota: number, idSucursal: number) {
     return this.get('/CargaOrdenPago/GetOrdenByIdNotaDebitoSucursal/?idNota=' + idNota + '&idsucursal=' + idSucursal) as Observable<OrdenPago>;
+  }
+
+  createAdelanto(adelanto: OrdenPagoAdelanto) {
+    return this.post('/CargaOrdenPago/CreateAdelanto', adelanto) as Observable<OrdenPago>;
   }
 
   getOrdenPagoByCliente(idORdenPago: string) {

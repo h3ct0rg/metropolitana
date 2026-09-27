@@ -16,6 +16,7 @@ namespace Common.model
         public double saldoDeudor;
         public int? monedaNota;
         public double? tipoCambioValor;
+        public DateTime fechaVencimiento;
     }
 
 }

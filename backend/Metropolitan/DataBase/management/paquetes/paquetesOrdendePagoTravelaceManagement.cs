@@ -375,6 +375,54 @@ namespace DataBase.management
             return ordenPago;
         }
 
+        // Registra un adelanto (pago parcial) contra una Orden de Pago pendiente.
+        // Resta de saldoDeudor pero nunca toca pagado -- eso solo cambia por el
+        // flujo normal de "Pagar" cuando se liquida el 100% restante.
+        public void createAdelanto(OrdenPagoAdelanto adelanto)
+        {
+            operacionPagoTravelace ordenActual = getOrdenPago(adelanto.idOrdenPago);
+            if (ordenActual.id == 0)
+            {
+                throw new Exception("La Orden de Pago no existe.");
+            }
+            if (adelanto.monto <= 0 || adelanto.monto > ordenActual.saldoDeudor)
+            {
+                throw new Exception("El monto del adelanto no puede ser mayor al saldo pendiente.");
+            }
+
+            base.sqlConnection.open();
+            try
+            {
+                using (SqlCommand command = new SqlCommand(@"Insert into paquetesOrdenPagoAdelanto
+                                        (idOrdenPago, idNotaDebito, monto, concepto, fechaPago, idSucursal, createBy, createDate)
+                                        values (@idOrdenPago, @idNotaDebito, @monto, @concepto, @fechaPago, @idSucursal, @createBy, @createDate)", sqlConnection._sqlConnect))
+                {
+                    command.Parameters.AddWithValue("@idOrdenPago", adelanto.idOrdenPago);
+                    command.Parameters.AddWithValue("@idNotaDebito", adelanto.idNotaDebito);
+                    command.Parameters.AddWithValue("@monto", adelanto.monto);
+                    command.Parameters.AddWithValue("@concepto", string.IsNullOrWhiteSpace(adelanto.concepto) ? (object)DBNull.Value : adelanto.concepto);
+                    command.Parameters.AddWithValue("@fechaPago", adelanto.fechaPago);
+                    command.Parameters.AddWithValue("@idSucursal", adelanto.idSucursal);
+                    command.Parameters.AddWithValue("@createBy", adelanto.createBy);
+                    command.Parameters.AddWithValue("@createDate", DateTime.Now);
+                    command.ExecuteNonQuery();
+                }
+
+                using (SqlCommand command = new SqlCommand("UPDATE paquetesOrdenPago SET saldoDeudor = saldoDeudor - @monto WHERE id = @id", sqlConnection._sqlConnect))
+                {
+                    command.Parameters.AddWithValue("@monto", adelanto.monto);
+                    command.Parameters.AddWithValue("@id", adelanto.idOrdenPago);
+                    command.ExecuteNonQuery();
+                }
+            }
+            catch (Exception ex)
+            {
+                base.sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            base.sqlConnection.close();
+        }
+
         public operacionPagoTravelace getOrdenPagoByIdNotaIdSucursal(string idNota, string idSucursal)
         {
             operacionPagoTravelace ordenPago = new operacionPagoTravelace();
@@ -612,6 +660,11 @@ namespace DataBase.management
             return numeroDevuelto;
         }
 
+        // ordenMontoPagar = total original de la ND (previo a cualquier adelanto),
+        // siempre derivado de la ND misma -- a diferencia de saldoDeudor (el saldo
+        // vivo en la OP), no baja cuando se registra un adelanto. Sirve para que
+        // el recibo final de pago pueda mostrar el total real de la ND, aunque
+        // ya se haya abonado parte por adelanto.
         public List<listaOrdenDePagoTravelace> getListOrdenesPendientes(int sucursal = -1, string clientID = "-1")
         {
             listaOrdenDePagoTravelace listaOrdenPagos = new listaOrdenDePagoTravelace();
@@ -622,13 +675,13 @@ namespace DataBase.management
             {
                 if (sucursal == -1)
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, (nd.montoNeto - nd.totalAgencia), op.saldoDeudor, nd.monedaNota, nd.tipoCambioValor, nd.fechaVencimiento
                                             FROM paquetesOrdenPago as op, paquetesNotaDebito as nd, clientePaquetes as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false' and cl.id = '{0}'", clientID);
                 }
                 else
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, (nd.montoNeto - nd.totalAgencia), op.saldoDeudor, nd.monedaNota, nd.tipoCambioValor, nd.fechaVencimiento
                                             FROM paquetesOrdenPago as op, paquetesNotaDebito as nd, clientePaquetes as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false' and cl.id = '{0}' and nd.idSucursal = '{1}' and op.idSucursal='{1}'", clientID, sucursal);
                 }
@@ -637,13 +690,13 @@ namespace DataBase.management
             {
                 if (sucursal == -1)
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, (nd.montoNeto - nd.totalAgencia), op.saldoDeudor, nd.monedaNota, nd.tipoCambioValor, nd.fechaVencimiento
                                             FROM paquetesOrdenPago as op, paquetesNotaDebito as nd, clientePaquetes as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false'");
                 }
                 else
                 {
-                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, nd.montoNeto, (nd.montoNeto-nd.totalAgencia), nd.monedaNota, nd.tipoCambioValor
+                    query = string.Format(@"SELECT cl.id, nd.codigoUnicoNota, op.id, cl.nombre, (nd.montoNeto - nd.totalAgencia), op.saldoDeudor, nd.monedaNota, nd.tipoCambioValor, nd.fechaVencimiento
                                             FROM paquetesOrdenPago as op, paquetesNotaDebito as nd, clientePaquetes as cl
                                             where nd.codigoUnicoNota = op.idNotaDebito  and nd.codCliente = cl.id and op.pagado='false' and nd.idSucursal = '{0}' and op.idSucursal='{0}'", sucursal);
                 }
@@ -665,6 +718,7 @@ namespace DataBase.management
                             listaOrdenPagos.saldoDeudor = reader.GetDouble(5);
                             listaOrdenPagos.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            listaOrdenPagos.fechaVencimiento = GetDateTimeByName(reader, "fechaVencimiento");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -693,6 +747,7 @@ namespace DataBase.management
                     nombreCliente = r.First().nombreCliente,
                     monedaNota = r.First().monedaNota,
                     tipoCambioValor = r.First().tipoCambioValor,
+                    fechaVencimiento = r.First().fechaVencimiento,
                     ordenMontoPagar = r.Sum(f => f.ordenMontoPagar),
                     saldoDeudor = r.Sum(f => f.saldoDeudor)
                 }).ToList();
@@ -712,6 +767,7 @@ namespace DataBase.management
                     nombreCliente = r.First().nombreCliente,
                     monedaNota = r.First().monedaNota,
                     tipoCambioValor = r.First().tipoCambioValor,
+                    fechaVencimiento = r.First().fechaVencimiento,
                     ordenMontoPagar = r.Sum(f => f.ordenMontoPagar),
                     saldoDeudor = r.Sum(f => f.saldoDeudor)
                 }).ToList();

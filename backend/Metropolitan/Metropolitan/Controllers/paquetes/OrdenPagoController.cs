@@ -112,6 +112,14 @@ namespace Metropolitan.Controllers.paquetes
             return notaDebito;
         }
 
+        [HttpPost("CreateAdelanto")]
+        public ActionResult<operacionPagoTravelace> CreateAdelanto([FromBody] OrdenPagoAdelanto adelanto)
+        {
+            adelanto.fechaPago = DateTime.Now;
+            gestordb.createAdelanto(adelanto);
+            return gestordb.getOrdenPago(adelanto.idOrdenPago);
+        }
+
         [HttpPost("CreateOrdenPago")]
         public ActionResult<operacionPagoTravelace> CreateOrdenPago(operacionPagoTravelace newOperador)
         {

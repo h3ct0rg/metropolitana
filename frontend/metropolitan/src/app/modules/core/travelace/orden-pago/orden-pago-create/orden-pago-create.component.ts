@@ -4,7 +4,10 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ListaOrdenPagoPendienteService } from '../../../services/orden-pago-list.services';
 import { OrdenPago } from '../../../../../shared/model/orden-pago';
+import { OrdenPagoAdelanto } from '../../../../../shared/model/orden-pago-adelanto';
 import { OrdenPagoNotaComponent } from '../orden-pago-nota/orden-pago-nota.component';
+import * as jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { IStorageKeys } from '../../../../../shared/services/local-data/storage';
 import { StorageService } from '../../../../../shared/services/local-data/storage.service';
 import { Guid } from "guid-typescript";
@@ -16,6 +19,7 @@ import { FormaPagoService } from '../../../services/forma-pago.services';
 import { CuentaBancariaService } from '../../../services/cuenta-bancaria.services';
 import { FormaPago } from '../../../../../shared/model/forma-pago';
 import { CuentaBancaria } from '../../../../../shared/model/cuenta-bancaria';
+import { NzMessageService } from 'ng-zorro-antd';
 
 interface ItemSeleccionado {
   id: number;
@@ -64,6 +68,11 @@ export class OrdenPagoCreateComponent implements OnInit {
   public mostrarCuentas: boolean = false;
   logs: Logs;
 
+  public isAdelantoVisible = false;
+  public adelantoForm: FormGroup;
+  public filaAdelanto: any = null;
+  public reciboAdelanto: any = null;
+
   constructor(private ordenPagoService: OrdenPagoService,
     private route: ActivatedRoute,
     private ordenPagoListService: ListaOrdenPagoPendienteService,
@@ -73,7 +82,8 @@ export class OrdenPagoCreateComponent implements OnInit {
     private userService: UsuarioService,
     private logService: LogsService,
     private formaPagoService: FormaPagoService,
-    private cuentaBancariaService: CuentaBancariaService
+    private cuentaBancariaService: CuentaBancariaService,
+    private message: NzMessageService
   ) {
     this.form = new FormGroup({
       fechaRegistro: new FormControl(null, [Validators.required]),
@@ -82,6 +92,11 @@ export class OrdenPagoCreateComponent implements OnInit {
       textMetodoPago: new FormControl(),
       metodoDePago: new FormControl(),
       cuentaBancaria: new FormControl()
+    });
+
+    this.adelantoForm = new FormGroup({
+      monto: new FormControl(null, [Validators.required, Validators.min(0.01)]),
+      concepto: new FormControl(null)
     });
 
     this.form.get("montoDolares").disable({ emitEvent: false, onlySelf: false });
@@ -175,8 +190,11 @@ export class OrdenPagoCreateComponent implements OnInit {
   // El equivalente en Bs se calcula sumando cada ND con su propio tipo de
   // cambio (el registrado al crearla), no con una tasa única ingresada a mano.
   private recalcularMontoBs() {
+    // El equivalente en Bs se muestra siempre que haya tipo de cambio
+    // registrado, sin importar si la ND es originalmente USD o BS -- es solo
+    // informativo para el cajero (igual que las columnas Saldo $us/Saldo Bs).
     const totalBs = this.itemsSeleccionados.reduce((acc, item) => {
-      const tasa = item.monedaNota === 2 && item.tipoCambioValor ? item.tipoCambioValor : 1;
+      const tasa = item.tipoCambioValor ? item.tipoCambioValor : 1;
       return acc + (item.saldo * tasa);
     }, 0);
     this.form.get("montoBs").disable({ emitEvent: false, onlySelf: false });
@@ -220,6 +238,118 @@ export class OrdenPagoCreateComponent implements OnInit {
     this.recalcularMontoBs();
   }
 
+  // El botón "Adelanto" se deshabilita si la ND ya está marcada para pago
+  // total en este lote, o si ya no tiene saldo pendiente.
+  puedeAdelantar(data): boolean {
+    return data.saldoDeudor > 0 && !this.itemsSeleccionados.find(x => x.id === data.idOrden);
+  }
+
+  abrirAdelanto(data) {
+    this.filaAdelanto = data;
+    this.adelantoForm.reset();
+    this.isAdelantoVisible = true;
+  }
+
+  cancelarAdelanto() {
+    this.isAdelantoVisible = false;
+    this.filaAdelanto = null;
+  }
+
+  // El saldo en la BD siempre se guarda en USD (el monto base de la ND nunca
+  // cambia de moneda). Para mostrar/ingresar el adelanto en la moneda propia
+  // de la ND (Bs si corresponde), se usa el tipo de cambio registrado en esa ND.
+  get tasaAdelanto(): number {
+    return this.filaAdelanto && this.filaAdelanto.monedaNota === 2 && this.filaAdelanto.tipoCambioValor
+      ? this.filaAdelanto.tipoCambioValor : 1;
+  }
+
+  get saldoPendienteNativo(): number {
+    return this.filaAdelanto ? this.filaAdelanto.saldoDeudor * this.tasaAdelanto : 0;
+  }
+
+  confirmarAdelanto() {
+    if (!this.adelantoForm.valid || !this.filaAdelanto) {
+      return;
+    }
+    const fila = this.filaAdelanto;
+    const tasa = this.tasaAdelanto;
+    const saldoAnteriorNativo = this.saldoPendienteNativo;
+
+    const montoNativo = parseFloat(this.adelantoForm.get('monto').value);
+    if (montoNativo > saldoAnteriorNativo) {
+      this.message.create('error', 'El monto del adelanto no puede ser mayor al saldo pendiente.');
+      return;
+    }
+    const montoUSD = montoNativo / tasa;
+    const concepto = this.adelantoForm.get('concepto').value;
+
+    const adelanto: OrdenPagoAdelanto = {
+      idOrdenPago: fila.idOrden,
+      idNotaDebito: fila.idNota,
+      monto: montoUSD,
+      concepto: concepto,
+      idSucursal: this.getActualSucursal(),
+      createBy: JSON.parse(this.token)["userId"]
+    };
+
+    this.ordenPagoService.createAdelanto(adelanto).subscribe(result => {
+      fila.saldoDeudor = result.saldoDeudor;
+      this.isAdelantoVisible = false;
+      this.filaAdelanto = null;
+      this.generarReciboAdelanto(fila, montoNativo, saldoAnteriorNativo, concepto);
+    });
+  }
+
+  generarReciboAdelanto(fila, monto, saldoAnterior, concepto) {
+    this.reciboAdelanto = {
+      nombreCliente: fila.nombreCliente,
+      idNota: fila.idNota,
+      monedaSimbolo: fila.monedaNota === 2 ? 'Bs.' : '$us',
+      monedaTexto: fila.monedaNota === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)',
+      concepto: concepto || '-',
+      montoRecibido: monto,
+      montoPendiente: saldoAnterior - monto,
+      fechaPago: this.getTime(new Date()),
+      fechaLimite: fila.fechaVencimiento ? this.getTime(fila.fechaVencimiento) : '-',
+      nombreCreador: ''
+    };
+
+    this.userService.getUser(JSON.parse(this.token)["userId"].toString()).subscribe(res => {
+      this.reciboAdelanto.nombreCreador = res.nombre;
+      setTimeout(() => this.imprimirReciboAdelanto(), 0);
+    });
+  }
+
+  private imprimirReciboAdelanto() {
+    const idNota = this.reciboAdelanto.idNota;
+    const pdfElement = document.getElementById('reciboAdelantoContainer');
+    pdfElement.classList.add('pdf-print');
+    html2canvas(pdfElement, {
+      allowTaint: true,
+      useCORS: false,
+      scale: 2
+    }).then(canvas => {
+      pdfElement.classList.remove('pdf-print');
+      const img = canvas.toDataURL('image/jpeg', 0.7);
+      const doc = new jsPDF();
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      doc.addImage(img, 'JPEG', 10, 10, imgWidth, imgHeight);
+      doc.save('recibo_adelanto_' + idNota + '_' + this.getTimeForFile(new Date()) + '.pdf');
+      this.reciboAdelanto = null;
+    });
+  }
+
+  getTime(theTime) {
+    const d = new Date(theTime);
+    return d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
+  }
+
+  getTimeForFile(theTime) {
+    const d = new Date(theTime);
+    return d.getDate() + '_' + (d.getMonth() + 1) + '_' + d.getFullYear();
+  }
+
   saveNotaVenta() {
     if (this.hayMonedasMezcladas) {
       return;
@@ -261,12 +391,17 @@ export class OrdenPagoCreateComponent implements OnInit {
       const tasaNota = resultI[0].tipoCambioValor;
       const factorRecibo = this.monedaSeleccionada === 2 && tasaNota ? tasaNota : 1;
 
+      // El recibo muestra el total original de la ND (sin descontar adelantos
+      // ya cobrados por separado), aunque lo que se registra como transacción
+      // de esta OP sea solo el saldo restante (resultI[0].saldoDeudor).
+      const montoOriginal = resultI[0].ordenMontoPagar;
+
       printList.push({
         nombreCliente: resultI[0].idNota,
         fechaPago: this.ordenPago.fechaPago,
         concepto: this.ordenPago.concepto,
-        montoAPagar: resultI[0].saldoDeudor * factorRecibo,
-        montoUSD: resultI[0].saldoDeudor,
+        montoAPagar: montoOriginal * factorRecibo,
+        montoUSD: montoOriginal,
         tipoCambioValor: tasaNota
       });
 
