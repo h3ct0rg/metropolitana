@@ -14,7 +14,6 @@ import { Logs } from '../../../../shared/model/Logs';
 import { LogsService } from '../../services/Logs/logs.services';
 import { FormaPagoService } from '../../services/forma-pago.services';
 import { CuentaBancariaService } from '../../services/cuenta-bancaria.services';
-import { TipoCambioService } from '../../services/tipo-cambio.services';
 import { FormaPago } from '../../../../shared/model/forma-pago';
 import { CuentaBancaria } from '../../../../shared/model/cuenta-bancaria';
 
@@ -22,6 +21,7 @@ interface ItemSeleccionado {
   id: number;
   saldo: number;
   monedaNota: number;
+  tipoCambioValor?: number;
 }
 
 @Component({
@@ -70,23 +70,19 @@ export class PaquetesordendepagocreateComponent implements OnInit {
     private userService: UsuarioService,
     private logService: LogsService,
     private formaPagoService: FormaPagoService,
-    private cuentaBancariaService: CuentaBancariaService,
-    private tipoCambioService: TipoCambioService
+    private cuentaBancariaService: CuentaBancariaService
   ) {
     this.form = new FormGroup({
       fechaRegistro: new FormControl(null, [Validators.required]),
-      numeroOrdenPago: new FormControl(),
       montoDolares: new FormControl(null, [Validators.required]),
       montoBs: new FormControl(null, [Validators.required]),
       textMetodoPago: new FormControl(),
       metodoDePago: new FormControl(),
-      cuentaBancaria: new FormControl(),
-      tipoCambioValor: new FormControl(null, [Validators.required, Validators.min(0.01)])
+      cuentaBancaria: new FormControl()
     });
 
     this.form.get("montoDolares").disable({ emitEvent: false, onlySelf: false });
     this.form.get("montoBs").disable({ emitEvent: false, onlySelf: false });
-    this.form.get("numeroOrdenPago").disable({ emitEvent: false, onlySelf: false });
 
     this.formaPagoService.getFormaPagoActivos().subscribe(result => {
       this.formasPagoTodas = result;
@@ -96,13 +92,6 @@ export class PaquetesordendepagocreateComponent implements OnInit {
     this.cuentaBancariaService.getCuentaBancariaActivas().subscribe(result => {
       this.cuentasTodas = result;
       this.actualizarCatalogosFiltrados();
-    });
-
-    this.tipoCambioService.getActual().subscribe(result => {
-      if (result && !this.form.get('tipoCambioValor').value) {
-        this.form.get('tipoCambioValor').setValue(result.valor);
-        this.recalcularMontoBs();
-      }
     });
   }
 
@@ -136,10 +125,6 @@ export class PaquetesordendepagocreateComponent implements OnInit {
       }
       const encontrada = this.optionsMetodoPago.find(o => o.id.toString() === data.toString());
       this.tituloFormaPago = encontrada ? encontrada.nombre : "";
-    });
-
-    this.form.get("tipoCambioValor").valueChanges.subscribe(() => {
-      this.recalcularMontoBs();
     });
 
     this.logs = {
@@ -176,10 +161,15 @@ export class PaquetesordendepagocreateComponent implements OnInit {
     this.cuentas = this.cuentasTodas.filter(cb => cb.moneda === monedaTexto);
   }
 
+  // El equivalente en Bs se calcula sumando cada ND con su propio tipo de
+  // cambio (el registrado al crearla), no con una tasa única ingresada a mano.
   private recalcularMontoBs() {
-    const tasa = this.form.get("tipoCambioValor").value || 0;
+    const totalBs = this.itemsSeleccionados.reduce((acc, item) => {
+      const tasa = item.monedaNota === 2 && item.tipoCambioValor ? item.tipoCambioValor : 1;
+      return acc + (item.saldo * tasa);
+    }, 0);
     this.form.get("montoBs").disable({ emitEvent: false, onlySelf: false });
-    this.form.get("montoBs").setValue((this.totalPagar * tasa).toFixed(2));
+    this.form.get("montoBs").setValue(totalBs.toFixed(2));
   }
 
   check(id, saldo, nordenPago, monedaNota?, tipoCambioValor?) {
@@ -194,16 +184,13 @@ export class PaquetesordendepagocreateComponent implements OnInit {
       this.totalPagar -= parseFloat(saldo.toFixed(2));
     }
     else {
-      this.itemsSeleccionados.push({ id, saldo, monedaNota: monedaFila });
+      this.itemsSeleccionados.push({ id, saldo, monedaNota: monedaFila, tipoCambioValor });
       this.listCheck.push(id);
       this.totalPagar += saldo;
       this.totalPagar = parseFloat(this.totalPagar.toFixed(2));
 
       if (this.itemsSeleccionados.length === 1) {
         this.monedaSeleccionada = monedaFila;
-        if (tipoCambioValor) {
-          this.form.get('tipoCambioValor').setValue(tipoCambioValor);
-        }
       }
     }
 
@@ -217,7 +204,6 @@ export class PaquetesordendepagocreateComponent implements OnInit {
     this.enablePay = !(this.totalPagar != undefined && this.totalPagar > 0);
 
     this.form.get("montoDolares").disable({ emitEvent: false, onlySelf: false });
-    this.form.get("numeroOrdenPago").disable({ emitEvent: false, onlySelf: false });
     this.form.get("montoDolares").setValue(this.totalPagar.toFixed(2));
     this.recalcularMontoBs();
   }
@@ -237,7 +223,7 @@ export class PaquetesordendepagocreateComponent implements OnInit {
       formaPago: formaPagoValue,
       formaPagoDescripcion: requiereCuenta ? (cuentaBancaria ? cuentaBancaria.nombre : '') : this.form.get('textMetodoPago').value,
       monedaPago: this.monedaSeleccionada ? this.monedaSeleccionada : 1,
-      tipoCambioValor: this.form.get("tipoCambioValor").value,
+      tipoCambioValor: null,
       montoAPagar: this.totalPagar,
       numeroNotaDebito: 0,
       numeroPago: 0,
@@ -253,24 +239,29 @@ export class PaquetesordendepagocreateComponent implements OnInit {
       modifyDate: this.fechaRegistro
     }
 
-    // Los montos se registran/guardan siempre en USD; el factor es solo para
-    // que el recibo impreso muestre el equivalente en Bs al pagar en Bolivianos.
-    const factorRecibo = this.monedaSeleccionada === 2 ? (this.form.get("tipoCambioValor").value || 1) : 1;
-
+    // Los montos se registran/guardan siempre en USD. El equivalente en Bs que
+    // muestra el recibo usa el tipo de cambio propio de cada ND (no un valor
+    // único ingresado a mano).
     let printList = [];
 
     this.listCheck.forEach(data => {
       let resultI = this.listOfData.filter(d => { return d.idOrden === data });
+      const tasaNota = resultI[0].tipoCambioValor;
+      const factorRecibo = this.monedaSeleccionada === 2 && tasaNota ? tasaNota : 1;
+
       printList.push({
         nombreCliente: resultI[0].idNota,
         fechaPago: this.ordenPago.fechaPago,
         concepto: this.ordenPago.concepto,
-        montoAPagar: resultI[0].saldoDeudor * factorRecibo
+        montoAPagar: resultI[0].saldoDeudor * factorRecibo,
+        montoUSD: resultI[0].saldoDeudor,
+        tipoCambioValor: tasaNota
       });
 
       this.ordenPago.numeroNotaDebito = data;
       this.ordenPago.id = data;
       this.ordenPago.montoAPagar = resultI[0].saldoDeudor;
+      this.ordenPago.tipoCambioValor = tasaNota;
 
       this.ordenPagoService.updateOrdenPago(this.ordenPago).subscribe(data => {
         this.ordenPagoService.getOrdenPago(this.ordenPago.id.toString()).subscribe(result => {
@@ -283,7 +274,7 @@ export class PaquetesordendepagocreateComponent implements OnInit {
 
     let tempData = this.ordenPagoService.getOrdenPago(this.listCheck[0]).subscribe(resNumber => {
       this.childPays.listOfData = printList;
-      this.childPays.montoPagado = (this.totalPagar * factorRecibo).toFixed(2);
+      this.childPays.montoPagado = printList.reduce((acc, p) => acc + p.montoAPagar, 0).toFixed(2);
       this.childPays.nombreCliente = this.listOfData[0].nombreCliente;
       this.childPays.fechaRegistro = this.fechaRegistro;
       this.childPays.formaPagoId = this.ordenPago.formaPago;

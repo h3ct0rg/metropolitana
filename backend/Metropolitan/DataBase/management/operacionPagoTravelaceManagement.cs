@@ -790,7 +790,7 @@ namespace DataBase.management
 
             query = string.Format(@"
                                     select
-                                    codigoUnicoNota, PR.nombre, codCounter,pasajero,servicios,montoNeto,totalArgentina,totalCounter,totalAgencia, fechaGestion, ND.tipoCambioValor
+                                    codigoUnicoNota, PR.nombre, codCounter,pasajero,servicios,montoNeto,totalArgentina,totalCounter,totalAgencia, fechaGestion, ND.tipoCambioValor, ND.monedaNota
   FROM travelaceNotaDebito as ND, operador as PR where
   ND.codOperador = PR.id
   and Nd.idSucursal = '{0}' 
@@ -818,6 +818,7 @@ namespace DataBase.management
                             listaOrdenPagos.totalAgencia = reader.GetDouble(8);
                             listaOrdenPagos.fechaPago = reader.GetDateTime(9);
                             listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            listaOrdenPagos.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -846,7 +847,7 @@ namespace DataBase.management
             query = string.Format(@"
                                     select ND.codigoUnicoNota,ND.fechaVencimiento, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios,
 ND.montoNeto,ND.totalArgentina,ND.totalCounter,ND.totalAgencia, ND.totalMetropolitan,
-CL.nombre, ND.tipoCambioValor
+CL.nombre, ND.tipoCambioValor, ND.monedaNota
 from travelaceNotaDebito as ND, operador as PR, clients as CL
 									where 									
 									PR.id=ND.codOperador
@@ -880,6 +881,7 @@ from travelaceNotaDebito as ND, operador as PR, clients as CL
                             listaOrdenPagos.totalMetro = reader.GetDouble(11);
                             listaOrdenPagos.nombreAgencia = reader.GetString(12);
                             listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            listaOrdenPagos.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }
@@ -970,7 +972,7 @@ from travelaceNotaDebito as ND, operador as PR, clients as CL
             string query = "";
 
             query = string.Format(@"
-                                    select ND.codigoUnicoNota, OP.numeroPago, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios, ND.montoNeto,ND.totalArgentina,ND.totalCounter,ND.totalAgencia,OP.fechaPago,OP.formaPago, CL.nombre, ND.tipoCambioValor
+                                    select ND.codigoUnicoNota, OP.numeroPago, ND.codOperador,PR.nombre, ND.codCounter, ND.pasajero,  ND.servicios, ND.montoNeto,ND.totalArgentina,ND.totalCounter,ND.totalAgencia,OP.fechaPago,OP.formaPago, CL.nombre, ND.tipoCambioValor, ND.monedaNota
                                     from travelaceNotaDebito as ND, travelOrdenPago as OP
 									, operador as PR, clients as CL
 									where
@@ -1008,6 +1010,7 @@ from travelaceNotaDebito as ND, operador as PR, clients as CL
                             listaOrdenPagos.formaPago = reader.GetInt32(12);
                             listaOrdenPagos.nombreAgencia = reader.GetString(13);
                             listaOrdenPagos.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            listaOrdenPagos.monedaNota = GetNullableInt32ByName(reader, "monedaNota");
                             listOrden.Add(listaOrdenPagos);
                         }
                     }

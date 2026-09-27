@@ -90,6 +90,7 @@
                 <th>Fecha</th>
                 <th>Forma Pago</th>
                 <th>Tipo de Cambio</th>
+                <th>Moneda</th>
                 <th>Precio</th>
                 <th>Com Agencia</th>
                 <th>Com Counter</th>
@@ -107,6 +108,7 @@
                 <td>{{ getTime(data.fechaPago) }}</td>
                 <td>{{ data.formaPago }}</td>
                 <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
+                <td>{{ data.monedaNota === 2 ? 'Bolivianos' : 'Dólares' }}</td>
                 <td>{{ data.montoNeto.toFixed(2) }}</td>
                 <td>{{ data.totalAgencia.toFixed(2) }}</td>
                 <td>{{ data.totalCounter.toFixed(2) }}</td>
@@ -124,6 +126,7 @@
                 <td></td>
                 <td></td>
                 <td><h3>Totales</h3></td>
+                <td></td>
                 <td></td>
                 <td>
                   {{getSum('montoNeto',operador).toFixed(2)}}
@@ -156,6 +159,7 @@
                 <th>Servicios</th>
                 <th>Fecha</th>
                 <th>Tipo de Cambio</th>
+                <th>Moneda</th>
                 <th>Precio</th>
                 <th>Com Agencia</th>
                 <th>Com Counter</th>
@@ -172,6 +176,7 @@
                 <td>{{ data.servicios }}</td>
                 <td>{{ getTime(data.fechaPago) }}</td>
                 <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
+                <td>{{ data.monedaNota === 2 ? 'Bolivianos' : 'Dólares' }}</td>
                 <td>{{ data.montoNeto.toFixed(2) }}</td>
                 <td>{{ data.totalAgencia.toFixed(2) }}</td>
                 <td>{{ data.totalCounter.toFixed(2) }}</td>
@@ -192,6 +197,7 @@
                 <th>Pasajero</th>
                 <th>Servicios</th>
                 <th>Tipo de Cambio</th>
+                <th>Moneda</th>
                 <th>Precio</th>
                 <th>Com Agencia</th>
                 <th>Com Counter</th>
@@ -207,6 +213,7 @@
                 <td>{{ data.pasajero }}</td>
                 <td>{{ data.servicios }}</td>
                 <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
+                <td>{{ data.monedaNota === 2 ? 'Bolivianos' : 'Dólares' }}</td>
                 <td>{{ data.montoNeto.toFixed(2) }}</td>
                 <td>{{ data.totalAgencia.toFixed(2) }}</td>
                 <td>{{ data.totalCounter.toFixed(2) }}</td>
@@ -227,6 +234,7 @@
                 <th>Pasajero</th>
                 <th>Servicios</th>
                 <th>Tipo de Cambio</th>
+                <th>Moneda</th>
                 <th>Precio</th>
                 <th>Com Agencia</th>
                 <th>Com Counter</th>
@@ -242,6 +250,7 @@
                 <td>{{ data.pasajero }}</td>
                 <td>{{ data.servicios }}</td>
                 <td>{{ data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-' }}</td>
+                <td>{{ data.monedaNota === 2 ? 'Bolivianos' : 'Dólares' }}</td>
                 <td>{{ data.montoNeto.toFixed(2) }}</td>
                 <td>{{ data.totalAgencia.toFixed(2) }}</td>
                 <td>{{ data.totalCounter.toFixed(2) }}</td>

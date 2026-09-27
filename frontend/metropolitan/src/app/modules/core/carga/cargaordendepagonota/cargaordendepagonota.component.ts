@@ -107,8 +107,10 @@ export class CargaordendepagonotaComponent implements OnInit {
         });
         this.numeroOrdenPago = result.numeroPago.toString();
         this.ordenPagoService.getOrdenPagoByCodProfile(result.codProfile).subscribe(resultCodProfile => {
-          const factorRecibo = result.monedaPago === 2 && result.tipoCambioValor ? result.tipoCambioValor : 1;
-          let calcular = 0;
+          // Cada fila (ND) trae su propio tipo de cambio -- no se usa una
+          // tasa única del encabezado, ya que cada ND pudo crearse con una
+          // tasa distinta.
+          let totalPagado = 0;
           resultCodProfile.forEach(key => {
             this.listOPN += " " + key.numeroPago + ",";
             this.notaDebitoService.getNotaDebitoByCodigoUnico(key.numeroNotaDebito, key.idSucursal).subscribe(NDResult => {
@@ -117,11 +119,13 @@ export class CargaordendepagonotaComponent implements OnInit {
               this.isSpinning = false;
             })
 
-            calcular += key.montoAPagar;
-            key.montoAPagar = key.montoAPagar * factorRecibo;
+            const factorFila = result.monedaPago === 2 && key.tipoCambioValor ? key.tipoCambioValor : 1;
+            key.montoUSD = key.montoAPagar;
+            key.montoAPagar = key.montoAPagar * factorFila;
+            totalPagado += key.montoAPagar;
           });
           this.listOPN = this.listOPN.substring(0, this.listOPN.length - 1) + " ";
-          this.montoPagado = (calcular * factorRecibo).toFixed(2);
+          this.montoPagado = totalPagado.toFixed(2);
           this.listOfData = resultCodProfile;
           this.getFormaPago();
         });

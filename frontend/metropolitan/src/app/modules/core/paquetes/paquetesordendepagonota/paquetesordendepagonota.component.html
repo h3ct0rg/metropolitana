@@ -30,10 +30,6 @@
           <span class="info-label">Moneda</span>
           <span class="info-value">{{localOrdenPago && localOrdenPago.monedaPago === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)'}}</span>
         </div>
-        <div class="info-row">
-          <span class="info-label">Tipo de Cambio (USD → Bs)</span>
-          <span class="info-value">{{localOrdenPago && localOrdenPago.tipoCambioValor ? (localOrdenPago.tipoCambioValor | number:'1.2-2') : '-'}}</span>
-        </div>
       </div>
     </div>
     <div nz-row style="margin-top:8px">
@@ -43,6 +39,8 @@
             <th>N° Debito</th>
             <th>Fecha</th>
             <th>Concepto de Venta</th>
+            <th *ngIf="localOrdenPago && localOrdenPago.monedaPago === 2">Tipo de Cambio</th>
+            <th *ngIf="localOrdenPago && localOrdenPago.monedaPago === 2" style="text-align:right">Equivalente $us</th>
             <th style="text-align:right">Amortizado</th>
           </tr>
         </thead>
@@ -51,6 +49,8 @@
             <td>{{data.nombreCliente}}</td>
             <td>{{getTime(data.fechaPago)}}</td>
             <td>{{data.pasajero}}</td>
+            <td *ngIf="localOrdenPago && localOrdenPago.monedaPago === 2">{{data.tipoCambioValor ? (data.tipoCambioValor | number:'1.2-2') : '-'}}</td>
+            <td *ngIf="localOrdenPago && localOrdenPago.monedaPago === 2" style="text-align:right">$us {{data.montoUSD.toFixed(2) | number:'1.2-2' }}</td>
             <td style="text-align:right">{{monedaSimbolo}} {{data.montoAPagar.toFixed(2) | number:'1.2-2' }}</td>
           </tr>
         </tbody>

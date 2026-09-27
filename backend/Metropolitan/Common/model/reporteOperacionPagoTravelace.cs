@@ -45,6 +45,7 @@ namespace Common.model
         public int formaPago;
         public string nombreAgencia;
         public double? tipoCambioValor;
+        public int? monedaNota; // 1 = USD, 2 = BS. null = legacy, mostrar como USD.
     }
 
     public class ReporteOperacionPagoTravelaceDetalleFiltrado

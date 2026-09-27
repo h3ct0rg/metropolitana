@@ -190,7 +190,8 @@ export class ReporteVentaComponent implements OnInit {
               totalFinal: 0,
               fechaPago: value.fechaPago,
               formaPago: (listOptions.find(element => element.id.toString() === value.formaPago.toString()) || { nombre: '' }).nombre,
-              tipoCambioValor: value.tipoCambioValor
+              tipoCambioValor: value.tipoCambioValor,
+              monedaNota: value.monedaNota
             };
             resultSum.push(res[value.codUnicoNota])
           }
