@@ -285,6 +285,65 @@ app-root {
   padding-right: 34px !important;
 }
 
+/* nz-date-picker / nz-range-picker (ng-zorro 8.x = AntD 3.x markup) render
+   their date text as one or two literal .ant-input elements, which then each
+   pick up the full pill styling above -- fine for a single date-picker (one
+   box, no visible seam), but the range-picker splits into two separate
+   disconnected pills with a gap. Same fix as the affix-wrapper above: the
+   border/background lives on the outer .ant-calendar-picker box, the inner
+   inputs go flat/borderless. */
+.ant-calendar-picker {
+  display: inline-flex !important;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  background: rgba(250, 250, 251, 0.9);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.035);
+  height: 40px;
+  padding: 0 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.ant-calendar-picker:hover {
+  border-color: #69c0ff;
+  background: #ffffff;
+}
+
+.ant-calendar-picker-focused {
+  border-color: #1890ff;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.12);
+}
+
+.ant-calendar-picker .ant-input {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  height: auto !important;
+  padding: 0 !important;
+  min-width: 0;
+  flex: 1;
+}
+
+.ant-calendar-range-picker-input {
+  width: auto !important;
+  text-align: center;
+}
+
+.ant-calendar-range-picker-separator {
+  padding: 0 8px;
+  color: #8c8c8c;
+  line-height: 38px;
+}
+
+.ant-calendar-picker-icon,
+.ant-calendar-picker-clear {
+  position: static !important;
+  margin-left: 8px;
+  margin-top: 0 !important;
+  color: #8c8c8c;
+}
+
 .ant-select {
   font-family: 'Poppins', sans-serif;
 }
