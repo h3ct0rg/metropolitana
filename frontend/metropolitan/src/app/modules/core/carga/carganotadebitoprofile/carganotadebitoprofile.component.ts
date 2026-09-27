@@ -12,6 +12,7 @@ import html2canvas from 'html2canvas';
 import { NotaDebito } from '../../../../shared/model/nota-debito';
 import { UsuarioService } from '../../services/usuario.service';
 import { CargaNotaDebitoService } from '../../services/carga/carga-nota-debito.services';
+import { CargaOrdenPagoService } from '../../services/carga/carga-orden-pago.services';
 import { Logs } from '../../../../shared/model/Logs';
 import { LogsService } from '../../services/Logs/logs.services';
 
@@ -28,6 +29,7 @@ export class CarganotadebitoprofileComponent implements OnInit {
   notaDebito: NotaDebito;
   fechaRegistro: string;
   fechaVencimimento: string;
+  fechaPago: string = 'Pendiente de Pago';
   public isAdmin: boolean = false;
   cliente: string;
   operador: string;
@@ -66,7 +68,8 @@ export class CarganotadebitoprofileComponent implements OnInit {
     private operadorService: OperadorService,
     private usuarioService: UsuarioService,
     private storageService: StorageService,
-    private logService: LogsService
+    private logService: LogsService,
+    private ordenPagoService: CargaOrdenPagoService
   ) {
     this.setUserName();
     this.notaDebito = {
@@ -170,6 +173,11 @@ export class CarganotadebitoprofileComponent implements OnInit {
 
           this.netoLiquidar = this.notaDebito.montoNeto;
           this.numeroNotaDebito = this.notaDebito.codigoUnico;
+
+          this.ordenPagoService.getOrdenPagoByIDNotaIDSucursal(this.notaDebito.codigoUnico, this.notaDebito.idSucursal).subscribe(orden => {
+            this.fechaPago = orden && orden.id && orden.pagado ? this.getDateNow(orden.fechaPago) : 'Pendiente de Pago';
+          });
+
           const createBy = this.notaDebito.createBy;
           this.usuarioService.getUser(createBy.toString()).subscribe(createdClient => {
             this.nombreCreador = createdClient.nombre;

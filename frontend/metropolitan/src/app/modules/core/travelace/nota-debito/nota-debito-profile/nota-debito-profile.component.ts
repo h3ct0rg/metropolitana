@@ -7,6 +7,7 @@ import { NotaDebito } from '../../../../../shared/model/nota-debito';
 import { ClientService } from '../../../services/clientes.service';
 import { CounterService } from '../../../services/counter.services';
 import { OperadorService } from '../../../services/operador.services';
+import { OrdenPagoService } from '../../../services/orden-pago.services';
 import * as jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
@@ -27,6 +28,7 @@ export class NotaDebitoProfileComponent implements OnInit {
   notaDebito: NotaDebito;
   fechaRegistro: string;
   fechaVencimimento: string;
+  fechaPago: string = 'Pendiente de Pago';
   public isAdmin: boolean = false;
   cliente: string;
   operador: string;
@@ -65,7 +67,8 @@ export class NotaDebitoProfileComponent implements OnInit {
     private operadorService: OperadorService,
     private usuarioService: UsuarioService,
     private storageService: StorageService,
-    private logService: LogsService
+    private logService: LogsService,
+    private ordenPagoService: OrdenPagoService
   ) {
     this.setUserName();
     this.notaDebito = {
@@ -170,6 +173,11 @@ export class NotaDebitoProfileComponent implements OnInit {
 
           this.netoLiquidar = this.notaDebito.montoNeto;
           this.numeroNotaDebito = this.notaDebito.codigoUnico;
+
+          this.ordenPagoService.getOrdenPagoByIDNotaIDSucursal(this.notaDebito.codigoUnico, this.notaDebito.idSucursal).subscribe(orden => {
+            this.fechaPago = orden && orden.id && orden.pagado ? this.getDateNow(orden.fechaPago) : 'Pendiente de Pago';
+          });
+
           const createBy = this.notaDebito.createBy;
           this.usuarioService.getUser(createBy.toString()).subscribe(createdClient => {
             this.nombreCreador = createdClient.nombre;

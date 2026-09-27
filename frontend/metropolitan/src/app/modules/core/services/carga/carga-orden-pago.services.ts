@@ -34,6 +34,10 @@ export class CargaOrdenPagoService extends BaseService<OrdenPago> {
     return this.get('/CargaOrdenPago/GetOrdenByCodProfile/?id=' + codProfile) as Observable<any>;
   }
 
+  getOrdenPagoByIDNotaIDSucursal(idNota: number, idSucursal: number) {
+    return this.get('/CargaOrdenPago/GetOrdenByIdNotaDebitoSucursal/?idNota=' + idNota + '&idsucursal=' + idSucursal) as Observable<OrdenPago>;
+  }
+
   getOrdenPagoByCliente(idORdenPago: string) {
     const dataResult = this.get('/CargaOrdenPago/GetOrdenByCliendId/?id=' + idORdenPago);
     return dataResult as Observable<any>;

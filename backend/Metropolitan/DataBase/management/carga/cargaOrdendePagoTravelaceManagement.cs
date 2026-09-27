@@ -375,6 +375,57 @@ namespace DataBase.management
             return ordenPago;
         }
 
+        public operacionPagoTravelace getOrdenPagoByIdNotaIdSucursal(string idNota, string idSucursal)
+        {
+            operacionPagoTravelace ordenPago = new operacionPagoTravelace();
+            base.sqlConnection.open();
+
+            string query = string.Format("select * from cargaOrdenPago where idSucursal = '{0}' and idNotaDebito = '{1}'", idSucursal, idNota);
+            try
+            {
+                using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
+                {
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            ordenPago = new operacionPagoTravelace();
+                            ordenPago.id = reader.GetInt32(0);
+                            ordenPago.fechaPago = reader.GetDateTime(1);
+                            ordenPago.montoAPagar = reader.GetDouble(2);
+                            ordenPago.monedaPago = reader.GetInt32(3);
+                            ordenPago.saldoDeudor = reader.GetDouble(4);
+                            ordenPago.numeroPago = reader.GetInt32(5);
+                            ordenPago.formaPago = reader.GetInt32(6);
+                            ordenPago.numeroTarjeta = reader.GetString(7);
+                            ordenPago.concepto = reader.GetString(8);
+                            ordenPago.anulado = reader.GetInt32(9);
+                            ordenPago.numeroNotaDebito = reader.GetInt32(10);
+                            ordenPago.pagado = reader.GetBoolean(11);
+                            ordenPago.codProfile = reader.GetString(12);
+                            ordenPago.idSucursal = reader.GetInt32(13);
+                            ordenPago.tipoCambioValor = GetNullableDoubleByName(reader, "tipoCambioValor");
+                            try
+                            {
+                                ordenPago.createBy = reader.GetInt32(14);
+                                ordenPago.modify = reader.GetInt32(15);
+                                ordenPago.createDate = reader.GetDateTime(16);
+                                ordenPago.modifyDate = reader.GetDateTime(17);
+                            }
+                            catch { }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.sqlConnection.close();
+                throw new Exception(ex.Message);
+            }
+            base.sqlConnection.close();
+            return ordenPago;
+        }
+
         public List<operacionPagoTravelace> getOrdenPagoByCodProfile(string codProfile)
         {
             List<operacionPagoTravelace> listOP = new List<operacionPagoTravelace>();

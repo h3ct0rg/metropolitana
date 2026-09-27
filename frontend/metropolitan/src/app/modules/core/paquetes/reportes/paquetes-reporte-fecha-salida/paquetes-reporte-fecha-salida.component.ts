@@ -27,7 +27,8 @@ export class PaquetesReporteFechaSalidaComponent implements OnInit {
     this.form = new FormGroup({
       fechaStardDate: new FormControl(inicioMes, [Validators.required]),
       fechaEndDate: new FormControl(hoy, [Validators.required]),
-      sucursal: new FormControl(null, [Validators.required])
+      sucursal: new FormControl(null, [Validators.required]),
+      voucher: new FormControl(null)
     });
 
     this.sucursalesService.getSucursalList().subscribe(result => {
@@ -56,7 +57,9 @@ export class PaquetesReporteFechaSalidaComponent implements OnInit {
     this.fechaIni = this.getTime(fechaStart);
     this.fechaF = this.getTime(fechaEnd);
 
-    this.notaDebitoService.getReporteFechaSalida(fechaStart, fechaEnd, this.form.get('sucursal').value).subscribe(result => {
+    this.notaDebitoService.getReporteFechaSalida(
+      fechaStart, fechaEnd, this.form.get('sucursal').value, this.form.get('voucher').value
+    ).subscribe(result => {
       this.listResultados = result;
       this.isSpinning = false;
     });

@@ -431,7 +431,7 @@ order by ND.codigoUnicoNota DESC
             return query;
         }
 
-        public List<notaDebitoFechaSalidaDto> getNotaDebitoByFechaSalida(DateTime startDate, DateTime endDate, int idSucursal)
+        public List<notaDebitoFechaSalidaDto> getNotaDebitoByFechaSalida(DateTime startDate, DateTime endDate, int idSucursal, string voucher = null)
         {
             List<notaDebitoFechaSalidaDto> lista = new List<notaDebitoFechaSalidaDto>();
             base.sqlConnection.open();
@@ -446,10 +446,12 @@ left join operadorPaquetes PR on PR.id = ND.codOperador
 where ND.fechaSalida is not null
   and ND.fechaSalida between '{0}' and '{1}'
   and ND.idSucursal = '{2}'
+  and (@voucher is null or ND.voucher like @voucher)
 order by ND.fechaSalida", startDate, endDate, idSucursal);
 
                 using (SqlCommand command = new SqlCommand(query, sqlConnection._sqlConnect))
                 {
+                    command.Parameters.AddWithValue("@voucher", string.IsNullOrWhiteSpace(voucher) ? (object)DBNull.Value : "%" + voucher.Trim() + "%");
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
                         while (reader.Read())

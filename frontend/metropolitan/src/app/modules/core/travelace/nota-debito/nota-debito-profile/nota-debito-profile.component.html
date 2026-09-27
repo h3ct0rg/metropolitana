@@ -33,10 +33,6 @@
           <span class="info-value">{{fechaRegistro}}</span>
         </div>
         <div class="info-row">
-          <span class="info-label">Fecha Vencimiento</span>
-          <span class="info-value">{{fechaVencimimento}}</span>
-        </div>
-        <div class="info-row">
           <span class="info-label">Voucher</span>
           <span class="info-value">{{voucher}}</span>
         </div>
@@ -56,11 +52,7 @@
           <span class="info-label">Concepto</span>
           <span class="info-value">{{concepto}}</span>
         </div>
-        <div class="info-row">
-          <span class="info-label">Moneda</span>
-          <span class="info-value">{{notaDebito.monedaNota === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)'}}</span>
-        </div>
-        <div class="info-row">
+        <div class="info-row" *ngIf="notaDebito.monedaNota === 2">
           <span class="info-label">Tipo de Cambio (USD → Bs)</span>
           <span class="info-value">{{notaDebito.tipoCambioValor ? (notaDebito.tipoCambioValor | number:'1.2-2') : '-'}}</span>
         </div>
@@ -74,6 +66,18 @@
         <div class="info-row">
           <span class="info-label">Comisión Agencia</span>
           <span class="info-value">{{monedaSimbolo}} {{(comicionAgencia * factorConversion) | number:'1.2-2' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Moneda</span>
+          <span class="info-value">{{notaDebito.monedaNota === 2 ? 'Bolivianos (BS)' : 'Dólares (USD)'}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha de Pago</span>
+          <span class="info-value">{{fechaPago}}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fecha de Vencimiento de Pago</span>
+          <span class="info-value">{{fechaVencimimento}}</span>
         </div>
       </div>
     </div>

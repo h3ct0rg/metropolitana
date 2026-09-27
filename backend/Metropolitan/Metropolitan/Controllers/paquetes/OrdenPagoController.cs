@@ -103,6 +103,15 @@ namespace Metropolitan.Controllers.paquetes
             return notaDebito;
         }
 
+        [HttpGet("GetOrdenByIdNotaDebitoSucursal")]
+        public ActionResult<operacionPagoTravelace> GetOrdenByIdNotaDebitoSucursal(string idNota, string idsucursal)
+        {
+            operacionPagoTravelace notaDebito = new operacionPagoTravelace();
+            notaDebito = gestordb.getOrdenPagoByIdNotaIdSucursal(idNota, idsucursal);
+            string json = JsonConvert.SerializeObject(notaDebito);
+            return notaDebito;
+        }
+
         [HttpPost("CreateOrdenPago")]
         public ActionResult<operacionPagoTravelace> CreateOrdenPago(operacionPagoTravelace newOperador)
         {

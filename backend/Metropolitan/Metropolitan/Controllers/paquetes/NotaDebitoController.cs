@@ -103,8 +103,9 @@ namespace Metropolitan.Controllers.paquetes
             var starDate = (string)apRequest.startDate;
             var endDate = (string)apRequest.endDate;
             var idSucursal = (int)apRequest.idSucursal;
+            var voucher = (string)apRequest.voucher;
 
-            List<notaDebitoFechaSalidaDto> result = gestordb.getNotaDebitoByFechaSalida(Convert.ToDateTime(starDate), Convert.ToDateTime(endDate), idSucursal);
+            List<notaDebitoFechaSalidaDto> result = gestordb.getNotaDebitoByFechaSalida(Convert.ToDateTime(starDate), Convert.ToDateTime(endDate), idSucursal, voucher);
             return result;
         }
 
